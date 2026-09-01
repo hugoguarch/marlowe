@@ -30,7 +30,7 @@ export function DemoFilm() {
             <video
               ref={videoRef}
               src={demoFilm.url}
-              poster={stepsImage.url}
+              poster={demoThumb.url}
               preload="metadata"
               controls={playing}
               playsInline
