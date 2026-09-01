@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import logoAsset from "@/assets/wm-logo-white.png.asset.json";
-import spaceEarth from "@/assets/space-earth.jpg.asset.json";
+import satelliteEarth from "@/assets/satellite-earth.jpg.asset.json";
 import spaceAstronaut from "@/assets/space-astronaut.jpg.asset.json";
-import nightSky from "@/assets/night-sky.jpg.asset.json";
 import officeDesk from "@/assets/office-desk.jpg.asset.json";
 import archCurves from "@/assets/arch-curves.jpg.asset.json";
 import archSpiral from "@/assets/arch-spiral.jpg.asset.json";
 import { Reveal } from "@/components/landing/Reveal";
-import { HeroSlideshow } from "@/components/landing/HeroSlideshow";
+import { DemoFilm } from "@/components/landing/DemoFilm";
 import { WaitlistForm } from "@/components/landing/WaitlistForm";
+
 
 const TITLE = "Marlowe — Why Media AI | Your whole marketing department, awake before you";
 const DESCRIPTION =
@@ -75,56 +75,90 @@ const STEPS = [
 function Landing() {
   return (
     <main className="bg-paper text-ink">
-      {/* Header */}
-      <header className="absolute inset-x-0 top-0 z-20">
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-8 md:px-12">
+      {/* Hero — framed cinematic card */}
+      <section className="bg-paper px-4 pt-4 pb-2 md:px-6 md:pt-6">
+        <div className="relative isolate flex h-[88vh] min-h-[600px] w-full flex-col overflow-hidden bg-ink text-paper shadow-[0_40px_90px_-50px_rgba(0,0,0,0.55)]">
           <img
-            src={logoAsset.url}
-            alt="Why Media"
-            className="h-5 w-auto md:h-6"
+            src={satelliteEarth.url}
+            alt="A satellite drifting above the lit curve of the Earth"
+            width={1920}
+            height={1088}
             loading="eager"
+            className="absolute inset-0 -z-10 h-full w-full object-cover"
           />
-          <a
-            href="#waitlist"
-            className="eyebrow border-b border-paper/40 pb-1 text-paper transition-colors hover:border-paper"
-          >
-            Join the waitlist
-          </a>
-        </div>
-      </header>
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/55 via-ink/15 to-ink/75" />
 
-      {/* Hero */}
-      <section className="relative isolate flex min-h-screen flex-col justify-end overflow-hidden bg-ink text-paper">
-        <HeroSlideshow
-          images={[spaceEarth.url, spaceAstronaut.url, nightSky.url]}
-        />
-        <div className="mx-auto w-full max-w-[1400px] px-6 pt-44 pb-20 md:px-12 md:pb-28">
-          <Reveal>
-            <p className="eyebrow text-paper/55">Why Media AI</p>
-            <h1 className="display mt-10 max-w-5xl text-[2.75rem] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
-              Your whole marketing department. Awake before you are.
-            </h1>
-            <p className="mt-8 max-w-2xl text-lg leading-relaxed text-paper/75 md:text-xl">
-              Meet Marlowe — not a tool you operate, a colleague you trust. It learns
-              your brand once, then researches, creates, posts and reports on its own
-              while the city sleeps. You wake up to the work already done.
-            </p>
-          </Reveal>
-          <Reveal delay={140}>
-            <div className="mt-14 flex flex-col items-start gap-6 border-t border-rule-light pt-10 sm:flex-row sm:items-center sm:justify-between">
-              <a
-                href="#waitlist"
-                className="bg-paper px-10 py-4 text-sm tracking-[0.14em] text-ink uppercase transition-opacity hover:opacity-85"
-              >
-                Join the waitlist
+          {/* Nav inside the frame */}
+          <header className="flex items-center justify-between px-6 py-6 md:px-10 md:py-8">
+            <img
+              src={logoAsset.url}
+              alt="Why Media"
+              className="h-5 w-auto md:h-6"
+              loading="eager"
+            />
+            <nav className="hidden items-center gap-10 text-xs tracking-[0.18em] text-paper/75 uppercase md:flex">
+              <a href="#department" className="transition-colors hover:text-paper">
+                Marlowe
               </a>
-              <span className="text-sm text-paper/55">
-                Founding members onboard first.
-              </span>
-            </div>
-          </Reveal>
+              <a href="#difference" className="transition-colors hover:text-paper">
+                Why it is different
+              </a>
+              <a href="#steps" className="transition-colors hover:text-paper">
+                How it works
+              </a>
+            </nav>
+            <a
+              href="#waitlist"
+              className="flex items-center gap-2 rounded-full bg-paper px-5 py-2.5 text-xs tracking-[0.14em] text-ink uppercase transition-opacity hover:opacity-85"
+            >
+              Join the waitlist <span aria-hidden="true">↗</span>
+            </a>
+          </header>
+
+          {/* Headline upper-left */}
+          <div className="px-6 pt-10 md:px-10 md:pt-14">
+            <Reveal>
+              <p className="eyebrow text-paper/60">Why Media AI</p>
+              <h1 className="display mt-6 max-w-4xl text-[2.6rem] sm:text-6xl md:text-7xl lg:text-[5rem]">
+                Your whole marketing
+                <br />
+                department. Awake before you.
+              </h1>
+            </Reveal>
+          </div>
+
+          {/* Bottom rail */}
+          <div className="mt-auto flex flex-col gap-8 px-6 pb-8 md:flex-row md:items-end md:justify-between md:px-10 md:pb-10">
+            <Reveal delay={120}>
+              <div className="max-w-md">
+                <p className="text-sm leading-relaxed text-paper/80">
+                  Meet Marlowe — not a tool you operate, a colleague you trust. It
+                  learns your brand once, then researches, creates, posts and reports
+                  on its own while the city sleeps.
+                </p>
+                <div className="mt-7 flex flex-wrap items-center gap-5">
+                  <a
+                    href="#waitlist"
+                    className="flex items-center gap-2 rounded-full border border-paper/60 px-7 py-3 text-xs tracking-[0.14em] text-paper uppercase transition-colors hover:bg-paper hover:text-ink"
+                  >
+                    Join the waitlist <span aria-hidden="true">↗</span>
+                  </a>
+                  <span className="text-xs text-paper/60">
+                    Founding members onboard first.
+                  </span>
+                </div>
+              </div>
+            </Reveal>
+            <span className="hidden text-xs tracking-[0.16em] text-paper/60 md:block">
+              Scroll to discover
+            </span>
+          </div>
         </div>
       </section>
+
+      <DemoFilm />
+
+
 
       {/* A normal Monday */}
       <section className="bg-paper">
@@ -176,7 +210,10 @@ function Landing() {
       </section>
 
       {/* The whole department */}
-      <section className="relative isolate overflow-hidden bg-ink text-paper">
+      <section
+        id="department"
+        className="relative isolate scroll-mt-8 overflow-hidden bg-ink text-paper"
+      >
         <img
           src={archSpiral.url}
           alt=""
@@ -213,7 +250,7 @@ function Landing() {
       </section>
 
       {/* Not another AI tool */}
-      <section className="bg-bone">
+      <section id="difference" className="scroll-mt-8 bg-bone">
         <div className="mx-auto max-w-[1400px] px-6 py-28 md:px-12 md:py-40">
           <Reveal>
             <p className="eyebrow text-muted-foreground">Not another AI tool</p>
@@ -251,7 +288,7 @@ function Landing() {
       </section>
 
       {/* Three steps */}
-      <section className="bg-ink text-paper">
+      <section id="steps" className="scroll-mt-8 bg-ink text-paper">
         <div className="mx-auto max-w-[1400px] px-6 py-28 md:px-12 md:py-40">
           <Reveal>
             <p className="eyebrow text-paper/45">Up and running in minutes</p>
