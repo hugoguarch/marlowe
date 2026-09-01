@@ -272,11 +272,15 @@ function Landing() {
           <div className="mt-20 grid gap-14 border-t border-rule pt-14 md:grid-cols-3">
             {DIFFERENCES.map((item, index) => (
               <Reveal key={item.title} delay={index * 90}>
-                <h3 className="text-xl leading-snug">{item.title}</h3>
-                <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-                  {item.body}
-                </p>
+                <div className="card-hover h-full">
+                  <span className="card-rule mb-6" aria-hidden="true" />
+                  <h3 className="text-xl leading-snug">{item.title}</h3>
+                  <p className="mt-5 text-base leading-relaxed text-muted-foreground">
+                    {item.body}
+                  </p>
+                </div>
               </Reveal>
+
             ))}
           </div>
           <Reveal delay={160}>
