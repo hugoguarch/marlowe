@@ -6,6 +6,7 @@ import officeDesk from "@/assets/office-desk.jpg.asset.json";
 import archCurves from "@/assets/arch-curves.jpg.asset.json";
 import archSpiral from "@/assets/arch-spiral.jpg.asset.json";
 import { Reveal } from "@/components/landing/Reveal";
+import { Magnetic } from "@/components/landing/Magnetic";
 import { DemoFilm } from "@/components/landing/DemoFilm";
 import { WaitlistForm } from "@/components/landing/WaitlistForm";
 
@@ -84,7 +85,7 @@ function Landing() {
             width={1920}
             height={1088}
             loading="eager"
-            className="absolute inset-0 -z-10 h-full w-full object-cover"
+            className="ken-burns absolute inset-0 -z-10 h-full w-full object-cover"
           />
           <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/55 via-ink/15 to-ink/75" />
 
@@ -93,27 +94,30 @@ function Landing() {
             <img
               src={logoAsset.url}
               alt="Why Media"
-              className="h-3.5 w-auto md:h-4"
+              className="h-3.5 w-auto transition-opacity duration-500 hover:opacity-70 md:h-4"
               loading="eager"
             />
             <nav className="hidden items-center gap-10 text-xs tracking-[0.18em] text-paper/75 uppercase md:flex">
-              <a href="#department" className="transition-colors hover:text-paper">
+              <a href="#department" className="nav-link transition-colors hover:text-paper">
                 Marlowe
               </a>
-              <a href="#difference" className="transition-colors hover:text-paper">
+              <a href="#difference" className="nav-link transition-colors hover:text-paper">
                 Why it is different
               </a>
-              <a href="#steps" className="transition-colors hover:text-paper">
+              <a href="#steps" className="nav-link transition-colors hover:text-paper">
                 How it works
               </a>
             </nav>
-            <a
-              href="#waitlist"
-              className="flex items-center gap-2 rounded-full bg-paper px-5 py-2.5 text-xs tracking-[0.14em] text-ink uppercase transition-opacity hover:opacity-85"
-            >
-              Join the waitlist <span aria-hidden="true">↗</span>
-            </a>
+            <Magnetic>
+              <a
+                href="#waitlist"
+                className="hover-lift sweep-dark group flex items-center gap-2 rounded-full bg-paper px-5 py-2.5 text-xs tracking-[0.14em] text-ink uppercase"
+              >
+                Join the waitlist <span aria-hidden="true" className="arrow-nudge">↗</span>
+              </a>
+            </Magnetic>
           </header>
+
 
           {/* Headline upper-left */}
           <div className="px-6 pt-10 md:px-10 md:pt-14">
