@@ -33,14 +33,15 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`border px-4 py-2 text-sm transition-colors ${
+      className={`chip-pop border px-4 py-2 text-sm ${
         selected
-          ? "border-ink bg-ink text-paper"
-          : "border-rule text-ink hover:border-ink"
+          ? "border-ink bg-ink text-paper shadow-[0_10px_24px_-16px_rgba(0,0,0,0.8)]"
+          : "border-rule text-ink hover:border-ink hover:bg-ink/5"
       }`}
     >
       {label}
     </button>
+
   );
 }
 
