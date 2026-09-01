@@ -141,21 +141,24 @@ function Landing() {
                   on its own while the city sleeps.
                 </p>
                 <div className="mt-7 flex flex-wrap items-center gap-5">
-                  <a
-                    href="#waitlist"
-                    className="flex items-center gap-2 rounded-full border border-paper/60 px-7 py-3 text-xs tracking-[0.14em] text-paper uppercase transition-colors hover:bg-paper hover:text-ink"
-                  >
-                    Join the waitlist <span aria-hidden="true">↗</span>
-                  </a>
+                  <Magnetic>
+                    <a
+                      href="#waitlist"
+                      className="hover-lift sweep group flex items-center gap-2 rounded-full border border-paper/60 px-7 py-3 text-xs tracking-[0.14em] text-paper uppercase"
+                    >
+                      Join the waitlist <span aria-hidden="true" className="arrow-nudge">↗</span>
+                    </a>
+                  </Magnetic>
                   <span className="text-xs text-paper/60">
                     Founding members onboard first.
                   </span>
                 </div>
               </div>
             </Reveal>
-            <span className="hidden text-xs tracking-[0.16em] text-paper/60 md:block">
+            <span className="scroll-hint hidden text-xs tracking-[0.16em] text-paper/60 md:block">
               Scroll to discover
             </span>
+
           </div>
         </div>
       </section>
