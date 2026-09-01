@@ -289,14 +289,17 @@ function Landing() {
                 And you never lose the wheel. Marlowe asks before anything that touches
                 money, goes public, or matters.
               </p>
-              <img
-                src={archCurves.url}
-                alt="Sweeping metal architectural curves against a clear sky"
-                width={1920}
-                height={1391}
-                loading="lazy"
-                className="aspect-[4/3] w-full object-cover"
-              />
+              <div className="img-zoom">
+                <img
+                  src={archCurves.url}
+                  alt="Sweeping metal architectural curves against a clear sky"
+                  width={1920}
+                  height={1391}
+                  loading="lazy"
+                  className="aspect-[4/3] w-full object-cover"
+                />
+              </div>
+
             </div>
           </Reveal>
         </div>
@@ -314,14 +317,18 @@ function Landing() {
           <div className="mt-20 grid gap-12 border-t border-rule-light pt-14 md:grid-cols-3">
             {STEPS.map((step, index) => (
               <Reveal key={step.title} delay={index * 90}>
-                <span className="eyebrow text-paper/40">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="mt-6 text-2xl">{step.title}</h3>
-                <p className="mt-4 text-base leading-relaxed text-paper/70">
-                  {step.body}
-                </p>
+                <div className="card-hover h-full">
+                  <span className="eyebrow text-paper/40">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="mt-6 text-2xl">{step.title}</h3>
+                  <span className="card-rule mt-4" aria-hidden="true" />
+                  <p className="mt-4 text-base leading-relaxed text-paper/70">
+                    {step.body}
+                  </p>
+                </div>
               </Reveal>
+
             ))}
           </div>
         </div>
