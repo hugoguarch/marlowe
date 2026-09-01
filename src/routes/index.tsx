@@ -179,15 +179,18 @@ function Landing() {
 
           <div className="mt-20 grid items-stretch gap-0 lg:grid-cols-[0.85fr_1.15fr]">
             <Reveal className="h-full">
-              <img
-                src={officeDesk.url}
-                alt="An empty executive desk in early morning light"
-                width={1280}
-                height={1920}
-                loading="lazy"
-                className="h-full min-h-[420px] w-full object-cover"
-              />
+              <div className="img-zoom h-full">
+                <img
+                  src={officeDesk.url}
+                  alt="An empty executive desk in early morning light"
+                  width={1280}
+                  height={1920}
+                  loading="lazy"
+                  className="h-full min-h-[420px] w-full object-cover"
+                />
+              </div>
             </Reveal>
+
             <Reveal delay={120} className="h-full">
               <figure className="flex h-full flex-col justify-center bg-ink p-10 text-paper md:p-16">
                 <figcaption className="eyebrow text-paper/45">
@@ -244,13 +247,14 @@ function Landing() {
           <div className="mt-20 grid border-t border-rule-light sm:grid-cols-2 lg:grid-cols-3">
             {DISCIPLINES.map((item, index) => (
               <Reveal key={item} delay={index * 40}>
-                <div className="flex h-full items-baseline gap-6 border-b border-rule-light py-8 pr-8">
-                  <span className="text-xs text-paper/40 tabular-nums">
+                <div className="row-hover flex h-full items-baseline gap-6 border-b border-rule-light py-8 pr-8 hover:bg-paper/5">
+                  <span className="row-index text-xs text-paper/40 tabular-nums">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span className="text-lg leading-snug">{item}</span>
+                  <span className="row-text text-lg leading-snug">{item}</span>
                 </div>
               </Reveal>
+
             ))}
           </div>
         </div>
