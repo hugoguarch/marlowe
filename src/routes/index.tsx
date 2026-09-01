@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import logoAsset from "@/assets/wm-logo-white.png.asset.json";
-import spaceEarth from "@/assets/space-earth.jpg.asset.json";
+import satelliteEarth from "@/assets/satellite-earth.jpg.asset.json";
 import spaceAstronaut from "@/assets/space-astronaut.jpg.asset.json";
-import nightSky from "@/assets/night-sky.jpg.asset.json";
 import officeDesk from "@/assets/office-desk.jpg.asset.json";
 import archCurves from "@/assets/arch-curves.jpg.asset.json";
 import archSpiral from "@/assets/arch-spiral.jpg.asset.json";
 import { Reveal } from "@/components/landing/Reveal";
-import { HeroSlideshow } from "@/components/landing/HeroSlideshow";
+import { DemoFilm } from "@/components/landing/DemoFilm";
 import { WaitlistForm } from "@/components/landing/WaitlistForm";
+
 
 const TITLE = "Marlowe — Why Media AI | Your whole marketing department, awake before you";
 const DESCRIPTION =
