@@ -124,10 +124,14 @@ export function WaitlistForm() {
     setStep(2);
   }
 
-  async function saveAndAdvance(
-    values: Record<string, unknown>,
-    nextStep: number,
-  ) {
+  type SignupUpdate = {
+    marketing_spend?: string | null;
+    focus_areas?: string[];
+    trust_requirements?: string | null;
+    founding_pilot?: string | null;
+  };
+
+  async function saveAndAdvance(values: SignupUpdate, nextStep: number) {
     if (!signupId) {
       setStep(nextStep);
       return;
