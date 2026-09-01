@@ -383,13 +383,13 @@ function Landing() {
             This account is run by Marlowe.{" "}
             <a
               href="#waitlist"
-              className="border-b border-paper/30 pb-0.5 text-paper/80 transition-colors hover:border-paper"
+              className="nav-link pb-0.5 text-paper/80 transition-colors hover:text-paper"
             >
               Follow along and watch it market itself.
             </a>
           </p>
           <div className="mt-14 flex flex-col gap-6 border-t border-rule-light pt-8 sm:flex-row sm:items-center sm:justify-between">
-            <img src={logoAsset.url} alt="Why Media" className="h-5 w-auto" />
+            <img src={logoAsset.url} alt="Why Media" className="h-5 w-auto transition-opacity duration-500 hover:opacity-70" />
             <p className="text-xs tracking-[0.16em] text-paper/40 uppercase">
               Why Media AI — Marlowe
             </p>
