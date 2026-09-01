@@ -203,3 +203,270 @@
     transform: none;
   }
 }
+
+/* ---------- Motion layer ---------- */
+
+@utility magnetic {
+  display: inline-flex;
+  transform: translate3d(var(--mx, 0px), var(--my, 0px), 0);
+  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  &[data-active="true"] {
+    transition: transform 120ms ease-out;
+  }
+}
+
+@utility hover-lift {
+  transition:
+    transform 380ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 380ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 320ms ease,
+    color 320ms ease,
+    border-color 320ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.55);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.97);
+  }
+}
+
+@utility sweep {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--paper);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover::before {
+    transform: scaleX(1);
+  }
+
+  &:hover:not(:disabled) {
+    color: var(--ink);
+  }
+}
+
+@utility sweep-dark {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--ink);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover::before {
+    transform: scaleX(1);
+  }
+
+  &:hover {
+    color: var(--paper);
+  }
+}
+
+@utility arrow-nudge {
+  display: inline-block;
+  transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  .group:hover &,
+  a:hover &,
+  button:hover & {
+    transform: translate(3px, -3px);
+  }
+}
+
+@utility nav-link {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 1px;
+    width: 100%;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+@utility ken-burns {
+  animation: kenburns 38s ease-in-out infinite alternate;
+}
+
+@keyframes kenburns {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.09) translate3d(-1.5%, -1.5%, 0);
+  }
+}
+
+@utility scroll-hint {
+  animation: scrollhint 2.6s ease-in-out infinite;
+}
+
+@keyframes scrollhint {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}
+
+@utility img-zoom {
+  overflow: hidden;
+
+  & img {
+    transition: transform 1100ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
+}
+
+@utility row-hover {
+  position: relative;
+  transition: background-color 420ms ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 1px;
+    width: 100%;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+  }
+
+  & .row-text {
+    transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover .row-text {
+    transform: translateX(8px);
+  }
+
+  & .row-index {
+    transition:
+      color 420ms ease,
+      opacity 420ms ease;
+  }
+
+  &:hover .row-index {
+    opacity: 1;
+  }
+}
+
+@utility card-hover {
+  transition: transform 480ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  & .card-rule {
+    display: block;
+    height: 1px;
+    width: 2rem;
+    background-color: currentColor;
+    opacity: 0.4;
+    transition:
+      width 520ms cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 520ms ease;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  &:hover .card-rule {
+    width: 5rem;
+    opacity: 1;
+  }
+}
+
+@utility step-panel {
+  animation: steppanel 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes steppanel {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility chip-pop {
+  transition:
+    transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 320ms ease,
+    color 320ms ease,
+    border-color 320ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .magnetic,
+  .hover-lift:hover,
+  .card-hover:hover,
+  .row-hover:hover .row-text,
+  .img-zoom:hover img {
+    transform: none !important;
+  }
+}
