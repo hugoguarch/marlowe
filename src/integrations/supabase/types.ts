@@ -16,8 +16,9 @@ export type Database = {
     Tables: {
       waitlist_signups: {
         Row: {
-          business_name: string
+          business_name: string | null
           created_at: string
+          email: string | null
           focus_areas: string[]
           founding_pilot: string | null
           id: string
@@ -28,8 +29,9 @@ export type Database = {
           website: string | null
         }
         Insert: {
-          business_name: string
+          business_name?: string | null
           created_at?: string
+          email?: string | null
           focus_areas?: string[]
           founding_pilot?: string | null
           id?: string
@@ -40,8 +42,9 @@ export type Database = {
           website?: string | null
         }
         Update: {
-          business_name?: string
+          business_name?: string | null
           created_at?: string
+          email?: string | null
           focus_areas?: string[]
           founding_pilot?: string | null
           id?: string
