@@ -6,6 +6,7 @@ import officeDesk from "@/assets/office-desk.jpg.asset.json";
 import archCurves from "@/assets/arch-curves.jpg.asset.json";
 import archSpiral from "@/assets/arch-spiral.jpg.asset.json";
 import { Reveal } from "@/components/landing/Reveal";
+import { Magnetic } from "@/components/landing/Magnetic";
 import { DemoFilm } from "@/components/landing/DemoFilm";
 import { WaitlistForm } from "@/components/landing/WaitlistForm";
 
@@ -84,7 +85,7 @@ function Landing() {
             width={1920}
             height={1088}
             loading="eager"
-            className="absolute inset-0 -z-10 h-full w-full object-cover"
+            className="ken-burns absolute inset-0 -z-10 h-full w-full object-cover"
           />
           <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/55 via-ink/15 to-ink/75" />
 
@@ -93,27 +94,30 @@ function Landing() {
             <img
               src={logoAsset.url}
               alt="Why Media"
-              className="h-3.5 w-auto md:h-4"
+              className="h-3.5 w-auto transition-opacity duration-500 hover:opacity-70 md:h-4"
               loading="eager"
             />
             <nav className="hidden items-center gap-10 text-xs tracking-[0.18em] text-paper/75 uppercase md:flex">
-              <a href="#department" className="transition-colors hover:text-paper">
+              <a href="#department" className="nav-link transition-colors hover:text-paper">
                 Marlowe
               </a>
-              <a href="#difference" className="transition-colors hover:text-paper">
+              <a href="#difference" className="nav-link transition-colors hover:text-paper">
                 Why it is different
               </a>
-              <a href="#steps" className="transition-colors hover:text-paper">
+              <a href="#steps" className="nav-link transition-colors hover:text-paper">
                 How it works
               </a>
             </nav>
-            <a
-              href="#waitlist"
-              className="flex items-center gap-2 rounded-full bg-paper px-5 py-2.5 text-xs tracking-[0.14em] text-ink uppercase transition-opacity hover:opacity-85"
-            >
-              Join the waitlist <span aria-hidden="true">↗</span>
-            </a>
+            <Magnetic>
+              <a
+                href="#waitlist"
+                className="hover-lift sweep-dark group flex items-center gap-2 rounded-full bg-paper px-5 py-2.5 text-xs tracking-[0.14em] text-ink uppercase"
+              >
+                Join the waitlist <span aria-hidden="true" className="arrow-nudge">↗</span>
+              </a>
+            </Magnetic>
           </header>
+
 
           {/* Headline upper-left */}
           <div className="px-6 pt-10 md:px-10 md:pt-14">
@@ -137,21 +141,24 @@ function Landing() {
                   on its own while the city sleeps.
                 </p>
                 <div className="mt-7 flex flex-wrap items-center gap-5">
-                  <a
-                    href="#waitlist"
-                    className="flex items-center gap-2 rounded-full border border-paper/60 px-7 py-3 text-xs tracking-[0.14em] text-paper uppercase transition-colors hover:bg-paper hover:text-ink"
-                  >
-                    Join the waitlist <span aria-hidden="true">↗</span>
-                  </a>
+                  <Magnetic>
+                    <a
+                      href="#waitlist"
+                      className="hover-lift sweep group flex items-center gap-2 rounded-full border border-paper/60 px-7 py-3 text-xs tracking-[0.14em] text-paper uppercase"
+                    >
+                      Join the waitlist <span aria-hidden="true" className="arrow-nudge">↗</span>
+                    </a>
+                  </Magnetic>
                   <span className="text-xs text-paper/60">
                     Founding members onboard first.
                   </span>
                 </div>
               </div>
             </Reveal>
-            <span className="hidden text-xs tracking-[0.16em] text-paper/60 md:block">
+            <span className="scroll-hint hidden text-xs tracking-[0.16em] text-paper/60 md:block">
               Scroll to discover
             </span>
+
           </div>
         </div>
       </section>
@@ -172,15 +179,18 @@ function Landing() {
 
           <div className="mt-20 grid items-stretch gap-0 lg:grid-cols-[0.85fr_1.15fr]">
             <Reveal className="h-full">
-              <img
-                src={officeDesk.url}
-                alt="An empty executive desk in early morning light"
-                width={1280}
-                height={1920}
-                loading="lazy"
-                className="h-full min-h-[420px] w-full object-cover"
-              />
+              <div className="img-zoom h-full">
+                <img
+                  src={officeDesk.url}
+                  alt="An empty executive desk in early morning light"
+                  width={1280}
+                  height={1920}
+                  loading="lazy"
+                  className="h-full min-h-[420px] w-full object-cover"
+                />
+              </div>
             </Reveal>
+
             <Reveal delay={120} className="h-full">
               <figure className="flex h-full flex-col justify-center bg-ink p-10 text-paper md:p-16">
                 <figcaption className="eyebrow text-paper/45">
@@ -237,13 +247,14 @@ function Landing() {
           <div className="mt-20 grid border-t border-rule-light sm:grid-cols-2 lg:grid-cols-3">
             {DISCIPLINES.map((item, index) => (
               <Reveal key={item} delay={index * 40}>
-                <div className="flex h-full items-baseline gap-6 border-b border-rule-light py-8 pr-8">
-                  <span className="text-xs text-paper/40 tabular-nums">
+                <div className="row-hover flex h-full items-baseline gap-6 border-b border-rule-light py-8 pr-8 hover:bg-paper/5">
+                  <span className="row-index text-xs text-paper/40 tabular-nums">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span className="text-lg leading-snug">{item}</span>
+                  <span className="row-text text-lg leading-snug">{item}</span>
                 </div>
               </Reveal>
+
             ))}
           </div>
         </div>
@@ -261,11 +272,15 @@ function Landing() {
           <div className="mt-20 grid gap-14 border-t border-rule pt-14 md:grid-cols-3">
             {DIFFERENCES.map((item, index) => (
               <Reveal key={item.title} delay={index * 90}>
-                <h3 className="text-xl leading-snug">{item.title}</h3>
-                <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-                  {item.body}
-                </p>
+                <div className="card-hover h-full">
+                  <span className="card-rule mb-6" aria-hidden="true" />
+                  <h3 className="text-xl leading-snug">{item.title}</h3>
+                  <p className="mt-5 text-base leading-relaxed text-muted-foreground">
+                    {item.body}
+                  </p>
+                </div>
               </Reveal>
+
             ))}
           </div>
           <Reveal delay={160}>
@@ -274,14 +289,17 @@ function Landing() {
                 And you never lose the wheel. Marlowe asks before anything that touches
                 money, goes public, or matters.
               </p>
-              <img
-                src={archCurves.url}
-                alt="Sweeping metal architectural curves against a clear sky"
-                width={1920}
-                height={1391}
-                loading="lazy"
-                className="aspect-[4/3] w-full object-cover"
-              />
+              <div className="img-zoom">
+                <img
+                  src={archCurves.url}
+                  alt="Sweeping metal architectural curves against a clear sky"
+                  width={1920}
+                  height={1391}
+                  loading="lazy"
+                  className="aspect-[4/3] w-full object-cover"
+                />
+              </div>
+
             </div>
           </Reveal>
         </div>
@@ -299,14 +317,18 @@ function Landing() {
           <div className="mt-20 grid gap-12 border-t border-rule-light pt-14 md:grid-cols-3">
             {STEPS.map((step, index) => (
               <Reveal key={step.title} delay={index * 90}>
-                <span className="eyebrow text-paper/40">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="mt-6 text-2xl">{step.title}</h3>
-                <p className="mt-4 text-base leading-relaxed text-paper/70">
-                  {step.body}
-                </p>
+                <div className="card-hover h-full">
+                  <span className="eyebrow text-paper/40">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="mt-6 text-2xl">{step.title}</h3>
+                  <span className="card-rule mt-4" aria-hidden="true" />
+                  <p className="mt-4 text-base leading-relaxed text-paper/70">
+                    {step.body}
+                  </p>
+                </div>
               </Reveal>
+
             ))}
           </div>
         </div>
@@ -361,13 +383,13 @@ function Landing() {
             This account is run by Marlowe.{" "}
             <a
               href="#waitlist"
-              className="border-b border-paper/30 pb-0.5 text-paper/80 transition-colors hover:border-paper"
+              className="nav-link pb-0.5 text-paper/80 transition-colors hover:text-paper"
             >
               Follow along and watch it market itself.
             </a>
           </p>
           <div className="mt-14 flex flex-col gap-6 border-t border-rule-light pt-8 sm:flex-row sm:items-center sm:justify-between">
-            <img src={logoAsset.url} alt="Why Media" className="h-5 w-auto" />
+            <img src={logoAsset.url} alt="Why Media" className="h-5 w-auto transition-opacity duration-500 hover:opacity-70" />
             <p className="text-xs tracking-[0.16em] text-paper/40 uppercase">
               Why Media AI — Marlowe
             </p>
