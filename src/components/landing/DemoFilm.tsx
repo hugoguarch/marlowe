@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import stepsImage from "@/assets/steps.jpg.asset.json";
+import demoThumb from "@/assets/marlowe-demo-thumb.jpg.asset.json";
 import demoFilm from "@/assets/marlowe-demo-film.mp4.asset.json";
 import { Reveal } from "@/components/landing/Reveal";
 
