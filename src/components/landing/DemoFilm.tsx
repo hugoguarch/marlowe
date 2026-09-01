@@ -14,33 +14,36 @@ export function DemoFilm() {
           </div>
         </Reveal>
         <Reveal delay={120}>
-          <div className="relative isolate mt-10 aspect-video w-full overflow-hidden bg-ink">
+          <div className="group relative isolate mt-10 aspect-video w-full overflow-hidden bg-ink">
             <img
               src={stepsImage.url}
               alt="Still frame from the Marlowe demo film"
               width={1920}
               height={1080}
               loading="lazy"
-              className="absolute inset-0 -z-10 h-full w-full object-cover opacity-55"
+              className="absolute inset-0 -z-10 h-full w-full object-cover opacity-55 transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04] group-hover:opacity-40"
             />
-            <div className="absolute inset-0 -z-10 bg-ink/35" />
+            <div className="absolute inset-0 -z-10 bg-ink/35 transition-colors duration-700 group-hover:bg-ink/50" />
             <button
               type="button"
               aria-label="Play the Marlowe demo film"
-              className="group absolute inset-0 flex flex-col items-center justify-center gap-6 text-paper"
+              className="absolute inset-0 flex flex-col items-center justify-center gap-6 text-paper"
             >
-              <span className="flex h-20 w-20 items-center justify-center rounded-full border border-paper/50 transition-colors group-hover:border-paper">
+              <span className="flex h-20 w-20 items-center justify-center rounded-full border border-paper/50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 group-hover:border-paper group-hover:bg-paper/10">
                 <svg
                   viewBox="0 0 24 24"
-                  className="ml-1 h-6 w-6 fill-current"
+                  className="ml-1 h-6 w-6 fill-current transition-transform duration-500 group-hover:scale-110"
                   aria-hidden="true"
                 >
                   <path d="M6 3.5v17l15-8.5-15-8.5Z" />
                 </svg>
               </span>
-              <span className="eyebrow text-paper/70">Watch the demo</span>
+              <span className="eyebrow text-paper/70 transition-colors duration-500 group-hover:text-paper">
+                Watch the demo
+              </span>
             </button>
           </div>
+
         </Reveal>
       </div>
     </section>
