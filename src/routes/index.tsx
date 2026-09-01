@@ -210,7 +210,10 @@ function Landing() {
       </section>
 
       {/* The whole department */}
-      <section className="relative isolate overflow-hidden bg-ink text-paper">
+      <section
+        id="department"
+        className="relative isolate scroll-mt-8 overflow-hidden bg-ink text-paper"
+      >
         <img
           src={archSpiral.url}
           alt=""
@@ -247,7 +250,7 @@ function Landing() {
       </section>
 
       {/* Not another AI tool */}
-      <section className="bg-bone">
+      <section id="difference" className="scroll-mt-8 bg-bone">
         <div className="mx-auto max-w-[1400px] px-6 py-28 md:px-12 md:py-40">
           <Reveal>
             <p className="eyebrow text-muted-foreground">Not another AI tool</p>
@@ -285,7 +288,7 @@ function Landing() {
       </section>
 
       {/* Three steps */}
-      <section className="bg-ink text-paper">
+      <section id="steps" className="scroll-mt-8 bg-ink text-paper">
         <div className="mx-auto max-w-[1400px] px-6 py-28 md:px-12 md:py-40">
           <Reveal>
             <p className="eyebrow text-paper/45">Up and running in minutes</p>
