@@ -1,14 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import logoAsset from "@/assets/wm-logo-white.png.asset.json";
-import heroImage from "@/assets/hero.jpg.asset.json";
-import mondayImage from "@/assets/monday.jpg.asset.json";
-import stepsImage from "@/assets/steps.jpg.asset.json";
+import spaceEarth from "@/assets/space-earth.jpg.asset.json";
+import spaceAstronaut from "@/assets/space-astronaut.jpg.asset.json";
+import nightSky from "@/assets/night-sky.jpg.asset.json";
+import officeDesk from "@/assets/office-desk.jpg.asset.json";
+import archCurves from "@/assets/arch-curves.jpg.asset.json";
+import archSpiral from "@/assets/arch-spiral.jpg.asset.json";
 import { Reveal } from "@/components/landing/Reveal";
+import { HeroSlideshow } from "@/components/landing/HeroSlideshow";
 import { WaitlistForm } from "@/components/landing/WaitlistForm";
 
-const TITLE = "Marlowe — Why Media AI | A whole marketing department, in one hire";
+const TITLE = "Marlowe — Why Media AI | Your whole marketing department, awake before you";
 const DESCRIPTION =
-  "Marlowe is your AI marketing partner. It learns your brand once, then researches, creates, posts and reports on its own. Join the Why Media AI waitlist.";
+  "Marlowe is an autonomous AI marketing colleague. It learns your brand once, then researches, creates, posts and reports while you sleep. Join the Why Media AI waitlist.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -40,31 +44,31 @@ const DISCIPLINES = [
 
 const DIFFERENCES = [
   {
-    title: "Proactive, not prompted.",
-    body: "Other tools sit in a chat waiting for instructions. Marlowe works on its own and comes to you with it done.",
+    title: "It moves first.",
+    body: "Every other tool sits in a chat box waiting to be told. Marlowe reads the market overnight, decides what matters, and hands you the work already finished.",
   },
   {
-    title: "It becomes your brand.",
-    body: "Marlowe learns your voice, your market and what works for you, and gets sharper every week. It is your marketing, not generic output.",
+    title: "It becomes you.",
+    body: "Your voice, your market, your customers. Marlowe learns them once and sharpens every week. Not generic output — your marketing, in your tone, at your standard.",
   },
   {
-    title: "Agency expertise, built in.",
-    body: "Marlowe carries Why Media's fifteen years of marketing knowledge. You are not renting software, you are hiring a team.",
+    title: "It arrives experienced.",
+    body: "Fifteen years of Why Media's agency thinking is already inside it. You are not renting software. You are hiring the department on day one.",
   },
 ];
 
 const STEPS = [
   {
     title: "Connect.",
-    body: "Point Marlowe at your website and channels.",
+    body: "Point Marlowe at your website and your channels. That is the whole setup.",
   },
   {
-    title: "Meet your brand.",
-    body: "Marlowe studies everything and comes back with what it sees and what it would do first.",
+    title: "It meets your brand.",
+    body: "Marlowe studies everything you have ever published, then tells you what it sees and what it would do first.",
   },
   {
     title: "Set the dial.",
-    body: "Choose how much Marlowe can do on its own. Then the morning briefs begin.",
+    body: "Decide how far Marlowe can go alone. From there, the morning briefs simply begin.",
   },
 ];
 
@@ -90,61 +94,33 @@ function Landing() {
       </header>
 
       {/* Hero */}
-      <section className="relative isolate overflow-hidden bg-ink text-paper">
-        <img
-          src={heroImage.url}
-          alt="A quiet Mayfair office at dawn"
-          width={1920}
-          height={1088}
-          className="absolute inset-0 -z-10 h-full w-full object-cover opacity-25"
+      <section className="relative isolate flex min-h-screen flex-col justify-end overflow-hidden bg-ink text-paper">
+        <HeroSlideshow
+          images={[spaceEarth.url, spaceAstronaut.url, nightSky.url]}
         />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/85 to-ink" />
-        <div className="mx-auto max-w-[1400px] px-6 pt-40 pb-24 md:px-12 md:pt-52 md:pb-32">
+        <div className="mx-auto w-full max-w-[1400px] px-6 pt-44 pb-20 md:px-12 md:pb-28">
           <Reveal>
             <p className="eyebrow text-paper/55">Why Media AI</p>
             <h1 className="display mt-10 max-w-5xl text-[2.75rem] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
-              Meet Marlowe. A whole marketing department, in one hire.
+              Your whole marketing department. Awake before you are.
             </h1>
+            <p className="mt-8 max-w-2xl text-lg leading-relaxed text-paper/75 md:text-xl">
+              Meet Marlowe — not a tool you operate, a colleague you trust. It learns
+              your brand once, then researches, creates, posts and reports on its own
+              while the city sleeps. You wake up to the work already done.
+            </p>
           </Reveal>
-          <Reveal delay={120}>
-            <div className="mt-14 grid gap-12 border-t border-rule-light pt-12 md:grid-cols-[1.1fr_0.9fr]">
-              <p className="max-w-xl text-lg leading-relaxed text-paper/70">
-                Marlowe is your AI marketing partner. It learns your brand once, then
-                researches, creates, posts and reports on its own. You wake up to the
-                work already done.
-              </p>
-              <div className="flex flex-col items-start gap-5 md:items-end">
-                <a
-                  href="#waitlist"
-                  className="bg-paper px-10 py-4 text-sm tracking-[0.14em] text-ink uppercase transition-opacity hover:opacity-85"
-                >
-                  Join the waitlist
-                </a>
-                <span className="text-sm text-paper/55">
-                  Founding members onboard first.
-                </span>
-              </div>
-            </div>
-          </Reveal>
-          <Reveal delay={200}>
-            <div className="mt-20 border border-rule-light">
-              <div className="relative flex aspect-[16/9] w-full flex-col items-center justify-center gap-6 overflow-hidden bg-paper/[0.03]">
-                <img
-                  src={stepsImage.url}
-                  alt="Marlowe demo film still"
-                  width={1408}
-                  height={912}
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover opacity-50"
-                />
-                <span
-                  aria-hidden="true"
-                  className="relative flex h-16 w-16 items-center justify-center rounded-full border border-paper/40"
-                >
-                  <span className="ml-1 block h-0 w-0 border-y-[8px] border-l-[13px] border-y-transparent border-l-paper" />
-                </span>
-                <span className="eyebrow relative text-paper/70">The demo film</span>
-              </div>
+          <Reveal delay={140}>
+            <div className="mt-14 flex flex-col items-start gap-6 border-t border-rule-light pt-10 sm:flex-row sm:items-center sm:justify-between">
+              <a
+                href="#waitlist"
+                className="bg-paper px-10 py-4 text-sm tracking-[0.14em] text-ink uppercase transition-opacity hover:opacity-85"
+              >
+                Join the waitlist
+              </a>
+              <span className="text-sm text-paper/55">
+                Founding members onboard first.
+              </span>
             </div>
           </Reveal>
         </div>
@@ -159,31 +135,24 @@ function Landing() {
               You do not brief Marlowe. Marlowe briefs you.
             </h2>
           </Reveal>
-          <Reveal delay={60}>
-            <img
-              src={mondayImage.url}
-              alt="Espresso and a phone on a dark stone desk in early morning light"
-              width={1408}
-              height={1008}
-              loading="lazy"
-              className="mt-16 aspect-[21/9] w-full object-cover"
-            />
-          </Reveal>
-          <div className="mt-16 grid gap-16 md:grid-cols-2">
-            <Reveal delay={80}>
-              <p className="max-w-xl text-lg leading-relaxed text-muted-foreground">
-                Every morning, Marlowe has already been working. It watched the
-                trends, read the numbers, made the content, handled the comments, and
-                answered the reviews. Then it tells you what it did, what it decided,
-                and the few things it needs from you.
-              </p>
+
+          <div className="mt-20 grid items-stretch gap-0 lg:grid-cols-[0.85fr_1.15fr]">
+            <Reveal className="h-full">
+              <img
+                src={officeDesk.url}
+                alt="An empty executive desk in early morning light"
+                width={1280}
+                height={1920}
+                loading="lazy"
+                className="h-full min-h-[420px] w-full object-cover"
+              />
             </Reveal>
-            <Reveal delay={160}>
-              <figure className="bg-ink p-10 text-paper md:p-14">
+            <Reveal delay={120} className="h-full">
+              <figure className="flex h-full flex-col justify-center bg-ink p-10 text-paper md:p-16">
                 <figcaption className="eyebrow text-paper/45">
-                  Marlowe, 06:41
+                  Marlowe — 06:41
                 </figcaption>
-                <blockquote className="mt-8 text-xl leading-relaxed md:text-2xl md:leading-relaxed">
+                <blockquote className="mt-8 text-xl leading-relaxed md:text-[1.6rem] md:leading-[1.55]">
                   “Morning. Two trends broke in your market overnight, so I built the
                   posts. Your best content this week was Tuesday's reel, so I made
                   three more like it. A competitor tried to undercut you, I have the
@@ -194,20 +163,38 @@ function Landing() {
               </figure>
             </Reveal>
           </div>
+
+          <Reveal delay={80}>
+            <p className="mt-16 max-w-3xl text-lg leading-relaxed text-muted-foreground md:text-xl">
+              That message was already waiting when you opened your phone. While you
+              slept, Marlowe watched the trends, read the numbers, made the content,
+              handled the comments and answered the reviews. All it needs from you is
+              a yes.
+            </p>
+          </Reveal>
         </div>
       </section>
 
       {/* The whole department */}
-      <section className="bg-ink text-paper">
+      <section className="relative isolate overflow-hidden bg-ink text-paper">
+        <img
+          src={archSpiral.url}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          className="absolute inset-0 -z-10 h-full w-full object-cover opacity-15"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-ink via-ink/90 to-ink/70" />
         <div className="mx-auto max-w-[1400px] px-6 py-28 md:px-12 md:py-40">
           <Reveal>
             <p className="eyebrow text-paper/45">The whole department</p>
             <h2 className="display mt-10 max-w-3xl text-4xl md:text-6xl">
-              One partner. Every discipline.
+              Eleven specialists. One calm voice.
             </h2>
             <p className="mt-10 max-w-xl text-lg leading-relaxed text-paper/70">
-              Marlowe is not one tool. It is a full marketing team, working together,
-              behind one calm voice.
+              You are not buying eleven subscriptions and stitching them together.
+              Marlowe is one mind that does all of it, and remembers everything it did
+              yesterday.
             </p>
           </Reveal>
           <div className="mt-20 grid border-t border-rule-light sm:grid-cols-2 lg:grid-cols-3">
@@ -244,11 +231,21 @@ function Landing() {
               </Reveal>
             ))}
           </div>
-          <Reveal delay={200}>
-            <p className="mt-20 max-w-3xl border-t border-rule pt-10 text-lg leading-relaxed">
-              And you are always in control. Marlowe asks before anything that touches
-              money, goes public, or matters.
-            </p>
+          <Reveal delay={160}>
+            <div className="mt-20 grid items-center gap-0 border-t border-rule pt-16 md:grid-cols-2">
+              <p className="max-w-xl pb-10 text-xl leading-relaxed md:pr-16 md:pb-0 md:text-2xl">
+                And you never lose the wheel. Marlowe asks before anything that touches
+                money, goes public, or matters.
+              </p>
+              <img
+                src={archCurves.url}
+                alt="Sweeping metal architectural curves against a clear sky"
+                width={1920}
+                height={1391}
+                loading="lazy"
+                className="aspect-[4/3] w-full object-cover"
+              />
+            </div>
           </Reveal>
         </div>
       </section>
@@ -275,6 +272,27 @@ function Landing() {
               </Reveal>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Out of this world band */}
+      <section className="relative isolate overflow-hidden bg-ink text-paper">
+        <img
+          src={spaceAstronaut.url}
+          alt="A lone astronaut drifting above the curve of the Earth"
+          width={1920}
+          height={1920}
+          loading="lazy"
+          className="absolute inset-0 -z-10 h-full w-full object-cover opacity-40"
+        />
+        <div className="absolute inset-0 -z-10 bg-ink/55" />
+        <div className="mx-auto max-w-[1400px] px-6 py-32 text-center md:px-12 md:py-48">
+          <Reveal>
+            <p className="eyebrow text-paper/55">The quiet advantage</p>
+            <h2 className="display mx-auto mt-10 max-w-4xl text-3xl md:text-5xl lg:text-6xl">
+              Your competitors are still writing prompts. You will be asleep.
+            </h2>
+          </Reveal>
         </div>
       </section>
 
