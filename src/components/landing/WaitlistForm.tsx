@@ -104,23 +104,23 @@ export function WaitlistForm() {
     }
     setError(null);
     setSaving(true);
-    const { data, error: insertError } = await supabase
+    const newId = crypto.randomUUID();
+    const { error: insertError } = await supabase
       .from("waitlist_signups")
       .insert({
+        id: newId,
         name: name.trim(),
         email: email.trim(),
         business_name: businessName.trim() || null,
         industry: industry.trim() || null,
         focus_areas: [],
-      })
-      .select("id")
-      .single();
+      });
     setSaving(false);
-    if (insertError || !data) {
+    if (insertError) {
       setError("Something went wrong. Please try again.");
       return;
     }
-    setSignupId(data.id);
+    setSignupId(newId);
     setStep(2);
   }
 
