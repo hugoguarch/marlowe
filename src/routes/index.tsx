@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import logoAsset from "@/assets/wm-logo-white.png.asset.json";
-import satelliteEarth from "@/assets/satellite-earth.jpg.asset.json";
+import heroEarth from "@/assets/hero-earth.jpg.asset.json";
 import spaceAstronaut from "@/assets/space-astronaut.jpg.asset.json";
 import officeDesk from "@/assets/office-desk.jpg.asset.json";
 import archCurves from "@/assets/arch-curves.jpg.asset.json";
@@ -79,7 +79,7 @@ function Landing() {
       <section className="bg-paper px-4 pt-4 pb-2 md:px-6 md:pt-6">
         <div className="relative isolate flex h-[88vh] min-h-[600px] w-full flex-col overflow-hidden bg-ink text-paper shadow-[0_40px_90px_-50px_rgba(0,0,0,0.55)]">
           <img
-            src={satelliteEarth.url}
+            src={heroEarth.url}
             alt="A satellite drifting above the lit curve of the Earth"
             width={1920}
             height={1088}
@@ -93,7 +93,7 @@ function Landing() {
             <img
               src={logoAsset.url}
               alt="Why Media"
-              className="h-5 w-auto md:h-6"
+              className="h-3.5 w-auto md:h-4"
               loading="eager"
             />
             <nav className="hidden items-center gap-10 text-xs tracking-[0.18em] text-paper/75 uppercase md:flex">
