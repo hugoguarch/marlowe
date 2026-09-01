@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import logoAsset from "@/assets/wm-logo-white.png.asset.json";
+import heroImage from "@/assets/hero.jpg.asset.json";
+import mondayImage from "@/assets/monday.jpg.asset.json";
+import stepsImage from "@/assets/steps.jpg.asset.json";
 import { Reveal } from "@/components/landing/Reveal";
 import { WaitlistForm } from "@/components/landing/WaitlistForm";
 
@@ -87,7 +90,15 @@ function Landing() {
       </header>
 
       {/* Hero */}
-      <section className="bg-ink text-paper">
+      <section className="relative isolate overflow-hidden bg-ink text-paper">
+        <img
+          src={heroImage.url}
+          alt="A quiet Mayfair office at dawn"
+          width={1920}
+          height={1088}
+          className="absolute inset-0 -z-10 h-full w-full object-cover opacity-25"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/85 to-ink" />
         <div className="mx-auto max-w-[1400px] px-6 pt-40 pb-24 md:px-12 md:pt-52 md:pb-32">
           <Reveal>
             <p className="eyebrow text-paper/55">Why Media AI</p>
@@ -117,14 +128,22 @@ function Landing() {
           </Reveal>
           <Reveal delay={200}>
             <div className="mt-20 border border-rule-light">
-              <div className="flex aspect-[16/9] w-full flex-col items-center justify-center gap-6 bg-paper/[0.03]">
+              <div className="relative flex aspect-[16/9] w-full flex-col items-center justify-center gap-6 overflow-hidden bg-paper/[0.03]">
+                <img
+                  src={stepsImage.url}
+                  alt="Marlowe demo film still"
+                  width={1408}
+                  height={912}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover opacity-50"
+                />
                 <span
                   aria-hidden="true"
-                  className="flex h-16 w-16 items-center justify-center rounded-full border border-paper/40"
+                  className="relative flex h-16 w-16 items-center justify-center rounded-full border border-paper/40"
                 >
                   <span className="ml-1 block h-0 w-0 border-y-[8px] border-l-[13px] border-y-transparent border-l-paper" />
                 </span>
-                <span className="eyebrow text-paper/45">The demo film</span>
+                <span className="eyebrow relative text-paper/70">The demo film</span>
               </div>
             </div>
           </Reveal>
@@ -139,6 +158,16 @@ function Landing() {
             <h2 className="display mt-10 max-w-4xl text-4xl md:text-6xl lg:text-7xl">
               You do not brief Marlowe. Marlowe briefs you.
             </h2>
+          </Reveal>
+          <Reveal delay={60}>
+            <img
+              src={mondayImage.url}
+              alt="Espresso and a phone on a dark stone desk in early morning light"
+              width={1408}
+              height={1008}
+              loading="lazy"
+              className="mt-16 aspect-[21/9] w-full object-cover"
+            />
           </Reveal>
           <div className="mt-16 grid gap-16 md:grid-cols-2">
             <Reveal delay={80}>
