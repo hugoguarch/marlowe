@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      waitlist_signups: {
+        Row: {
+          business_name: string
+          created_at: string
+          focus_areas: string[]
+          founding_pilot: string | null
+          id: string
+          industry: string | null
+          marketing_spend: string | null
+          name: string
+          trust_requirements: string | null
+          website: string | null
+        }
+        Insert: {
+          business_name: string
+          created_at?: string
+          focus_areas?: string[]
+          founding_pilot?: string | null
+          id?: string
+          industry?: string | null
+          marketing_spend?: string | null
+          name: string
+          trust_requirements?: string | null
+          website?: string | null
+        }
+        Update: {
+          business_name?: string
+          created_at?: string
+          focus_areas?: string[]
+          founding_pilot?: string | null
+          id?: string
+          industry?: string | null
+          marketing_spend?: string | null
+          name?: string
+          trust_requirements?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
