@@ -19,6 +19,10 @@
  */
 
 @theme inline {
+  --font-sans:
+    "Helvetica Neue", "HelveticaNeue", Helvetica, Arial, "Inter", system-ui, sans-serif;
+  --font-display:
+    "Helvetica Neue", "HelveticaNeue", Helvetica, Arial, "Inter", system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -26,7 +30,14 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-bone: var(--bone);
+  --color-mist: var(--mist);
+  --color-rule: var(--rule);
+  --color-rule-light: var(--rule-light);
   --color-background: var(--background);
+
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
