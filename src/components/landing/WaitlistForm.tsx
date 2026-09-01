@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Magnetic } from "@/components/landing/Magnetic";
 import { supabase } from "@/integrations/supabase/client";
 
 const SPEND_OPTIONS = ["Agency", "In-house", "Freelancers", "Nothing yet"];
@@ -171,7 +172,7 @@ export function WaitlistForm() {
       <Progress step={step} />
 
       {step === 1 ? (
-        <form onSubmit={submitStepOne} className="space-y-12">
+        <form onSubmit={submitStepOne} className="step-panel space-y-12">
           <div className="grid gap-10 md:grid-cols-2">
             <div>
               <label className={labelClass} htmlFor="wl-name">
@@ -228,13 +229,15 @@ export function WaitlistForm() {
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
           <div className="flex flex-wrap items-center gap-6 border-t border-rule pt-10">
-            <button
-              type="submit"
-              disabled={saving}
-              className="bg-ink px-10 py-4 text-sm tracking-[0.14em] text-paper uppercase transition-opacity hover:opacity-85 disabled:opacity-60"
-            >
-              {saving ? "Joining" : "Join the waitlist"}
-            </button>
+            <Magnetic>
+              <button
+                type="submit"
+                disabled={saving}
+                className="hover-lift sweep group bg-ink px-10 py-4 text-sm tracking-[0.14em] text-paper uppercase disabled:opacity-60"
+              >
+                {saving ? "Joining" : "Join the waitlist"}
+              </button>
+            </Magnetic>
             <span className="text-sm text-muted-foreground">
               Two short questions follow. Your place is secured at this step.
             </span>
@@ -243,7 +246,7 @@ export function WaitlistForm() {
       ) : null}
 
       {step === 2 ? (
-        <div className="space-y-12">
+        <div className="step-panel space-y-12">
           <p className="max-w-xl text-base leading-relaxed text-muted-foreground">
             You are on the list. Two quick questions so Marlowe arrives already
             knowing something about you.
@@ -284,23 +287,25 @@ export function WaitlistForm() {
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
           <div className="flex flex-wrap items-center gap-6 border-t border-rule pt-10">
-            <button
-              type="button"
-              disabled={saving}
-              onClick={() =>
-                saveAndAdvance(
-                  { marketing_spend: spend || null, focus_areas: focus },
-                  3,
-                )
-              }
-              className="bg-ink px-10 py-4 text-sm tracking-[0.14em] text-paper uppercase transition-opacity hover:opacity-85 disabled:opacity-60"
-            >
-              {saving ? "Saving" : "Continue"}
-            </button>
+            <Magnetic>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() =>
+                  saveAndAdvance(
+                    { marketing_spend: spend || null, focus_areas: focus },
+                    3,
+                  )
+                }
+                className="hover-lift sweep group bg-ink px-10 py-4 text-sm tracking-[0.14em] text-paper uppercase disabled:opacity-60"
+              >
+                {saving ? "Saving" : "Continue"}
+              </button>
+            </Magnetic>
             <button
               type="button"
               onClick={() => setStep(3)}
-              className="text-sm text-muted-foreground underline-offset-4 hover:underline"
+              className="nav-link text-sm text-muted-foreground transition-colors hover:text-ink"
             >
               Skip
             </button>
@@ -309,7 +314,7 @@ export function WaitlistForm() {
       ) : null}
 
       {step === 3 ? (
-        <div className="space-y-12">
+        <div className="step-panel space-y-12">
           <div>
             <label className={labelClass} htmlFor="wl-trust">
               What would Marlowe need to do before you trusted it to run on its own?
@@ -342,26 +347,28 @@ export function WaitlistForm() {
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
           <div className="flex flex-wrap items-center gap-6 border-t border-rule pt-10">
-            <button
-              type="button"
-              disabled={saving}
-              onClick={() =>
-                saveAndAdvance(
-                  {
-                    trust_requirements: trust.trim() || null,
-                    founding_pilot: pilot || null,
-                  },
-                  4,
-                )
-              }
-              className="bg-ink px-10 py-4 text-sm tracking-[0.14em] text-paper uppercase transition-opacity hover:opacity-85 disabled:opacity-60"
-            >
-              {saving ? "Saving" : "Finish"}
-            </button>
+            <Magnetic>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() =>
+                  saveAndAdvance(
+                    {
+                      trust_requirements: trust.trim() || null,
+                      founding_pilot: pilot || null,
+                    },
+                    4,
+                  )
+                }
+                className="hover-lift sweep group bg-ink px-10 py-4 text-sm tracking-[0.14em] text-paper uppercase disabled:opacity-60"
+              >
+                {saving ? "Saving" : "Finish"}
+              </button>
+            </Magnetic>
             <button
               type="button"
               onClick={() => setStep(4)}
-              className="text-sm text-muted-foreground underline-offset-4 hover:underline"
+              className="nav-link text-sm text-muted-foreground transition-colors hover:text-ink"
             >
               Skip
             </button>
