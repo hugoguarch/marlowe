@@ -66,7 +66,7 @@ function GrowthPage() {
       <PageHeader
         eyebrow="Growth"
         title={`You're ${pct}% to 10k followers`}
-        subtitle={`${CURRENT.toLocaleString()} of ${GOAL.toLocaleString()} — at this pace, Marlowe expects you there in eleven weeks.`}
+        subtitle={`${current.toLocaleString()} of ${goal.toLocaleString()} — at this pace, Marlowe expects you there in eleven weeks.`}
         action={
           <div className="flex gap-1 rounded-full border border-app-line bg-app-card p-1">
             {ranges.map((r) => (
