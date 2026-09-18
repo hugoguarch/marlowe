@@ -95,6 +95,7 @@
   --ink-navy: oklch(0.255 0.045 255);
   --cerulean: oklch(0.62 0.135 245);
   --gold: oklch(0.79 0.11 80);
+  --brand-green: oklch(0.52 0.08 165);
   --background: var(--paper);
   --foreground: var(--ink);
   --card: var(--paper);
