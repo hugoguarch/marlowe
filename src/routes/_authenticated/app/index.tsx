@@ -1,10 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useState } from "react";
 
 import { Card, CardLabel, PageHeader, pillClass, pillPrimaryClass } from "@/components/app/ui";
 import demoFilm from "@/assets/marlowe-demo-film.mp4.asset.json";
 import demoThumb from "@/assets/marlowe-demo-thumb.jpg.asset.json";
-import { briefBody, briefSummary, channelWork, toneClass } from "@/lib/mock/workspace";
+import { generateBrief } from "@/lib/marlowe.functions";
+import {
+  briefBody as seedBody,
+  briefSummary as seedSummary,
+  channelWork as seedChannels,
+  toneClass,
+} from "@/lib/mock/workspace";
 
 export const Route = createFileRoute("/_authenticated/app/")({
   head: () => ({
