@@ -1,7 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-import { Sphere } from "@/components/app/Sphere";
+import { AppSidebar } from "@/components/app/AppSidebar";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/app")({
@@ -12,45 +12,45 @@ export const Route = createFileRoute("/_authenticated/app")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: AppHome,
+  component: AppLayout,
 });
 
-function AppHome() {
-  const navigate = useNavigate();
+function AppLayout() {
   const { user } = Route.useRouteContext();
-  const [name, setName] = useState<string>("");
+  const [profile, setProfile] = useState<{ name: string; autonomy: string }>({
+    name: "",
+    autonomy: "Guided",
+  });
 
   useEffect(() => {
     supabase
       .from("profiles")
-      .select("name")
+      .select("name, autonomy_level")
       .eq("id", user.id)
       .maybeSingle()
-      .then(({ data }) => setName(data?.name || ""));
+      .then(({ data }) => {
+        if (!data) return;
+        setProfile({
+          name: data.name || "",
+          autonomy: data.autonomy_level === "auto" ? "Auto" : "Guided",
+        });
+      });
   }, [user.id]);
 
-  const display = name || user.email?.split("@")[0] || "there";
-
-  async function signOut() {
-    await supabase.auth.signOut();
-    navigate({ to: "/login", replace: true });
-  }
+  const displayName = profile.name || user.email?.split("@")[0] || "You";
 
   return (
-    <main className="min-h-screen bg-app-bg text-ink-navy">
-      <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-6 text-center">
-        <Sphere size={72} />
-        <h1 className="display mt-8 text-4xl font-light tracking-tight">Welcome, {display}</h1>
-        <p className="mt-3 max-w-sm text-sm leading-relaxed text-ink-navy/55">
-          Your workspace is being built. Next: the sidebar and Marlowe's morning brief.
-        </p>
-        <button
-          onClick={signOut}
-          className="mt-10 rounded-full border border-app-line bg-app-card px-6 py-3 text-xs tracking-[0.16em] uppercase transition-all duration-300 hover:-translate-y-0.5 hover:border-cerulean/60"
-        >
-          Sign out
-        </button>
+    <div className="min-h-screen bg-app-bg text-ink-navy">
+      <div className="flex min-h-screen flex-col lg:flex-row">
+        <AppSidebar
+          name={displayName}
+          email={user.email ?? ""}
+          autonomy={profile.autonomy}
+        />
+        <main className="min-w-0 flex-1 px-5 py-8 sm:px-8 lg:px-12 lg:py-12">
+          <Outlet />
+        </main>
       </div>
-    </main>
+    </div>
   );
 }
