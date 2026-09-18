@@ -14,6 +14,297 @@ export type Database = {
   }
   public: {
     Tables: {
+      action_queue: {
+        Row: {
+          brand_id: string | null
+          created_at: string
+          detail: string | null
+          id: string
+          kind: string
+          label: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          brand_id?: string | null
+          created_at?: string
+          detail?: string | null
+          id?: string
+          kind?: string
+          label: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          brand_id?: string | null
+          created_at?: string
+          detail?: string | null
+          id?: string
+          kind?: string
+          label?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "action_queue_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brand_brain: {
+        Row: {
+          brand_id: string
+          created_at: string
+          id: string
+          learned: Json
+          logo_url: string | null
+          palette: Json
+          personas: Json
+          tone_of_voice: Json
+          typography: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          id?: string
+          learned?: Json
+          logo_url?: string | null
+          palette?: Json
+          personas?: Json
+          tone_of_voice?: Json
+          typography?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          id?: string
+          learned?: Json
+          logo_url?: string | null
+          palette?: Json
+          personas?: Json
+          tone_of_voice?: Json
+          typography?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_brain_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brands: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          body: string
+          brand_id: string | null
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      connected_accounts: {
+        Row: {
+          account_name: string | null
+          brand_id: string | null
+          connected_at: string | null
+          created_at: string
+          id: string
+          provider: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          account_name?: string | null
+          brand_id?: string | null
+          connected_at?: string | null
+          created_at?: string
+          id?: string
+          provider: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          account_name?: string | null
+          brand_id?: string | null
+          connected_at?: string | null
+          created_at?: string
+          id?: string
+          provider?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connected_accounts_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_items: {
+        Row: {
+          brand_id: string | null
+          caption: string | null
+          channel: string
+          created_at: string
+          format: string
+          id: string
+          media_url: string | null
+          slides: Json
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand_id?: string | null
+          caption?: string | null
+          channel?: string
+          created_at?: string
+          format?: string
+          id?: string
+          media_url?: string | null
+          slides?: Json
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand_id?: string | null
+          caption?: string | null
+          channel?: string
+          created_at?: string
+          format?: string
+          id?: string
+          media_url?: string | null
+          slides?: Json
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_items_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      metrics: {
+        Row: {
+          brand_id: string | null
+          captured_for: string
+          created_at: string
+          delta: number | null
+          id: string
+          metric: string
+          platform: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          brand_id?: string | null
+          captured_for?: string
+          created_at?: string
+          delta?: number | null
+          id?: string
+          metric: string
+          platform?: string
+          user_id: string
+          value?: number
+        }
+        Update: {
+          brand_id?: string | null
+          captured_for?: string
+          created_at?: string
+          delta?: number | null
+          id?: string
+          metric?: string
+          platform?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "metrics_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           autonomy_level: string
@@ -43,6 +334,57 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      schedule: {
+        Row: {
+          brand_id: string | null
+          channel: string
+          content_item_id: string | null
+          created_at: string
+          id: string
+          scheduled_for: string
+          status: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          brand_id?: string | null
+          channel?: string
+          content_item_id?: string | null
+          created_at?: string
+          id?: string
+          scheduled_for?: string
+          status?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          brand_id?: string | null
+          channel?: string
+          content_item_id?: string | null
+          created_at?: string
+          id?: string
+          scheduled_for?: string
+          status?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedule_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedule_content_item_id_fkey"
+            columns: ["content_item_id"]
+            isOneToOne: false
+            referencedRelation: "content_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       waitlist_signups: {
         Row: {
