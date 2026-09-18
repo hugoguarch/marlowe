@@ -75,6 +75,8 @@ const STEPS = [
 ];
 
 function Landing() {
+  const { session } = useSession();
+
   return (
     <main className="bg-paper text-ink">
       {/* Hero — framed cinematic card */}
@@ -132,7 +134,8 @@ function Landing() {
               >
                 Join the waitlist <span aria-hidden="true" className="arrow-nudge">↗</span>
               </a>
-            </Magnetic>
+              </Magnetic>
+            </div>
           </header>
 
 
