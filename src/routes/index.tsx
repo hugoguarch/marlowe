@@ -109,7 +109,23 @@ function Landing() {
                 How it works
               </a>
             </nav>
-            <Magnetic>
+            <div className="flex items-center gap-5">
+              {session ? (
+                <Link
+                  to="/app"
+                  className="nav-link text-xs tracking-[0.16em] text-paper/75 uppercase transition-colors hover:text-paper"
+                >
+                  Open workspace
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  className="nav-link text-xs tracking-[0.16em] text-paper/75 uppercase transition-colors hover:text-paper"
+                >
+                  Log in
+                </Link>
+              )}
+              <Magnetic>
               <a
                 href="#waitlist"
                 className="hover-lift sweep-dark group flex items-center gap-2 rounded-full bg-paper px-5 py-2.5 text-xs tracking-[0.14em] text-ink uppercase"
