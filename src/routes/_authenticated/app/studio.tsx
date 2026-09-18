@@ -22,9 +22,32 @@ function StudioPage() {
   const slide = carouselSlides[active] ?? carouselSlides[0]!;
   const [picked, setPicked] = useState<string[]>(["Instagram"]);
   const [queued, setQueued] = useState(false);
+  const [sending, setSending] = useState(false);
+  const send = useServerFn(createPost);
 
   function toggle(channel: string) {
     setPicked((p) => (p.includes(channel) ? p.filter((c) => c !== channel) : [...p, channel]));
+  }
+
+  async function sendToQueue() {
+    if (sending) return;
+    setSending(true);
+    try {
+      await send({
+        data: {
+          title: "Carousel — the 6am edit",
+          caption: slide.caption,
+          format: "carousel",
+          channels: picked,
+          slides: carouselSlides.map((s) => ({ title: s.title, caption: s.caption })),
+        },
+      });
+      setQueued(true);
+    } catch {
+      setQueued(false);
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
