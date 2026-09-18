@@ -28,8 +28,36 @@ const GOAL = 10000;
 const CURRENT = 7412;
 
 function GrowthPage() {
-  const [range, setRange] = useState(ranges[1]);
-  const pct = Math.round((CURRENT / GOAL) * 100);
+  const [range, setRange] = useState(ranges[1]!);
+  const [metrics, setMetrics] = useState(seedMetrics);
+  const [byPlatform, setByPlatform] = useState(seedByPlatform);
+  const [followerSeries, setFollowerSeries] = useState(seedSeries);
+  const [topContent, setTopContent] = useState(seedTopContent);
+  const [upcoming, setUpcoming] = useState(seedUpcoming);
+  const [goal, setGoal] = useState(GOAL);
+  const [current, setCurrent] = useState(CURRENT);
+  const pull = useServerFn(pullAnalytics);
+
+  useEffect(() => {
+    let cancelled = false;
+    pull({ data: { range } })
+      .then((d) => {
+        if (cancelled) return;
+        setMetrics(d.cards);
+        setByPlatform(d.byPlatform);
+        setFollowerSeries(d.series);
+        setTopContent(d.topContent);
+        setUpcoming(d.upcoming);
+        setGoal(d.goal);
+        setCurrent(d.current);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [pull, range]);
+
+  const pct = Math.round((current / goal) * 100);
   const max = Math.max(...followerSeries.map((p) => p.value));
   const min = Math.min(...followerSeries.map((p) => p.value)) * 0.985;
 
