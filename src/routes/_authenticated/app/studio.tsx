@@ -110,11 +110,11 @@ function StudioPage() {
             </div>
 
             <button
-              onClick={() => setQueued(true)}
+              onClick={sendToQueue}
               className={`${pillPrimaryClass} mt-6`}
-              disabled={picked.length === 0}
+              disabled={picked.length === 0 || sending}
             >
-              {queued ? "In the queue" : "Send to queue"}
+              {sending ? "Sending…" : queued ? "In the queue" : "Send to queue"}
             </button>
             <button className={`${pillClass} mt-6 ml-3`}>Ask for another version</button>
           </div>
