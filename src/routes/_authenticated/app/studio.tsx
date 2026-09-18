@@ -17,6 +17,7 @@ export const Route = createFileRoute("/_authenticated/app/studio")({
 
 function StudioPage() {
   const [active, setActive] = useState(0);
+  const slide = carouselSlides[active] ?? carouselSlides[0]!;
   const [picked, setPicked] = useState<string[]>(["Instagram"]);
   const [queued, setQueued] = useState(false);
 

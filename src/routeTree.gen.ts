@@ -18,7 +18,10 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/ap
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
 import { Route as AuthenticatedAppBrandRouteImport } from './routes/_authenticated/app/brand'
+import { Route as AuthenticatedAppGrowthRouteImport } from './routes/_authenticated/app/growth'
 import { Route as AuthenticatedAppMarloweRouteImport } from './routes/_authenticated/app/marlowe'
+import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app/settings'
+import { Route as AuthenticatedAppStudioRouteImport } from './routes/_authenticated/app/studio'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,9 +67,25 @@ const AuthenticatedAppBrandRoute = AuthenticatedAppBrandRouteImport.update({
   path: '/brand',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppGrowthRoute = AuthenticatedAppGrowthRouteImport.update({
+  id: '/growth',
+  path: '/growth',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppMarloweRoute = AuthenticatedAppMarloweRouteImport.update({
   id: '/marlowe',
   path: '/marlowe',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppSettingsRoute =
+  AuthenticatedAppSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppStudioRoute = AuthenticatedAppStudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
 
@@ -78,7 +97,10 @@ export interface FileRoutesByFullPath {
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/app/brand': typeof AuthenticatedAppBrandRoute
+  '/app/growth': typeof AuthenticatedAppGrowthRoute
   '/app/marlowe': typeof AuthenticatedAppMarloweRoute
+  '/app/settings': typeof AuthenticatedAppSettingsRoute
+  '/app/studio': typeof AuthenticatedAppStudioRoute
   '/app/': typeof AuthenticatedAppIndexRoute
 }
 export interface FileRoutesByTo {
@@ -88,7 +110,10 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/app/brand': typeof AuthenticatedAppBrandRoute
+  '/app/growth': typeof AuthenticatedAppGrowthRoute
   '/app/marlowe': typeof AuthenticatedAppMarloweRoute
+  '/app/settings': typeof AuthenticatedAppSettingsRoute
+  '/app/studio': typeof AuthenticatedAppStudioRoute
   '/app': typeof AuthenticatedAppIndexRoute
 }
 export interface FileRoutesById {
@@ -101,7 +126,10 @@ export interface FileRoutesById {
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/_authenticated/app/brand': typeof AuthenticatedAppBrandRoute
+  '/_authenticated/app/growth': typeof AuthenticatedAppGrowthRoute
   '/_authenticated/app/marlowe': typeof AuthenticatedAppMarloweRoute
+  '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
+  '/_authenticated/app/studio': typeof AuthenticatedAppStudioRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
 }
 export interface FileRouteTypes {
@@ -114,7 +142,10 @@ export interface FileRouteTypes {
     | '/app'
     | '/auth/callback'
     | '/app/brand'
+    | '/app/growth'
     | '/app/marlowe'
+    | '/app/settings'
+    | '/app/studio'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -124,7 +155,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/auth/callback'
     | '/app/brand'
+    | '/app/growth'
     | '/app/marlowe'
+    | '/app/settings'
+    | '/app/studio'
     | '/app'
   id:
     | '__root__'
@@ -136,7 +170,10 @@ export interface FileRouteTypes {
     | '/_authenticated/app'
     | '/auth/callback'
     | '/_authenticated/app/brand'
+    | '/_authenticated/app/growth'
     | '/_authenticated/app/marlowe'
+    | '/_authenticated/app/settings'
+    | '/_authenticated/app/studio'
     | '/_authenticated/app/'
   fileRoutesById: FileRoutesById
 }
@@ -214,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppBrandRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/growth': {
+      id: '/_authenticated/app/growth'
+      path: '/growth'
+      fullPath: '/app/growth'
+      preLoaderRoute: typeof AuthenticatedAppGrowthRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/marlowe': {
       id: '/_authenticated/app/marlowe'
       path: '/marlowe'
@@ -221,18 +265,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppMarloweRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/settings': {
+      id: '/_authenticated/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AuthenticatedAppSettingsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/studio': {
+      id: '/_authenticated/app/studio'
+      path: '/studio'
+      fullPath: '/app/studio'
+      preLoaderRoute: typeof AuthenticatedAppStudioRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
   }
 }
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBrandRoute: typeof AuthenticatedAppBrandRoute
+  AuthenticatedAppGrowthRoute: typeof AuthenticatedAppGrowthRoute
   AuthenticatedAppMarloweRoute: typeof AuthenticatedAppMarloweRoute
+  AuthenticatedAppSettingsRoute: typeof AuthenticatedAppSettingsRoute
+  AuthenticatedAppStudioRoute: typeof AuthenticatedAppStudioRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppBrandRoute: AuthenticatedAppBrandRoute,
+  AuthenticatedAppGrowthRoute: AuthenticatedAppGrowthRoute,
   AuthenticatedAppMarloweRoute: AuthenticatedAppMarloweRoute,
+  AuthenticatedAppSettingsRoute: AuthenticatedAppSettingsRoute,
+  AuthenticatedAppStudioRoute: AuthenticatedAppStudioRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
 }
 
