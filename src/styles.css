@@ -36,6 +36,12 @@
   --color-mist: var(--mist);
   --color-rule: var(--rule);
   --color-rule-light: var(--rule-light);
+  --color-app-bg: var(--app-bg);
+  --color-app-card: var(--app-card);
+  --color-app-line: var(--app-line);
+  --color-ink-navy: var(--ink-navy);
+  --color-cerulean: var(--cerulean);
+  --color-gold: var(--gold);
   --color-background: var(--background);
 
   --color-foreground: var(--foreground);
@@ -81,6 +87,13 @@
   --mist: oklch(0.42 0.038 214);
   --rule: oklch(0.885 0.008 210);
   --rule-light: oklch(1 0 0 / 18%);
+  /* App-side (product) palette: warm pale off-white + ink navy + cerulean + gold */
+  --app-bg: oklch(0.982 0.004 95);
+  --app-card: oklch(1 0 0);
+  --app-line: oklch(0.912 0.006 240);
+  --ink-navy: oklch(0.255 0.045 255);
+  --cerulean: oklch(0.62 0.135 245);
+  --gold: oklch(0.79 0.11 80);
   --background: var(--paper);
   --foreground: var(--ink);
   --card: var(--paper);
