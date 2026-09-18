@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 
 import { Card, CardLabel, PageHeader, pillClass, pillPrimaryClass } from "@/components/app/ui";
+import { createPost } from "@/lib/marlowe.functions";
 import { carouselSlides, channels, toneClass, weekCalendar } from "@/lib/mock/workspace";
 
 export const Route = createFileRoute("/_authenticated/app/studio")({
@@ -20,9 +22,32 @@ function StudioPage() {
   const slide = carouselSlides[active] ?? carouselSlides[0]!;
   const [picked, setPicked] = useState<string[]>(["Instagram"]);
   const [queued, setQueued] = useState(false);
+  const [sending, setSending] = useState(false);
+  const send = useServerFn(createPost);
 
   function toggle(channel: string) {
     setPicked((p) => (p.includes(channel) ? p.filter((c) => c !== channel) : [...p, channel]));
+  }
+
+  async function sendToQueue() {
+    if (sending) return;
+    setSending(true);
+    try {
+      await send({
+        data: {
+          title: "Carousel — the 6am edit",
+          caption: slide.caption,
+          format: "carousel",
+          channels: picked,
+          slides: carouselSlides.map((s) => ({ title: s.title, caption: s.caption })),
+        },
+      });
+      setQueued(true);
+    } catch {
+      setQueued(false);
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -85,11 +110,11 @@ function StudioPage() {
             </div>
 
             <button
-              onClick={() => setQueued(true)}
+              onClick={sendToQueue}
               className={`${pillPrimaryClass} mt-6`}
-              disabled={picked.length === 0}
+              disabled={picked.length === 0 || sending}
             >
-              {queued ? "In the queue" : "Send to queue"}
+              {sending ? "Sending…" : queued ? "In the queue" : "Send to queue"}
             </button>
             <button className={`${pillClass} mt-6 ml-3`}>Ask for another version</button>
           </div>

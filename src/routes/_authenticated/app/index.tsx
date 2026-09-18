@@ -1,10 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useState } from "react";
 
 import { Card, CardLabel, PageHeader, pillClass, pillPrimaryClass } from "@/components/app/ui";
 import demoFilm from "@/assets/marlowe-demo-film.mp4.asset.json";
 import demoThumb from "@/assets/marlowe-demo-thumb.jpg.asset.json";
-import { briefBody, briefSummary, channelWork, toneClass } from "@/lib/mock/workspace";
+import { generateBrief } from "@/lib/marlowe.functions";
+import {
+  briefBody as seedBody,
+  briefSummary as seedSummary,
+  channelWork as seedChannels,
+  toneClass,
+} from "@/lib/mock/workspace";
 
 export const Route = createFileRoute("/_authenticated/app/")({
   head: () => ({
@@ -20,6 +27,27 @@ export const Route = createFileRoute("/_authenticated/app/")({
 function BriefPage() {
   const { user } = Route.useRouteContext();
   const [approved, setApproved] = useState(false);
+  const [briefBody, setBriefBody] = useState<string[]>(seedBody);
+  const [briefSummary, setBriefSummary] = useState(seedSummary);
+  const [channelWork, setChannelWork] = useState<
+    { channel: string; state: string; tone: string }[]
+  >(seedChannels.map((c) => ({ ...c })));
+  const brief = useServerFn(generateBrief);
+
+  useEffect(() => {
+    let cancelled = false;
+    brief()
+      .then((d) => {
+        if (cancelled) return;
+        setBriefBody(d.body);
+        setBriefSummary(d.summary);
+        setChannelWork(d.channels);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [brief]);
   const name = (user.email?.split("@")[0] ?? "there").replace(/[._-]/g, " ");
   const today = new Date().toLocaleDateString("en-GB", {
     weekday: "long",

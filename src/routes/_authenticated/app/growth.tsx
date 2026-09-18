@@ -1,8 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useState } from "react";
 
 import { Card, CardLabel, PageHeader } from "@/components/app/ui";
-import { byPlatform, followerSeries, metrics, topContent, upcoming } from "@/lib/mock/workspace";
+import { pullAnalytics } from "@/lib/marlowe.functions";
+import {
+  byPlatform as seedByPlatform,
+  followerSeries as seedSeries,
+  metrics as seedMetrics,
+  topContent as seedTopContent,
+  upcoming as seedUpcoming,
+} from "@/lib/mock/workspace";
 
 export const Route = createFileRoute("/_authenticated/app/growth")({
   head: () => ({
@@ -20,8 +28,36 @@ const GOAL = 10000;
 const CURRENT = 7412;
 
 function GrowthPage() {
-  const [range, setRange] = useState(ranges[1]);
-  const pct = Math.round((CURRENT / GOAL) * 100);
+  const [range, setRange] = useState(ranges[1]!);
+  const [metrics, setMetrics] = useState(seedMetrics);
+  const [byPlatform, setByPlatform] = useState(seedByPlatform);
+  const [followerSeries, setFollowerSeries] = useState(seedSeries);
+  const [topContent, setTopContent] = useState(seedTopContent);
+  const [upcoming, setUpcoming] = useState(seedUpcoming);
+  const [goal, setGoal] = useState(GOAL);
+  const [current, setCurrent] = useState(CURRENT);
+  const pull = useServerFn(pullAnalytics);
+
+  useEffect(() => {
+    let cancelled = false;
+    pull({ data: { range } })
+      .then((d) => {
+        if (cancelled) return;
+        setMetrics(d.cards);
+        setByPlatform(d.byPlatform);
+        setFollowerSeries(d.series);
+        setTopContent(d.topContent);
+        setUpcoming(d.upcoming);
+        setGoal(d.goal);
+        setCurrent(d.current);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [pull, range]);
+
+  const pct = Math.round((current / goal) * 100);
   const max = Math.max(...followerSeries.map((p) => p.value));
   const min = Math.min(...followerSeries.map((p) => p.value)) * 0.985;
 
@@ -30,7 +66,7 @@ function GrowthPage() {
       <PageHeader
         eyebrow="Growth"
         title={`You're ${pct}% to 10k followers`}
-        subtitle={`${CURRENT.toLocaleString()} of ${GOAL.toLocaleString()} — at this pace, Marlowe expects you there in eleven weeks.`}
+        subtitle={`${current.toLocaleString()} of ${goal.toLocaleString()} — at this pace, Marlowe expects you there in eleven weeks.`}
         action={
           <div className="flex gap-1 rounded-full border border-app-line bg-app-card p-1">
             {ranges.map((r) => (

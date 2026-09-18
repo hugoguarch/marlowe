@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useState } from "react";
 
 import { Sphere } from "@/components/app/Sphere";
 import { PageHeader, pillClass, pillPrimaryClass } from "@/components/app/ui";
+import { chatWithMarlowe, getChatHistory } from "@/lib/marlowe.functions";
 import { chatSeed } from "@/lib/mock/workspace";
 
 export const Route = createFileRoute("/_authenticated/app/marlowe")({
@@ -16,27 +18,47 @@ export const Route = createFileRoute("/_authenticated/app/marlowe")({
   component: MarlowePage,
 });
 
-type Message = { role: "user" | "marlowe"; body: string };
+type Message = { role: string; body: string };
 
 function MarlowePage() {
   const [messages, setMessages] = useState<Message[]>(chatSeed);
   const [draft, setDraft] = useState("");
+  const [busy, setBusy] = useState(false);
+  const loadHistory = useServerFn(getChatHistory);
+  const sendMessage = useServerFn(chatWithMarlowe);
 
-  function send(e: React.FormEvent) {
+  useEffect(() => {
+    let cancelled = false;
+    loadHistory()
+      .then((rows) => {
+        if (!cancelled && rows.length) {
+          setMessages(rows.map((r) => ({ role: r.role, body: r.body })));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [loadHistory]);
+
+  async function send(e: React.FormEvent) {
     e.preventDefault();
     const text = draft.trim();
-    if (!text) return;
+    if (!text || busy) return;
     setDraft("");
+    setBusy(true);
     setMessages((m) => [...m, { role: "user", body: text }]);
-    setTimeout(() => {
+    try {
+      const { reply } = await sendMessage({ data: { body: text } });
+      setMessages((m) => [...m, { role: "marlowe", body: reply }]);
+    } catch {
       setMessages((m) => [
         ...m,
-        {
-          role: "marlowe",
-          body: "Understood. I'll fold that into this week and show you the revised plan in the Studio shortly.",
-        },
+        { role: "marlowe", body: "I couldn't reach the workspace just then. Try me again." },
       ]);
-    }, 500);
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -64,6 +86,11 @@ function MarlowePage() {
             </div>
           ),
         )}
+        {busy && (
+          <div className="flex items-center gap-3 text-xs tracking-[0.16em] text-ink-navy/40 uppercase">
+            <Sphere size={22} /> Marlowe is thinking
+          </div>
+        )}
       </div>
 
       <form
@@ -83,7 +110,7 @@ function MarlowePage() {
           <button type="button" className={pillClass}>
             Search web
           </button>
-          <button type="submit" className={`${pillPrimaryClass} ml-auto`}>
+          <button type="submit" className={`${pillPrimaryClass} ml-auto`} disabled={busy}>
             Send
           </button>
         </div>
