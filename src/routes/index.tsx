@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSession } from "@/lib/auth";
 import logoAsset from "@/assets/wm-logo-white.png.asset.json";
 import heroEarth from "@/assets/hero-earth.jpg.asset.json";
 import spaceAstronaut from "@/assets/space-astronaut.jpg.asset.json";
@@ -74,6 +75,8 @@ const STEPS = [
 ];
 
 function Landing() {
+  const { session } = useSession();
+
   return (
     <main className="bg-paper text-ink">
       {/* Hero — framed cinematic card */}
@@ -108,14 +111,31 @@ function Landing() {
                 How it works
               </a>
             </nav>
-            <Magnetic>
+            <div className="flex items-center gap-5">
+              {session ? (
+                <Link
+                  to="/app"
+                  className="nav-link text-xs tracking-[0.16em] text-paper/75 uppercase transition-colors hover:text-paper"
+                >
+                  Open workspace
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  className="nav-link text-xs tracking-[0.16em] text-paper/75 uppercase transition-colors hover:text-paper"
+                >
+                  Log in
+                </Link>
+              )}
+              <Magnetic>
               <a
                 href="#waitlist"
                 className="hover-lift sweep-dark group flex items-center gap-2 rounded-full bg-paper px-5 py-2.5 text-xs tracking-[0.14em] text-ink uppercase"
               >
                 Join the waitlist <span aria-hidden="true" className="arrow-nudge">↗</span>
               </a>
-            </Magnetic>
+              </Magnetic>
+            </div>
           </header>
 
 
