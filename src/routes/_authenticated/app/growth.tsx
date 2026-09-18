@@ -1,8 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useState } from "react";
 
 import { Card, CardLabel, PageHeader } from "@/components/app/ui";
-import { byPlatform, followerSeries, metrics, topContent, upcoming } from "@/lib/mock/workspace";
+import { pullAnalytics } from "@/lib/marlowe.functions";
+import {
+  byPlatform as seedByPlatform,
+  followerSeries as seedSeries,
+  metrics as seedMetrics,
+  topContent as seedTopContent,
+  upcoming as seedUpcoming,
+} from "@/lib/mock/workspace";
 
 export const Route = createFileRoute("/_authenticated/app/growth")({
   head: () => ({
