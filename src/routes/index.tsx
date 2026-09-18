@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSession } from "@/lib/auth";
 import logoAsset from "@/assets/wm-logo-white.png.asset.json";
 import heroEarth from "@/assets/hero-earth.jpg.asset.json";
 import spaceAstronaut from "@/assets/space-astronaut.jpg.asset.json";
