@@ -41,10 +41,10 @@ function StudioPage() {
               Slide {active + 1} of {carouselSlides.length}
             </p>
             <p className="display mt-6 text-3xl font-light tracking-tight">
-              {carouselSlides[active].title}
+              {slide.title}
             </p>
             <p className="mt-4 text-sm leading-relaxed text-white/70">
-              {carouselSlides[active].caption}
+              {slide.caption}
             </p>
           </div>
 
