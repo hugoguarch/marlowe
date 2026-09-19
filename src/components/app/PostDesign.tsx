@@ -34,18 +34,21 @@ export function PostDesign({
   content,
   imageUrl,
   className = "",
+  compact = false,
 }: {
   template: TemplateId | string;
   tokens: DesignTokens;
   content: DesignContent;
   imageUrl?: string | null;
   className?: string;
+  /** Smaller type and padding, for thumbnails inside grids. */
+  compact?: boolean;
 }) {
   const ratio = template === "story" ? "9 / 16" : "4 / 5";
 
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-3xl ${className}`}
+      className={`relative w-full overflow-hidden ${compact ? "rounded-2xl" : "rounded-3xl"} ${className}`}
       style={{ aspectRatio: ratio, backgroundColor: tokens.ink }}
     >
       {imageUrl ? (
