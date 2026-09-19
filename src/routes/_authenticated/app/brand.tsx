@@ -309,7 +309,7 @@ function BrandPage() {
                 <div key={a.id} className="w-24">
                   <button
                     onClick={async () => {
-                      await makePrimary({ data: { assetId: a.id } });
+                      await makePrimary({ data: { assetId: a.id, brandId: brain.brandId, kind: a.kind } });
                       await reload(brain.brandId);
                     }}
                     className={`flex h-24 w-24 items-center justify-center rounded-2xl border bg-app-bg/60 p-3 ${
@@ -328,7 +328,7 @@ function BrandPage() {
                     </span>
                     <button
                       onClick={async () => {
-                        await removeAsset({ data: { assetId: a.id } });
+                        await removeAsset({ data: { assetId: a.id, brandId: brain.brandId } });
                         await reload(brain.brandId);
                       }}
                       className="text-[0.6rem] text-ink-navy/40 hover:text-red-600"
@@ -367,7 +367,7 @@ function BrandPage() {
                   </div>
                   <button
                     onClick={async () => {
-                      await removeAsset({ data: { assetId: a.id } });
+                      await removeAsset({ data: { assetId: a.id, brandId: brain.brandId } });
                       await reload(brain.brandId);
                     }}
                     className="mt-1 text-[0.6rem] text-ink-navy/40 hover:text-red-600"
