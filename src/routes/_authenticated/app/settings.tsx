@@ -1,34 +1,45 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 
-import { Card, CardLabel, PageHeader } from "@/components/app/ui";
+import { Card, CardLabel, PageHeader, pillClass, pillPrimaryClass } from "@/components/app/ui";
 import { supabase } from "@/integrations/supabase/client";
+import { waitForChannelOAuth } from "@/lib/channelConnect";
+import {
+  completeChannelConnect,
+  disconnectChannel,
+  listChannels,
+  startChannelConnect,
+  type ChannelState,
+} from "@/lib/channels.functions";
 
 export const Route = createFileRoute("/_authenticated/app/settings")({
   head: () => ({
     meta: [
       { title: "Settings — Why Media AI" },
-      { name: "description", content: "Set how much Marlowe can do on its own and connect your accounts." },
+      {
+        name: "description",
+        content: "Set how much Marlowe can do on its own and connect your accounts.",
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
   component: SettingsPage,
 });
 
-const channels = [
-  { provider: "instagram", name: "Instagram", does: "Posts, stories and replies to comments and DMs." },
-  { provider: "facebook", name: "Facebook", does: "Posts to your page and answers messages." },
-  { provider: "linkedin", name: "LinkedIn", does: "Posts to your company page." },
-  { provider: "tiktok", name: "TikTok", does: "Publishes short-form video." },
-  { provider: "google_business", name: "Google Business", does: "Posts updates and replies to reviews." },
-  { provider: "google_analytics", name: "Google Analytics", does: "Reads website traffic for your Growth numbers." },
-];
-
 function SettingsPage() {
   const { user } = Route.useRouteContext();
   const [autonomy, setAutonomy] = useState<"guided" | "auto">("guided");
   const [saving, setSaving] = useState(false);
-  const [connected, setConnected] = useState<Record<string, { status: string; account_name: string | null }>>({});
+  const [channels, setChannels] = useState<ChannelState[]>([]);
+  const [working, setWorking] = useState<string | null>(null);
+  const [note, setNote] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useServerFn(listChannels);
+  const start = useServerFn(startChannelConnect);
+  const complete = useServerFn(completeChannelConnect);
+  const forget = useServerFn(disconnectChannel);
 
   useEffect(() => {
     supabase
@@ -40,24 +51,52 @@ function SettingsPage() {
         if (data?.autonomy_level === "auto") setAutonomy("auto");
       });
 
-    supabase
-      .from("connected_accounts")
-      .select("provider, status, account_name")
-      .eq("user_id", user.id)
-      .then(({ data }) => {
-        const map: Record<string, { status: string; account_name: string | null }> = {};
-        (data ?? []).forEach((row) => {
-          map[row.provider] = { status: row.status, account_name: row.account_name };
-        });
-        setConnected(map);
-      });
-  }, [user.id]);
+    load()
+      .then(setChannels)
+      .catch(() => {});
+  }, [user.id, load]);
 
   async function choose(level: "guided" | "auto") {
     setAutonomy(level);
     setSaving(true);
     await supabase.from("profiles").update({ autonomy_level: level }).eq("id", user.id);
     setSaving(false);
+  }
+
+  async function connect(provider: string, name: string) {
+    setError(null);
+    setNote(null);
+    setWorking(provider);
+    const popup = window.open("", "wm-channel-oauth", "width=620,height=760");
+    if (!popup) {
+      setWorking(null);
+      setError("Your browser blocked the login window. Allow pop-ups and try again.");
+      return;
+    }
+    try {
+      const { authorizationUrl } = await start({ data: { provider } });
+      const waiting = waitForChannelOAuth(popup);
+      popup.location.href = authorizationUrl;
+      const { code, state } = await waiting;
+      await complete({ data: { code, state } });
+      setChannels(await load());
+      setNote(`${name} is connected.`);
+    } catch (e) {
+      popup.close();
+      setError(e instanceof Error ? e.message : `Couldn't connect ${name}.`);
+    } finally {
+      setWorking(null);
+    }
+  }
+
+  async function disconnect(provider: string) {
+    setWorking(provider);
+    try {
+      await forget({ data: { provider } });
+      setChannels(await load());
+    } finally {
+      setWorking(null);
+    }
   }
 
   return (
@@ -105,36 +144,61 @@ function SettingsPage() {
             </button>
           ))}
         </div>
-        <p className="mt-4 text-xs text-ink-navy/45">
-          {saving ? "Saving…" : "Saved to your profile."}
-        </p>
+        <p className="mt-4 text-xs text-ink-navy/45">{saving ? "Saving…" : "Saved to your profile."}</p>
       </Card>
 
       <Card>
         <CardLabel>Your channels</CardLabel>
         <p className="mt-3 text-sm leading-relaxed text-ink-navy/55">
-          Nothing is connected yet, so Marlowe queues posts instead of publishing them and Growth
-          shows no numbers. Connecting each channel is the next piece of work.
+          Sign in to each channel and Marlowe can publish and read its numbers. Until a channel is
+          connected, posts stay in the queue.
         </p>
+
+        {note ? <p className="mt-4 text-xs text-cerulean">{note}</p> : null}
+        {error ? <p className="mt-4 text-xs text-red-600">{error}</p> : null}
+
         <ul className="mt-5 divide-y divide-app-line">
           {channels.map((c) => {
-            const state = connected[c.provider];
-            const live = state?.status === "connected";
+            const live = c.status === "connected";
             return (
-              <li key={c.provider} className="flex items-center justify-between gap-4 py-4">
-                <div>
+              <li key={c.provider} className="flex flex-wrap items-center justify-between gap-4 py-4">
+                <div className="min-w-[14rem]">
                   <p className="text-sm text-ink-navy">{c.name}</p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-ink-navy/50">{c.does}</p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-ink-navy/50">
+                    {!c.buildable
+                      ? `${c.does} Waiting on the platform's business review.`
+                      : !c.configured
+                        ? `${c.does} Waiting on the developer app credentials.`
+                        : c.does}
+                  </p>
                 </div>
-                <span
-                  className={`shrink-0 rounded-full border px-4 py-1.5 text-[0.6rem] tracking-[0.16em] uppercase ${
-                    live
-                      ? "border-brand-green/40 bg-brand-green/10 text-brand-green"
-                      : "border-app-line bg-app-bg/60 text-ink-navy/45"
-                  }`}
-                >
-                  {live ? (state?.account_name ?? "Connected") : "Not connected"}
-                </span>
+
+                {live ? (
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full border border-brand-green/40 bg-brand-green/10 px-4 py-1.5 text-[0.6rem] tracking-[0.16em] text-brand-green uppercase">
+                      {c.accountName ?? "Connected"}
+                    </span>
+                    <button
+                      onClick={() => disconnect(c.provider)}
+                      className={pillClass}
+                      disabled={working === c.provider}
+                    >
+                      Disconnect
+                    </button>
+                  </div>
+                ) : c.buildable && c.configured ? (
+                  <button
+                    onClick={() => connect(c.provider, c.name)}
+                    className={pillPrimaryClass}
+                    disabled={working === c.provider}
+                  >
+                    {working === c.provider ? "Connecting…" : "Connect"}
+                  </button>
+                ) : (
+                  <span className="rounded-full border border-app-line bg-app-bg/60 px-4 py-1.5 text-[0.6rem] tracking-[0.16em] text-ink-navy/45 uppercase">
+                    {c.buildable ? "Setup pending" : "Coming soon"}
+                  </span>
+                )}
               </li>
             );
           })}
