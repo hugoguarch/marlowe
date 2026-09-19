@@ -26,6 +26,7 @@ function MarlowePage() {
   const [messages, setMessages] = useState<Message[]>(chatSeed);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
+  const { brandId } = useSelectedBrandId();
   const loadHistory = useServerFn(getChatHistory);
   const sendMessage = useServerFn(chatWithMarlowe);
 
