@@ -163,26 +163,102 @@ export const createPost = createServerFn({ method: "POST" })
     return { id: item.id as string, channels, scheduledFor: when.toISOString(), source: "stub" as const };
   });
 
-/** pull_analytics — Growth page numbers. */
+/** Approve everything pending in the action queue. */
+export const approveQueue = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context as unknown as Ctx;
+    const { data, error } = await supabase
+      .from("action_queue")
+      .update({ status: "approved" })
+      .eq("user_id", userId)
+      .eq("status", "pending")
+      .select("id");
+    if (error) throw error;
+    return { approved: (data ?? []).length };
+  });
+
+/**
+ * pull_analytics — Growth numbers, read only from what has actually been
+ * captured. No connected channels means no numbers, and the page says so.
+ */
 export const pullAnalytics = createServerFn({ method: "POST" })
   .inputValidator((input: { range?: string }) => ({ range: input?.range ?? "30 days" }))
   .middleware([requireSupabaseAuth])
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as unknown as Ctx;
-    const brandId = await ensureBrand({ supabase, userId });
+    const days = data.range === "7 days" ? 7 : data.range === "90 days" ? 90 : 30;
+    const since = new Date();
+    since.setDate(since.getDate() - days);
+    const sinceDay = since.toISOString().slice(0, 10);
 
-    const scale = data.range === "7 days" ? 0.35 : data.range === "90 days" ? 1.6 : 1;
+    const [{ data: accounts }, { data: rows }] = await Promise.all([
+      supabase
+        .from("connected_accounts")
+        .select("provider, status, account_name")
+        .eq("user_id", userId),
+      supabase
+        .from("metrics")
+        .select("platform, metric, value, delta, captured_for")
+        .eq("user_id", userId)
+        .gte("captured_for", sinceDay)
+        .order("captured_for", { ascending: true }),
+    ]);
+
+    const connected = (accounts ?? []).filter((a: any) => a.status === "connected");
+    const metrics = (rows ?? []) as {
+      platform: string;
+      metric: string;
+      value: number;
+      delta: number | null;
+      captured_for: string;
+    }[];
+
+    // Follower total per capture date, summed across platforms.
+    const byDay = new Map<string, number>();
+    for (const row of metrics) {
+      if (row.metric !== "followers") continue;
+      byDay.set(row.captured_for, (byDay.get(row.captured_for) ?? 0) + Number(row.value));
+    }
+    const series = [...byDay.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([label, value]) => ({ label, value }));
+
+    // Latest value per platform+metric.
+    const latest = new Map<string, { value: number; delta: number | null }>();
+    for (const row of metrics) {
+      latest.set(`${row.platform}|${row.metric}`, { value: Number(row.value), delta: row.delta });
+    }
+
+    const platforms = [...new Set(metrics.map((m) => m.platform))];
+    const platformRows = platforms.map((platform) => ({
+      platform,
+      followers: latest.get(`${platform}|followers`)?.value ?? 0,
+      growth: latest.get(`${platform}|followers`)?.delta ?? 0,
+      engagement: latest.get(`${platform}|engagement`)?.value ?? 0,
+      reach: latest.get(`${platform}|reach`)?.value ?? 0,
+    }));
+
+    const totalFor = (metric: string) =>
+      platforms.reduce((sum, p) => sum + (latest.get(`${p}|${metric}`)?.value ?? 0), 0);
+    const deltaFor = (metric: string) =>
+      platforms.reduce((sum, p) => sum + (latest.get(`${p}|${metric}`)?.delta ?? 0), 0);
+
+    const cards = ["followers", "engagement", "reach", "saves", "profile_visits"].map((metric) => ({
+      metric,
+      value: totalFor(metric),
+      delta: deltaFor(metric),
+    }));
 
     return {
-      brandId,
       range: data.range,
+      connectedCount: connected.length,
+      connected: connected.map((a: any) => a.provider as string),
+      hasData: metrics.length > 0,
       goal: 10000,
-      current: 7412,
-      cards: metricCards,
-      byPlatform,
-      series: followerSeries.map((p) => ({ ...p, value: Math.round(p.value * (0.9 + 0.1 * scale)) })),
-      topContent,
-      upcoming,
-      source: "stub" as const,
+      current: series.length ? series[series.length - 1]!.value : 0,
+      cards,
+      byPlatform: platformRows,
+      series,
     };
   });

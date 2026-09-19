@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-import { Card, CardLabel, PageHeader, pillClass } from "@/components/app/ui";
+import { Card, CardLabel, PageHeader } from "@/components/app/ui";
 import { supabase } from "@/integrations/supabase/client";
-import { accounts } from "@/lib/mock/workspace";
 
 export const Route = createFileRoute("/_authenticated/app/settings")({
   head: () => ({
@@ -16,10 +15,20 @@ export const Route = createFileRoute("/_authenticated/app/settings")({
   component: SettingsPage,
 });
 
+const channels = [
+  { provider: "instagram", name: "Instagram", does: "Posts, stories and replies to comments and DMs." },
+  { provider: "facebook", name: "Facebook", does: "Posts to your page and answers messages." },
+  { provider: "linkedin", name: "LinkedIn", does: "Posts to your company page." },
+  { provider: "tiktok", name: "TikTok", does: "Publishes short-form video." },
+  { provider: "google_business", name: "Google Business", does: "Posts updates and replies to reviews." },
+  { provider: "google_analytics", name: "Google Analytics", does: "Reads website traffic for your Growth numbers." },
+];
+
 function SettingsPage() {
   const { user } = Route.useRouteContext();
   const [autonomy, setAutonomy] = useState<"guided" | "auto">("guided");
   const [saving, setSaving] = useState(false);
+  const [connected, setConnected] = useState<Record<string, { status: string; account_name: string | null }>>({});
 
   useEffect(() => {
     supabase
@@ -29,6 +38,18 @@ function SettingsPage() {
       .maybeSingle()
       .then(({ data }) => {
         if (data?.autonomy_level === "auto") setAutonomy("auto");
+      });
+
+    supabase
+      .from("connected_accounts")
+      .select("provider, status, account_name")
+      .eq("user_id", user.id)
+      .then(({ data }) => {
+        const map: Record<string, { status: string; account_name: string | null }> = {};
+        (data ?? []).forEach((row) => {
+          map[row.provider] = { status: row.status, account_name: row.account_name };
+        });
+        setConnected(map);
       });
   }, [user.id]);
 
@@ -90,17 +111,33 @@ function SettingsPage() {
       </Card>
 
       <Card>
-        <CardLabel>Connect accounts</CardLabel>
-        <p className="mt-3 text-sm text-ink-navy/55">
-          Marlowe works inside your channels. Connecting is coming with the live release.
+        <CardLabel>Your channels</CardLabel>
+        <p className="mt-3 text-sm leading-relaxed text-ink-navy/55">
+          Nothing is connected yet, so Marlowe queues posts instead of publishing them and Growth
+          shows no numbers. Connecting each channel is the next piece of work.
         </p>
         <ul className="mt-5 divide-y divide-app-line">
-          {accounts.map((a) => (
-            <li key={a} className="flex items-center justify-between gap-4 py-3">
-              <span className="text-sm text-ink-navy">{a}</span>
-              <button className={pillClass}>Connect</button>
-            </li>
-          ))}
+          {channels.map((c) => {
+            const state = connected[c.provider];
+            const live = state?.status === "connected";
+            return (
+              <li key={c.provider} className="flex items-center justify-between gap-4 py-4">
+                <div>
+                  <p className="text-sm text-ink-navy">{c.name}</p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-ink-navy/50">{c.does}</p>
+                </div>
+                <span
+                  className={`shrink-0 rounded-full border px-4 py-1.5 text-[0.6rem] tracking-[0.16em] uppercase ${
+                    live
+                      ? "border-brand-green/40 bg-brand-green/10 text-brand-green"
+                      : "border-app-line bg-app-bg/60 text-ink-navy/45"
+                  }`}
+                >
+                  {live ? (state?.account_name ?? "Connected") : "Not connected"}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       </Card>
     </div>
