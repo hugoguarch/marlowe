@@ -2,8 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 
+import { BrandSwitcher } from "@/components/app/BrandSwitcher";
 import { Sphere } from "@/components/app/Sphere";
 import { PageHeader, pillClass, pillPrimaryClass } from "@/components/app/ui";
+import { useSelectedBrandId } from "@/lib/brandSelection";
 import { chatWithMarlowe, getChatHistory } from "@/lib/marlowe.functions";
 import { chatSeed } from "@/lib/mock/workspace";
 
