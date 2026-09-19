@@ -114,13 +114,19 @@ export const listBrands = createServerFn({ method: "GET" })
     const { supabase, userId } = context as unknown as Ctx;
     const { data } = await supabase
       .from("brands")
-      .select("id, name, website")
+      .select("id, name, website, is_default")
       .eq("user_id", userId)
+      .order("is_default", { ascending: false })
       .order("created_at", { ascending: true });
-    return (data ?? []) as { id: string; name: string; website: string | null }[];
+    return (data ?? []) as {
+      id: string;
+      name: string;
+      website: string | null;
+      is_default: boolean;
+    }[];
   });
 
-/** One brand with its full brain, or the first brand when no id is given. */
+/** One brand with its full brain, or the default brand when no id is given. */
 export const getBrandBrain = createServerFn({ method: "POST" })
   .inputValidator((input: { brandId?: string } | undefined) => ({
     brandId: input?.brandId ?? null,
@@ -129,11 +135,21 @@ export const getBrandBrain = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const ctx = context as unknown as Ctx;
     let brandId = data.brandId;
+    if (brandId) {
+      const { data: owned } = await ctx.supabase
+        .from("brands")
+        .select("id")
+        .eq("id", brandId)
+        .eq("user_id", ctx.userId)
+        .maybeSingle();
+      if (!owned) brandId = null;
+    }
     if (!brandId) {
       const { data: first } = await ctx.supabase
         .from("brands")
         .select("id")
         .eq("user_id", ctx.userId)
+        .order("is_default", { ascending: false })
         .order("created_at", { ascending: true })
         .limit(1)
         .maybeSingle();
