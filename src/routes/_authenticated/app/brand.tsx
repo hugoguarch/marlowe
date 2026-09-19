@@ -81,7 +81,8 @@ function BrandPage() {
     const path = `${user.id}/${brandId}/${kind}/${crypto.randomUUID()}-${safe}`;
     const { error: uploadError } = await supabase.storage
       .from("brand-assets")
-      .upload(path, file, { contentType: file.type || undefined });
+      .upload(path, file, file.type ? { contentType: file.type } : {});
+
     if (uploadError) throw uploadError;
     await register({
       data: { brandId, kind, filePath: path, fileName: file.name, mimeType: file.type },
@@ -102,7 +103,7 @@ function BrandPage() {
   if (creating || !brain) {
     return (
       <CreateBrandFlow
-        onCancel={brain ? () => setCreating(false) : undefined}
+        {...(brain ? { onCancel: () => setCreating(false) } : {})}
         onCreate={async (name, website) => make({ data: { name, website } })}
         onUpload={upload}
         onAnalyse={(brandId, filePath, brandName) =>
