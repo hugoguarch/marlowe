@@ -16,6 +16,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as OauthCallbackRouteImport } from './routes/oauth.callback'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
 import { Route as AuthenticatedAppBrandRouteImport } from './routes/_authenticated/app/brand'
 import { Route as AuthenticatedAppGrowthRouteImport } from './routes/_authenticated/app/growth'
@@ -57,6 +58,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OauthCallbackRoute = OauthCallbackRouteImport.update({
+  id: '/oauth/callback',
+  path: '/oauth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
+  '/oauth/callback': typeof OauthCallbackRoute
   '/app/brand': typeof AuthenticatedAppBrandRoute
   '/app/growth': typeof AuthenticatedAppGrowthRoute
   '/app/marlowe': typeof AuthenticatedAppMarloweRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/oauth/callback': typeof OauthCallbackRoute
   '/app/brand': typeof AuthenticatedAppBrandRoute
   '/app/growth': typeof AuthenticatedAppGrowthRoute
   '/app/marlowe': typeof AuthenticatedAppMarloweRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
+  '/oauth/callback': typeof OauthCallbackRoute
   '/_authenticated/app/brand': typeof AuthenticatedAppBrandRoute
   '/_authenticated/app/growth': typeof AuthenticatedAppGrowthRoute
   '/_authenticated/app/marlowe': typeof AuthenticatedAppMarloweRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/app'
     | '/auth/callback'
+    | '/oauth/callback'
     | '/app/brand'
     | '/app/growth'
     | '/app/marlowe'
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/auth/callback'
+    | '/oauth/callback'
     | '/app/brand'
     | '/app/growth'
     | '/app/marlowe'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/_authenticated/app'
     | '/auth/callback'
+    | '/oauth/callback'
     | '/_authenticated/app/brand'
     | '/_authenticated/app/growth'
     | '/_authenticated/app/marlowe'
@@ -184,6 +196,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  OauthCallbackRoute: typeof OauthCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -235,6 +248,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/callback'
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/oauth/callback': {
+      id: '/oauth/callback'
+      path: '/oauth/callback'
+      fullPath: '/oauth/callback'
+      preLoaderRoute: typeof OauthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/app/': {
@@ -321,6 +341,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  OauthCallbackRoute: OauthCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

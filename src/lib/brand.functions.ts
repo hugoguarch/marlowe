@@ -11,10 +11,21 @@ export type PaletteColour = { name: string; hex: string };
 export type Persona = { name: string; detail: string };
 export type Typography = { headline: string; body: string; notes: string };
 
+export type BrandAsset = {
+  id: string;
+  kind: string;
+  file_name: string | null;
+  file_path: string;
+  is_primary: boolean;
+  url: string | null;
+};
+
 export type BrandBrain = {
   brandId: string;
   name: string;
   website: string | null;
+  isDefault: boolean;
+  dailyTarget: number;
   logoPath: string | null;
   logoUrl: string | null;
   palette: PaletteColour[];
@@ -23,7 +34,7 @@ export type BrandBrain = {
   personas: Persona[];
   audience: string;
   learned: string[];
-  assets: { id: string; kind: string; file_name: string | null; file_path: string }[];
+  assets: BrandAsset[];
 };
 
 const emptyTypography: Typography = { headline: "", body: "", notes: "" };
