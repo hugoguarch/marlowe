@@ -65,13 +65,21 @@ export function PostDesign({
         }}
       />
 
-      <div className="absolute inset-0 flex flex-col justify-between p-7 sm:p-9">
+      <div
+        className={`absolute inset-0 flex flex-col justify-between ${
+          compact ? "p-4" : "p-7 sm:p-9"
+        }`}
+      >
         <div className="flex items-center gap-3">
           {tokens.logoUrl ? (
-            <img src={tokens.logoUrl} alt="" className="h-7 w-auto object-contain" />
+            <img
+              src={tokens.logoUrl}
+              alt=""
+              className={`${compact ? "h-4" : "h-7"} w-auto object-contain`}
+            />
           ) : (
             <span
-              className="text-[0.62rem] tracking-[0.3em] uppercase"
+              className={`${compact ? "text-[0.5rem]" : "text-[0.62rem]"} tracking-[0.3em] uppercase`}
               style={{ color: tokens.light, fontFamily: tokens.bodyFont }}
             >
               {tokens.name}
@@ -82,7 +90,7 @@ export function PostDesign({
         <div>
           {template === "stat" ? (
             <p
-              className="text-6xl leading-none font-light sm:text-7xl"
+              className={`leading-none font-light ${compact ? "text-3xl" : "text-6xl sm:text-7xl"}`}
               style={{ color: tokens.light, fontFamily: tokens.headlineFont }}
             >
               {content.headline}
@@ -90,12 +98,16 @@ export function PostDesign({
           ) : (
             <p
               className={`font-light tracking-tight ${
-                template === "quote" ? "text-3xl sm:text-4xl" : "text-4xl sm:text-5xl"
+                compact
+                  ? "text-base"
+                  : template === "quote"
+                    ? "text-3xl sm:text-4xl"
+                    : "text-4xl sm:text-5xl"
               }`}
               style={{
                 color: tokens.light,
                 fontFamily: tokens.headlineFont,
-                lineHeight: 1.05,
+                lineHeight: 1.1,
               }}
             >
               {template === "quote" ? `“${content.headline}”` : content.headline}
@@ -104,7 +116,9 @@ export function PostDesign({
 
           {content.subhead ? (
             <p
-              className="mt-4 max-w-[85%] text-sm leading-relaxed sm:text-base"
+              className={`max-w-[92%] leading-relaxed ${
+                compact ? "mt-2 line-clamp-3 text-[0.68rem]" : "mt-4 text-sm sm:text-base"
+              }`}
               style={{ color: `${tokens.light}B3`, fontFamily: tokens.bodyFont }}
             >
               {content.subhead}
@@ -112,7 +126,7 @@ export function PostDesign({
           ) : null}
 
           <span
-            className="mt-6 inline-block h-[3px] w-14 rounded-full"
+            className={`inline-block rounded-full ${compact ? "mt-3 h-[2px] w-8" : "mt-6 h-[3px] w-14"}`}
             style={{ backgroundColor: tokens.accent }}
           />
         </div>
