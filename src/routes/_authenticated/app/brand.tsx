@@ -5,17 +5,26 @@ import { useEffect, useRef, useState } from "react";
 import { Sphere } from "@/components/app/Sphere";
 import { Card, CardLabel, PageHeader, pillClass, pillPrimaryClass } from "@/components/app/ui";
 import { supabase } from "@/integrations/supabase/client";
+import { useSelectedBrandId } from "@/lib/brandSelection";
 import {
   analyseGuidelines,
   createBrand,
+  deleteBrand,
+  deleteBrandAsset,
   getBrandBrain,
   listBrands,
   registerBrandAsset,
   saveBrandBrain,
+  setDailyTarget,
+  setDefaultBrand,
+  setPrimaryAsset,
+  type BrandAsset,
   type BrandBrain,
   type PaletteColour,
   type Persona,
 } from "@/lib/brand.functions";
+
+const MAX_UPLOAD_MB = 50;
 
 export const Route = createFileRoute("/_authenticated/app/brand")({
   head: () => ({
