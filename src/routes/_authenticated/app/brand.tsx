@@ -275,6 +275,118 @@ function BrandPage() {
           />
         </Card>
 
+        <Card>
+          <CardLabel>How much to post</CardLabel>
+          <p className="mt-3 text-sm text-ink-navy/55">
+            Marlowe aims for this many posts a day for {brain.name}.
+          </p>
+          <div className="mt-4 flex items-center gap-3">
+            <input
+              type="number"
+              min={0}
+              max={20}
+              defaultValue={brain.dailyTarget}
+              onBlur={async (e) => {
+                await setTarget({
+                  data: { brandId: brain.brandId, dailyTarget: Number(e.target.value) },
+                });
+                await reload(brain.brandId);
+                setStatus("Saved");
+                setTimeout(() => setStatus(null), 1500);
+              }}
+              className={`${inputClass} w-24`}
+            />
+            <span className="text-sm text-ink-navy/55">posts a day</span>
+          </div>
+        </Card>
+
+        <Card>
+          <CardLabel>Logos</CardLabel>
+          <div className="mt-5 flex flex-wrap gap-3">
+            {brain.assets
+              .filter((a) => a.kind === "logo")
+              .map((a) => (
+                <div key={a.id} className="w-24">
+                  <button
+                    onClick={async () => {
+                      await makePrimary({ data: { assetId: a.id } });
+                      await reload(brain.brandId);
+                    }}
+                    className={`flex h-24 w-24 items-center justify-center rounded-2xl border bg-app-bg/60 p-3 ${
+                      a.is_primary ? "border-cerulean" : "border-app-line"
+                    }`}
+                  >
+                    {a.url ? (
+                      <img src={a.url} alt="" className="max-h-full max-w-full object-contain" />
+                    ) : (
+                      <span className="text-[0.6rem] text-ink-navy/45">{a.file_name}</span>
+                    )}
+                  </button>
+                  <div className="mt-1 flex items-center justify-between">
+                    <span className="text-[0.6rem] text-ink-navy/45">
+                      {a.is_primary ? "Primary" : "Use"}
+                    </span>
+                    <button
+                      onClick={async () => {
+                        await removeAsset({ data: { assetId: a.id } });
+                        await reload(brain.brandId);
+                      }}
+                      className="text-[0.6rem] text-ink-navy/40 hover:text-red-600"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </div>
+          <FilePick
+            label="Add a logo"
+            accept="image/*"
+            onPick={async (file) => {
+              await upload(file, "logo", brain.brandId);
+              await reload(brain.brandId);
+            }}
+          />
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardLabel>Image bank</CardLabel>
+          <p className="mt-3 text-sm text-ink-navy/55">
+            Your own photography. Anything here can be picked in the Studio instead of letting
+            Marlowe generate a picture.
+          </p>
+          <div className="mt-5 grid grid-cols-3 gap-3 sm:grid-cols-5">
+            {brain.assets
+              .filter((a) => a.kind === "image")
+              .map((a) => (
+                <div key={a.id}>
+                  <div className="aspect-square overflow-hidden rounded-2xl border border-app-line">
+                    {a.url ? (
+                      <img src={a.url} alt="" className="h-full w-full object-cover" />
+                    ) : null}
+                  </div>
+                  <button
+                    onClick={async () => {
+                      await removeAsset({ data: { assetId: a.id } });
+                      await reload(brain.brandId);
+                    }}
+                    className="mt-1 text-[0.6rem] text-ink-navy/40 hover:text-red-600"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+          </div>
+          <FilePick
+            label="Add images"
+            accept="image/*"
+            onPick={async (file) => {
+              await upload(file, "image", brain.brandId);
+              await reload(brain.brandId);
+            }}
+          />
+        </Card>
+
         <Card className="lg:col-span-2">
           <CardLabel>Brand guidelines</CardLabel>
           <p className="mt-3 text-sm text-ink-navy/55">
