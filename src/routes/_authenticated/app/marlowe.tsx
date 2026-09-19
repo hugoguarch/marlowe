@@ -67,6 +67,7 @@ function MarlowePage() {
         eyebrow="Always on"
         title="Marlowe"
         subtitle="A colleague, not a chatbot. Redirect it and the week reshapes itself."
+        action={<BrandSwitcher current={brandId} />}
       />
 
       <div className="flex-1 space-y-6">
