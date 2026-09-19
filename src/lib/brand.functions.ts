@@ -49,7 +49,7 @@ async function loadBrain(ctx: Ctx, brandId: string): Promise<BrandBrain | null> 
   const { supabase, userId } = ctx;
   const { data: brand } = await supabase
     .from("brands")
-    .select("id, name, website, logo_url")
+    .select("id, name, website, logo_url, is_default, daily_target")
     .eq("id", brandId)
     .eq("user_id", userId)
     .maybeSingle();
@@ -62,27 +62,48 @@ async function loadBrain(ctx: Ctx, brandId: string): Promise<BrandBrain | null> 
     .eq("user_id", userId)
     .maybeSingle();
 
-  const { data: assets } = await supabase
+  const { data: assetRows } = await supabase
     .from("brand_assets")
-    .select("id, kind, file_name, file_path")
+    .select("id, kind, file_name, file_path, is_primary")
     .eq("brand_id", brandId)
+    .order("is_primary", { ascending: false })
     .order("created_at", { ascending: false });
 
-  const logoPath = (brand.logo_url as string | null) ?? (brain?.logo_url as string | null) ?? null;
+  const assets: BrandAsset[] = await Promise.all(
+    ((assetRows ?? []) as any[]).map(async (a) => ({
+      id: a.id,
+      kind: a.kind,
+      file_name: a.file_name,
+      file_path: a.file_path,
+      is_primary: Boolean(a.is_primary),
+      url:
+        a.kind === "logo" || a.kind === "image" ? await signed(supabase, a.file_path) : null,
+    })),
+  );
+
+  const primaryLogo = assets.find((a) => a.kind === "logo" && a.is_primary);
+  const anyLogo = primaryLogo ?? assets.find((a) => a.kind === "logo");
+  const logoPath =
+    anyLogo?.file_path ??
+    (brand.logo_url as string | null) ??
+    (brain?.logo_url as string | null) ??
+    null;
 
   return {
     brandId: brand.id,
     name: brand.name,
     website: brand.website,
+    isDefault: Boolean(brand.is_default),
+    dailyTarget: Number(brand.daily_target ?? 1),
     logoPath,
-    logoUrl: await signed(supabase, logoPath),
+    logoUrl: anyLogo?.url ?? (await signed(supabase, logoPath)),
     palette: (brain?.palette as PaletteColour[]) ?? [],
     typography: { ...emptyTypography, ...((brain?.typography as Partial<Typography>) ?? {}) },
     toneOfVoice: (brain?.tone_of_voice as string[]) ?? [],
     personas: (brain?.personas as Persona[]) ?? [],
     audience: (brain?.audience as string | null) ?? "",
     learned: (brain?.learned as string[]) ?? [],
-    assets: assets ?? [],
+    assets,
   };
 }
 
