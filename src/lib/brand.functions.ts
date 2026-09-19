@@ -370,3 +370,137 @@ export const saveBrandBrain = createServerFn({ method: "POST" })
 
     return loadBrain(ctx, data.brandId);
   });
+
+/** Make one brand the one that opens by default. */
+export const setDefaultBrand = createServerFn({ method: "POST" })
+  .inputValidator((input: { brandId: string }) => ({ brandId: String(input.brandId) }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as unknown as Ctx;
+    await supabase.from("brands").update({ is_default: false }).eq("user_id", userId);
+    const { error } = await supabase
+      .from("brands")
+      .update({ is_default: true })
+      .eq("id", data.brandId)
+      .eq("user_id", userId);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+/** How many posts this brand should publish a day. */
+export const setDailyTarget = createServerFn({ method: "POST" })
+  .inputValidator((input: { brandId: string; dailyTarget: number }) => ({
+    brandId: String(input.brandId),
+    dailyTarget: Math.min(20, Math.max(0, Math.round(Number(input.dailyTarget) || 0))),
+  }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as unknown as Ctx;
+    const { error } = await supabase
+      .from("brands")
+      .update({ daily_target: data.dailyTarget })
+      .eq("id", data.brandId)
+      .eq("user_id", userId);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+/** Remove a brand brain, its assets, posts and schedule. */
+export const deleteBrand = createServerFn({ method: "POST" })
+  .inputValidator((input: { brandId: string }) => ({ brandId: String(input.brandId) }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as unknown as Ctx;
+
+    const { data: files } = await supabase
+      .from("brand_assets")
+      .select("file_path")
+      .eq("brand_id", data.brandId)
+      .eq("user_id", userId);
+    const paths = ((files ?? []) as { file_path: string }[]).map((f) => f.file_path);
+    if (paths.length) await supabase.storage.from("brand-assets").remove(paths);
+
+    for (const table of [
+      "schedule",
+      "content_items",
+      "metrics",
+      "chat_messages",
+      "action_queue",
+      "connected_accounts",
+      "brand_assets",
+      "brand_brain",
+    ]) {
+      await supabase.from(table).delete().eq("brand_id", data.brandId).eq("user_id", userId);
+    }
+
+    const { error } = await supabase
+      .from("brands")
+      .delete()
+      .eq("id", data.brandId)
+      .eq("user_id", userId);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+/** Delete one uploaded file from the bank. */
+export const deleteBrandAsset = createServerFn({ method: "POST" })
+  .inputValidator((input: { assetId: string; brandId: string }) => ({
+    assetId: String(input.assetId),
+    brandId: String(input.brandId),
+  }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const ctx = context as unknown as Ctx;
+    const { data: asset } = await ctx.supabase
+      .from("brand_assets")
+      .select("file_path")
+      .eq("id", data.assetId)
+      .eq("user_id", ctx.userId)
+      .maybeSingle();
+    if (asset?.file_path) await ctx.supabase.storage.from("brand-assets").remove([asset.file_path]);
+    await ctx.supabase
+      .from("brand_assets")
+      .delete()
+      .eq("id", data.assetId)
+      .eq("user_id", ctx.userId);
+    return loadBrain(ctx, data.brandId);
+  });
+
+/** Mark one logo as the primary mark. */
+export const setPrimaryAsset = createServerFn({ method: "POST" })
+  .inputValidator((input: { assetId: string; brandId: string; kind: string }) => ({
+    assetId: String(input.assetId),
+    brandId: String(input.brandId),
+    kind: String(input.kind),
+  }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const ctx = context as unknown as Ctx;
+    await ctx.supabase
+      .from("brand_assets")
+      .update({ is_primary: false })
+      .eq("brand_id", data.brandId)
+      .eq("user_id", ctx.userId)
+      .eq("kind", data.kind);
+    await ctx.supabase
+      .from("brand_assets")
+      .update({ is_primary: true })
+      .eq("id", data.assetId)
+      .eq("user_id", ctx.userId);
+
+    if (data.kind === "logo") {
+      const { data: asset } = await ctx.supabase
+        .from("brand_assets")
+        .select("file_path")
+        .eq("id", data.assetId)
+        .maybeSingle();
+      if (asset?.file_path) {
+        await ctx.supabase
+          .from("brands")
+          .update({ logo_url: asset.file_path })
+          .eq("id", data.brandId)
+          .eq("user_id", ctx.userId);
+      }
+    }
+    return loadBrain(ctx, data.brandId);
+  });
