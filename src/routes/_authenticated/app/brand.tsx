@@ -166,6 +166,40 @@ function BrandPage() {
                 ))}
               </select>
             ) : null}
+            {!brain.isDefault ? (
+              <button
+                onClick={async () => {
+                  await makeDefault({ data: { brandId: brain.brandId } });
+                  setBrands((await all()) as any);
+                  await reload(brain.brandId);
+                }}
+                className={pillClass}
+              >
+                Make default
+              </button>
+            ) : (
+              <span className="rounded-full border border-cerulean/40 bg-cerulean/10 px-4 py-2 text-[0.6rem] tracking-[0.16em] text-cerulean uppercase">
+                Default
+              </span>
+            )}
+            <button
+              onClick={async () => {
+                if (
+                  !window.confirm(
+                    `Delete "${brain.name}"? Its posts, schedule and uploads go with it. This cannot be undone.`,
+                  )
+                )
+                  return;
+                await removeBrand({ data: { brandId: brain.brandId } });
+                const list = (await all()) as any[];
+                setBrands(list);
+                remember(list[0]?.id ?? null);
+                setBrain(list.length ? await one({ data: { brandId: list[0].id } }) : null);
+              }}
+              className={pillClass}
+            >
+              Delete
+            </button>
             <button onClick={() => setCreating(true)} className={pillClass}>
               New brand brain
             </button>
