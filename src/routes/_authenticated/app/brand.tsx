@@ -5,17 +5,26 @@ import { useEffect, useRef, useState } from "react";
 import { Sphere } from "@/components/app/Sphere";
 import { Card, CardLabel, PageHeader, pillClass, pillPrimaryClass } from "@/components/app/ui";
 import { supabase } from "@/integrations/supabase/client";
+import { useSelectedBrandId } from "@/lib/brandSelection";
 import {
   analyseGuidelines,
   createBrand,
+  deleteBrand,
+  deleteBrandAsset,
   getBrandBrain,
   listBrands,
   registerBrandAsset,
   saveBrandBrain,
+  setDailyTarget,
+  setDefaultBrand,
+  setPrimaryAsset,
+  type BrandAsset,
   type BrandBrain,
   type PaletteColour,
   type Persona,
 } from "@/lib/brand.functions";
+
+const MAX_UPLOAD_MB = 50;
 
 export const Route = createFileRoute("/_authenticated/app/brand")({
   head: () => ({
@@ -33,32 +42,44 @@ const inputClass =
 
 function BrandPage() {
   const { user } = Route.useRouteContext();
-  const [brands, setBrands] = useState<{ id: string; name: string }[]>([]);
+  const [brands, setBrands] = useState<{ id: string; name: string; is_default: boolean }[]>([]);
   const [brain, setBrain] = useState<BrandBrain | null>(null);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const { brandId: chosen, ready, select: remember } = useSelectedBrandId();
   const all = useServerFn(listBrands);
   const one = useServerFn(getBrandBrain);
   const make = useServerFn(createBrand);
   const save = useServerFn(saveBrandBrain);
   const register = useServerFn(registerBrandAsset);
   const analyse = useServerFn(analyseGuidelines);
+  const makeDefault = useServerFn(setDefaultBrand);
+  const setTarget = useServerFn(setDailyTarget);
+  const removeBrand = useServerFn(deleteBrand);
+  const removeAsset = useServerFn(deleteBrandAsset);
+  const makePrimary = useServerFn(setPrimaryAsset);
 
   useEffect(() => {
-    Promise.all([all(), one({ data: {} })])
+    if (!ready) return;
+    Promise.all([all(), one({ data: chosen ? { brandId: chosen } : {} })])
       .then(([list, current]) => {
-        setBrands(list);
+        setBrands(list as any);
         setBrain(current);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [all, one]);
+  }, [ready, chosen, all, one]);
+
+  async function reload(brandId: string) {
+    setBrain(await one({ data: { brandId } }));
+  }
 
   async function select(brandId: string) {
     setLoading(true);
+    remember(brandId);
     setBrain(await one({ data: { brandId } }));
     setLoading(false);
   }
@@ -77,6 +98,11 @@ function BrandPage() {
   }
 
   async function upload(file: File, kind: string, brandId: string) {
+    if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+      throw new Error(
+        `That file is ${(file.size / 1024 / 1024).toFixed(0)}MB. The limit is ${MAX_UPLOAD_MB}MB — please upload a smaller version.`,
+      );
+    }
     const safe = file.name.replace(/[^\w.\-]+/g, "_");
     const path = `${user.id}/${brandId}/${kind}/${crypto.randomUUID()}-${safe}`;
     const { error: uploadError } = await supabase.storage
@@ -140,6 +166,40 @@ function BrandPage() {
                 ))}
               </select>
             ) : null}
+            {!brain.isDefault ? (
+              <button
+                onClick={async () => {
+                  await makeDefault({ data: { brandId: brain.brandId } });
+                  setBrands((await all()) as any);
+                  await reload(brain.brandId);
+                }}
+                className={pillClass}
+              >
+                Make default
+              </button>
+            ) : (
+              <span className="rounded-full border border-cerulean/40 bg-cerulean/10 px-4 py-2 text-[0.6rem] tracking-[0.16em] text-cerulean uppercase">
+                Default
+              </span>
+            )}
+            <button
+              onClick={async () => {
+                if (
+                  !window.confirm(
+                    `Delete "${brain.name}"? Its posts, schedule and uploads go with it. This cannot be undone.`,
+                  )
+                )
+                  return;
+                await removeBrand({ data: { brandId: brain.brandId } });
+                const list = (await all()) as any[];
+                setBrands(list);
+                remember(list[0]?.id ?? null);
+                setBrain(list.length ? await one({ data: { brandId: list[0].id } }) : null);
+              }}
+              className={pillClass}
+            >
+              Delete
+            </button>
             <button onClick={() => setCreating(true)} className={pillClass}>
               New brand brain
             </button>
@@ -212,6 +272,118 @@ function BrandPage() {
             audience={brain.audience}
             personas={brain.personas}
             onSave={(audience, personas) => persist({ brandId: brain.brandId, audience, personas })}
+          />
+        </Card>
+
+        <Card>
+          <CardLabel>How much to post</CardLabel>
+          <p className="mt-3 text-sm text-ink-navy/55">
+            Marlowe aims for this many posts a day for {brain.name}.
+          </p>
+          <div className="mt-4 flex items-center gap-3">
+            <input
+              type="number"
+              min={0}
+              max={20}
+              defaultValue={brain.dailyTarget}
+              onBlur={async (e) => {
+                await setTarget({
+                  data: { brandId: brain.brandId, dailyTarget: Number(e.target.value) },
+                });
+                await reload(brain.brandId);
+                setStatus("Saved");
+                setTimeout(() => setStatus(null), 1500);
+              }}
+              className={`${inputClass} w-24`}
+            />
+            <span className="text-sm text-ink-navy/55">posts a day</span>
+          </div>
+        </Card>
+
+        <Card>
+          <CardLabel>Logos</CardLabel>
+          <div className="mt-5 flex flex-wrap gap-3">
+            {brain.assets
+              .filter((a) => a.kind === "logo")
+              .map((a) => (
+                <div key={a.id} className="w-24">
+                  <button
+                    onClick={async () => {
+                      await makePrimary({ data: { assetId: a.id, brandId: brain.brandId, kind: a.kind } });
+                      await reload(brain.brandId);
+                    }}
+                    className={`flex h-24 w-24 items-center justify-center rounded-2xl border bg-app-bg/60 p-3 ${
+                      a.is_primary ? "border-cerulean" : "border-app-line"
+                    }`}
+                  >
+                    {a.url ? (
+                      <img src={a.url} alt="" className="max-h-full max-w-full object-contain" />
+                    ) : (
+                      <span className="text-[0.6rem] text-ink-navy/45">{a.file_name}</span>
+                    )}
+                  </button>
+                  <div className="mt-1 flex items-center justify-between">
+                    <span className="text-[0.6rem] text-ink-navy/45">
+                      {a.is_primary ? "Primary" : "Use"}
+                    </span>
+                    <button
+                      onClick={async () => {
+                        await removeAsset({ data: { assetId: a.id, brandId: brain.brandId } });
+                        await reload(brain.brandId);
+                      }}
+                      className="text-[0.6rem] text-ink-navy/40 hover:text-red-600"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </div>
+          <FilePick
+            label="Add a logo"
+            accept="image/*"
+            onPick={async (file) => {
+              await upload(file, "logo", brain.brandId);
+              await reload(brain.brandId);
+            }}
+          />
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardLabel>Image bank</CardLabel>
+          <p className="mt-3 text-sm text-ink-navy/55">
+            Your own photography. Anything here can be picked in the Studio instead of letting
+            Marlowe generate a picture.
+          </p>
+          <div className="mt-5 grid grid-cols-3 gap-3 sm:grid-cols-5">
+            {brain.assets
+              .filter((a) => a.kind === "image")
+              .map((a) => (
+                <div key={a.id}>
+                  <div className="aspect-square overflow-hidden rounded-2xl border border-app-line">
+                    {a.url ? (
+                      <img src={a.url} alt="" className="h-full w-full object-cover" />
+                    ) : null}
+                  </div>
+                  <button
+                    onClick={async () => {
+                      await removeAsset({ data: { assetId: a.id, brandId: brain.brandId } });
+                      await reload(brain.brandId);
+                    }}
+                    className="mt-1 text-[0.6rem] text-ink-navy/40 hover:text-red-600"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+          </div>
+          <FilePick
+            label="Add images"
+            accept="image/*"
+            onPick={async (file) => {
+              await upload(file, "image", brain.brandId);
+              await reload(brain.brandId);
+            }}
           />
         </Card>
 

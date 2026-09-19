@@ -54,11 +54,19 @@ async function brandContext(ctx: Ctx, brandId: string) {
 
 /** Write the post and generate its artwork. */
 export const generatePost = createServerFn({ method: "POST" })
-  .inputValidator((input: { brandId: string; template: string; topic: string }) => ({
-    brandId: String(input.brandId),
-    template: String(input.template ?? "carousel"),
-    topic: String(input.topic ?? "").slice(0, 500),
-  }))
+  .inputValidator(
+    (input: {
+      brandId: string;
+      template: string;
+      topic: string;
+      imagePath?: string | null;
+    }) => ({
+      brandId: String(input.brandId),
+      template: String(input.template ?? "carousel"),
+      topic: String(input.topic ?? "").slice(0, 500),
+      imagePath: input.imagePath ?? null,
+    }),
+  )
   .middleware([requireSupabaseAuth])
   .handler(async ({ data, context }) => {
     const ctx = context as unknown as Ctx;
@@ -81,17 +89,21 @@ export const generatePost = createServerFn({ method: "POST" })
       schema: copySchema,
     });
 
-    const colours = palette.map((c) => `${c.name} ${c.hex}`).join(", ");
-    const image = await generateImage(
-      `Editorial photographic background for a premium ${brand.name} social post about "${data.topic || copy.headline}". Cinematic natural light, shallow depth of field, generous empty space in the upper left for text, no text or logos in the image. Colour mood: ${colours || "deep ink navy, cerulean blue, warm gold"}.`,
-      "1024x1024",
-    );
+    let path = data.imagePath;
 
-    const path = `${ctx.userId}/${data.brandId}/renders/${crypto.randomUUID()}.png`;
-    const { error: uploadError } = await ctx.supabase.storage
-      .from("brand-assets")
-      .upload(path, image.bytes, { contentType: image.contentType, upsert: false });
-    if (uploadError) throw uploadError;
+    // No image chosen from the bank, so Marlowe makes one.
+    if (!path) {
+      const colours = palette.map((c) => `${c.name} ${c.hex}`).join(", ");
+      const image = await generateImage(
+        `Editorial photographic background for a premium ${brand.name} social post about "${data.topic || copy.headline}". Cinematic natural light, shallow depth of field, generous empty space in the upper left for text, no text or logos in the image. Colour mood: ${colours || "deep ink navy, cerulean blue, warm gold"}.`,
+        "1024x1024",
+      );
+      path = `${ctx.userId}/${data.brandId}/renders/${crypto.randomUUID()}.png`;
+      const { error: uploadError } = await ctx.supabase.storage
+        .from("brand-assets")
+        .upload(path, image.bytes, { contentType: image.contentType, upsert: false });
+      if (uploadError) throw uploadError;
+    }
 
     const { data: signed } = await ctx.supabase.storage
       .from("brand-assets")
@@ -172,44 +184,111 @@ export const queuePost = createServerFn({ method: "POST" })
     return { id: item.id as string, scheduledFor: when.toISOString() };
   });
 
-/** Everything scheduled from today onwards. */
-export const getSchedule = createServerFn({ method: "GET" })
+/** Everything on the calendar, with the artwork and caption for the pop-up. */
+export const getSchedule = createServerFn({ method: "POST" })
+  .inputValidator((input: { brandId?: string | null } | undefined) => ({
+    brandId: input?.brandId ?? null,
+  }))
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .handler(async ({ data, context }) => {
     const { supabase, userId } = context as unknown as Ctx;
-    const from = new Date();
-    from.setHours(0, 0, 0, 0);
-    const { data } = await supabase
+    let query = supabase
       .from("schedule")
-      .select("id, title, channel, scheduled_for, status")
+      .select("id, title, channel, scheduled_for, status, content_item_id, posted_at")
       .eq("user_id", userId)
-      .gte("scheduled_for", from.toISOString())
       .order("scheduled_for", { ascending: true })
-      .limit(60);
-    return (data ?? []) as {
-      id: string;
-      title: string;
-      channel: string;
-      scheduled_for: string;
-      status: string;
-    }[];
+      .limit(200);
+    if (data.brandId) query = query.eq("brand_id", data.brandId);
+    const { data: rows } = await query;
+
+    const list = (rows ?? []) as any[];
+    const itemIds = list.map((r) => r.content_item_id).filter(Boolean);
+    const items = new Map<string, any>();
+    if (itemIds.length) {
+      const { data: contents } = await supabase
+        .from("content_items")
+        .select("id, caption, template, render_url")
+        .in("id", itemIds);
+      for (const c of (contents ?? []) as any[]) items.set(c.id, c);
+    }
+
+    return Promise.all(
+      list.map(async (r) => {
+        const item = r.content_item_id ? items.get(r.content_item_id) : null;
+        let imageUrl: string | null = null;
+        if (item?.render_url) {
+          const { data: signed } = await supabase.storage
+            .from("brand-assets")
+            .createSignedUrl(item.render_url, 60 * 60 * 6);
+          imageUrl = signed?.signedUrl ?? null;
+        }
+        return {
+          id: r.id as string,
+          title: r.title as string,
+          channel: r.channel as string,
+          scheduled_for: r.scheduled_for as string,
+          status: r.status as string,
+          postedAt: (r.posted_at as string | null) ?? null,
+          caption: (item?.caption as string | null) ?? null,
+          template: (item?.template as string | null) ?? "carousel",
+          imageUrl,
+        };
+      }),
+    );
+  });
+
+/** Move a scheduled post. */
+export const rescheduleItem = createServerFn({ method: "POST" })
+  .inputValidator((input: { scheduleId: string; when: string }) => ({
+    scheduleId: String(input.scheduleId),
+    when: new Date(input.when).toISOString(),
+  }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as unknown as Ctx;
+    const { error } = await supabase
+      .from("schedule")
+      .update({ scheduled_for: data.when })
+      .eq("id", data.scheduleId)
+      .eq("user_id", userId);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+/** Take a post off the calendar. */
+export const removeScheduleItem = createServerFn({ method: "POST" })
+  .inputValidator((input: { scheduleId: string }) => ({ scheduleId: String(input.scheduleId) }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as unknown as Ctx;
+    const { error } = await supabase
+      .from("schedule")
+      .delete()
+      .eq("id", data.scheduleId)
+      .eq("user_id", userId);
+    if (error) throw error;
+    return { ok: true };
   });
 
 /** Posts already made, newest first. */
-export const listPosts = createServerFn({ method: "GET" })
+export const listPosts = createServerFn({ method: "POST" })
+  .inputValidator((input: { brandId?: string | null } | undefined) => ({
+    brandId: input?.brandId ?? null,
+  }))
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .handler(async ({ data, context }) => {
     const { supabase, userId } = context as unknown as Ctx;
-    const { data } = await supabase
+    let query = supabase
       .from("content_items")
       .select("id, title, caption, template, channel, status, slides, render_url, created_at")
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(12);
+    if (data.brandId) query = query.eq("brand_id", data.brandId);
+    const { data: rows } = await query;
 
-    const rows = (data ?? []) as any[];
-    const withUrls = await Promise.all(
-      rows.map(async (row) => {
+    return Promise.all(
+      ((rows ?? []) as any[]).map(async (row) => {
         let url: string | null = null;
         if (row.render_url) {
           const { data: signed } = await supabase.storage
@@ -220,5 +299,4 @@ export const listPosts = createServerFn({ method: "GET" })
         return { ...row, imageUrl: url };
       }),
     );
-    return withUrls;
   });

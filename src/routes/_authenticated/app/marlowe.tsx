@@ -2,8 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 
+import { BrandSwitcher } from "@/components/app/BrandSwitcher";
 import { Sphere } from "@/components/app/Sphere";
 import { PageHeader, pillClass, pillPrimaryClass } from "@/components/app/ui";
+import { useSelectedBrandId } from "@/lib/brandSelection";
 import { chatWithMarlowe, getChatHistory } from "@/lib/marlowe.functions";
 import { chatSeed } from "@/lib/mock/workspace";
 
@@ -24,6 +26,7 @@ function MarlowePage() {
   const [messages, setMessages] = useState<Message[]>(chatSeed);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
+  const { brandId } = useSelectedBrandId();
   const loadHistory = useServerFn(getChatHistory);
   const sendMessage = useServerFn(chatWithMarlowe);
 
@@ -67,6 +70,7 @@ function MarlowePage() {
         eyebrow="Always on"
         title="Marlowe"
         subtitle="A colleague, not a chatbot. Redirect it and the week reshapes itself."
+        action={<BrandSwitcher current={brandId} />}
       />
 
       <div className="flex-1 space-y-6">
