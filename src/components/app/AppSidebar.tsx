@@ -5,7 +5,7 @@ import { Sphere } from "./Sphere";
 import { supabase } from "@/integrations/supabase/client";
 
 const nav = [
-  { label: "Brief", to: "/app" as const },
+  { label: "Dashboard", to: "/app" as const },
   { label: "Marlowe", to: "/app/marlowe" as const },
   { label: "Brand", to: "/app/brand" as const },
   { label: "Studio", to: "/app/studio" as const },
