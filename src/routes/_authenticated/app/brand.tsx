@@ -42,32 +42,44 @@ const inputClass =
 
 function BrandPage() {
   const { user } = Route.useRouteContext();
-  const [brands, setBrands] = useState<{ id: string; name: string }[]>([]);
+  const [brands, setBrands] = useState<{ id: string; name: string; is_default: boolean }[]>([]);
   const [brain, setBrain] = useState<BrandBrain | null>(null);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const { brandId: chosen, ready, select: remember } = useSelectedBrandId();
   const all = useServerFn(listBrands);
   const one = useServerFn(getBrandBrain);
   const make = useServerFn(createBrand);
   const save = useServerFn(saveBrandBrain);
   const register = useServerFn(registerBrandAsset);
   const analyse = useServerFn(analyseGuidelines);
+  const makeDefault = useServerFn(setDefaultBrand);
+  const setTarget = useServerFn(setDailyTarget);
+  const removeBrand = useServerFn(deleteBrand);
+  const removeAsset = useServerFn(deleteBrandAsset);
+  const makePrimary = useServerFn(setPrimaryAsset);
 
   useEffect(() => {
-    Promise.all([all(), one({ data: {} })])
+    if (!ready) return;
+    Promise.all([all(), one({ data: chosen ? { brandId: chosen } : {} })])
       .then(([list, current]) => {
-        setBrands(list);
+        setBrands(list as any);
         setBrain(current);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [all, one]);
+  }, [ready, chosen, all, one]);
+
+  async function reload(brandId: string) {
+    setBrain(await one({ data: { brandId } }));
+  }
 
   async function select(brandId: string) {
     setLoading(true);
+    remember(brandId);
     setBrain(await one({ data: { brandId } }));
     setLoading(false);
   }
@@ -86,6 +98,11 @@ function BrandPage() {
   }
 
   async function upload(file: File, kind: string, brandId: string) {
+    if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+      throw new Error(
+        `That file is ${(file.size / 1024 / 1024).toFixed(0)}MB. The limit is ${MAX_UPLOAD_MB}MB — please upload a smaller version.`,
+      );
+    }
     const safe = file.name.replace(/[^\w.\-]+/g, "_");
     const path = `${user.id}/${brandId}/${kind}/${crypto.randomUUID()}-${safe}`;
     const { error: uploadError } = await supabase.storage
