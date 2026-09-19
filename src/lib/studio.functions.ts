@@ -89,17 +89,21 @@ export const generatePost = createServerFn({ method: "POST" })
       schema: copySchema,
     });
 
-    const colours = palette.map((c) => `${c.name} ${c.hex}`).join(", ");
-    const image = await generateImage(
-      `Editorial photographic background for a premium ${brand.name} social post about "${data.topic || copy.headline}". Cinematic natural light, shallow depth of field, generous empty space in the upper left for text, no text or logos in the image. Colour mood: ${colours || "deep ink navy, cerulean blue, warm gold"}.`,
-      "1024x1024",
-    );
+    let path = data.imagePath;
 
-    const path = `${ctx.userId}/${data.brandId}/renders/${crypto.randomUUID()}.png`;
-    const { error: uploadError } = await ctx.supabase.storage
-      .from("brand-assets")
-      .upload(path, image.bytes, { contentType: image.contentType, upsert: false });
-    if (uploadError) throw uploadError;
+    // No image chosen from the bank, so Marlowe makes one.
+    if (!path) {
+      const colours = palette.map((c) => `${c.name} ${c.hex}`).join(", ");
+      const image = await generateImage(
+        `Editorial photographic background for a premium ${brand.name} social post about "${data.topic || copy.headline}". Cinematic natural light, shallow depth of field, generous empty space in the upper left for text, no text or logos in the image. Colour mood: ${colours || "deep ink navy, cerulean blue, warm gold"}.`,
+        "1024x1024",
+      );
+      path = `${ctx.userId}/${data.brandId}/renders/${crypto.randomUUID()}.png`;
+      const { error: uploadError } = await ctx.supabase.storage
+        .from("brand-assets")
+        .upload(path, image.bytes, { contentType: image.contentType, upsert: false });
+      if (uploadError) throw uploadError;
+    }
 
     const { data: signed } = await ctx.supabase.storage
       .from("brand-assets")
