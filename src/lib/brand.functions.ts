@@ -291,17 +291,17 @@ export const saveBrandBrain = createServerFn({ method: "POST" })
 
     if (data.name !== undefined || data.website !== undefined) {
       const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
-      if (data.name !== undefined) patch.name = data.name;
-      if (data.website !== undefined) patch.website = data.website;
+      if (data.name !== undefined) patch["name"] = data.name;
+      if (data.website !== undefined) patch["website"] = data.website;
       await supabase.from("brands").update(patch).eq("id", data.brandId).eq("user_id", userId);
     }
 
     const brainPatch: Record<string, unknown> = { updated_at: new Date().toISOString() };
-    if (data.palette !== undefined) brainPatch.palette = data.palette;
-    if (data.typography !== undefined) brainPatch.typography = data.typography;
-    if (data.toneOfVoice !== undefined) brainPatch.tone_of_voice = data.toneOfVoice;
-    if (data.personas !== undefined) brainPatch.personas = data.personas;
-    if (data.audience !== undefined) brainPatch.audience = data.audience;
+    if (data.palette !== undefined) brainPatch["palette"] = data.palette;
+    if (data.typography !== undefined) brainPatch["typography"] = data.typography;
+    if (data.toneOfVoice !== undefined) brainPatch["tone_of_voice"] = data.toneOfVoice;
+    if (data.personas !== undefined) brainPatch["personas"] = data.personas;
+    if (data.audience !== undefined) brainPatch["audience"] = data.audience;
 
     const { data: existing } = await supabase
       .from("brand_brain")
