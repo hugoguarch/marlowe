@@ -54,11 +54,19 @@ async function brandContext(ctx: Ctx, brandId: string) {
 
 /** Write the post and generate its artwork. */
 export const generatePost = createServerFn({ method: "POST" })
-  .inputValidator((input: { brandId: string; template: string; topic: string }) => ({
-    brandId: String(input.brandId),
-    template: String(input.template ?? "carousel"),
-    topic: String(input.topic ?? "").slice(0, 500),
-  }))
+  .inputValidator(
+    (input: {
+      brandId: string;
+      template: string;
+      topic: string;
+      imagePath?: string | null;
+    }) => ({
+      brandId: String(input.brandId),
+      template: String(input.template ?? "carousel"),
+      topic: String(input.topic ?? "").slice(0, 500),
+      imagePath: input.imagePath ?? null,
+    }),
+  )
   .middleware([requireSupabaseAuth])
   .handler(async ({ data, context }) => {
     const ctx = context as unknown as Ctx;
