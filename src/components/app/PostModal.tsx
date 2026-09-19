@@ -53,7 +53,7 @@ export function PostModal({
           template={post.template ?? "carousel"}
           tokens={tokens}
           imageUrl={post.imageUrl ?? null}
-          content={{ headline: post.title, subhead: post.caption ?? undefined }}
+          content={post.caption ? { headline: post.title, subhead: post.caption } : { headline: post.title }}
         />
 
         <div>
