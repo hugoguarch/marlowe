@@ -62,6 +62,7 @@ export type Database = {
           file_name: string | null
           file_path: string
           id: string
+          is_primary: boolean
           kind: string
           meta: Json
           mime_type: string | null
@@ -73,6 +74,7 @@ export type Database = {
           file_name?: string | null
           file_path: string
           id?: string
+          is_primary?: boolean
           kind?: string
           meta?: Json
           mime_type?: string | null
@@ -84,6 +86,7 @@ export type Database = {
           file_name?: string | null
           file_path?: string
           id?: string
+          is_primary?: boolean
           kind?: string
           meta?: Json
           mime_type?: string | null
@@ -155,7 +158,9 @@ export type Database = {
       brands: {
         Row: {
           created_at: string
+          daily_target: number
           id: string
+          is_default: boolean
           logo_url: string | null
           name: string
           updated_at: string
@@ -164,7 +169,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          daily_target?: number
           id?: string
+          is_default?: boolean
           logo_url?: string | null
           name?: string
           updated_at?: string
@@ -173,7 +180,9 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          daily_target?: number
           id?: string
+          is_default?: boolean
           logo_url?: string | null
           name?: string
           updated_at?: string
@@ -219,32 +228,53 @@ export type Database = {
       }
       connected_accounts: {
         Row: {
+          access_token_ciphertext: string | null
           account_name: string | null
           brand_id: string | null
+          brand_scope: string | null
           connected_at: string | null
           created_at: string
+          expires_at: string | null
+          external_account_id: string | null
           id: string
+          meta: Json
           provider: string
+          refresh_token_ciphertext: string | null
+          scopes: string | null
           status: string
           user_id: string
         }
         Insert: {
+          access_token_ciphertext?: string | null
           account_name?: string | null
           brand_id?: string | null
+          brand_scope?: string | null
           connected_at?: string | null
           created_at?: string
+          expires_at?: string | null
+          external_account_id?: string | null
           id?: string
+          meta?: Json
           provider: string
+          refresh_token_ciphertext?: string | null
+          scopes?: string | null
           status?: string
           user_id: string
         }
         Update: {
+          access_token_ciphertext?: string | null
           account_name?: string | null
           brand_id?: string | null
+          brand_scope?: string | null
           connected_at?: string | null
           created_at?: string
+          expires_at?: string | null
+          external_account_id?: string | null
           id?: string
+          meta?: Json
           provider?: string
+          refresh_token_ciphertext?: string | null
+          scopes?: string | null
           status?: string
           user_id?: string
         }
@@ -397,7 +427,9 @@ export type Database = {
           channel: string
           content_item_id: string | null
           created_at: string
+          external_post_id: string | null
           id: string
+          posted_at: string | null
           scheduled_for: string
           status: string
           title: string
@@ -408,7 +440,9 @@ export type Database = {
           channel?: string
           content_item_id?: string | null
           created_at?: string
+          external_post_id?: string | null
           id?: string
+          posted_at?: string | null
           scheduled_for?: string
           status?: string
           title: string
@@ -419,7 +453,9 @@ export type Database = {
           channel?: string
           content_item_id?: string | null
           created_at?: string
+          external_post_id?: string | null
           id?: string
+          posted_at?: string | null
           scheduled_for?: string
           status?: string
           title?: string
