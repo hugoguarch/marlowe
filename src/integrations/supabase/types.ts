@@ -55,8 +55,53 @@ export type Database = {
           },
         ]
       }
+      brand_assets: {
+        Row: {
+          brand_id: string
+          created_at: string
+          file_name: string | null
+          file_path: string
+          id: string
+          kind: string
+          meta: Json
+          mime_type: string | null
+          user_id: string
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          file_name?: string | null
+          file_path: string
+          id?: string
+          kind?: string
+          meta?: Json
+          mime_type?: string | null
+          user_id: string
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          file_name?: string | null
+          file_path?: string
+          id?: string
+          kind?: string
+          meta?: Json
+          mime_type?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_assets_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brand_brain: {
         Row: {
+          audience: string | null
           brand_id: string
           created_at: string
           id: string
@@ -70,6 +115,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          audience?: string | null
           brand_id: string
           created_at?: string
           id?: string
@@ -83,6 +129,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          audience?: string | null
           brand_id?: string
           created_at?: string
           id?: string
@@ -109,6 +156,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          logo_url: string | null
           name: string
           updated_at: string
           user_id: string
@@ -117,6 +165,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          logo_url?: string | null
           name?: string
           updated_at?: string
           user_id: string
@@ -125,6 +174,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          logo_url?: string | null
           name?: string
           updated_at?: string
           user_id?: string
@@ -217,8 +267,10 @@ export type Database = {
           format: string
           id: string
           media_url: string | null
+          render_url: string | null
           slides: Json
           status: string
+          template: string
           title: string
           updated_at: string
           user_id: string
@@ -231,8 +283,10 @@ export type Database = {
           format?: string
           id?: string
           media_url?: string | null
+          render_url?: string | null
           slides?: Json
           status?: string
+          template?: string
           title: string
           updated_at?: string
           user_id: string
@@ -245,8 +299,10 @@ export type Database = {
           format?: string
           id?: string
           media_url?: string | null
+          render_url?: string | null
           slides?: Json
           status?: string
+          template?: string
           title?: string
           updated_at?: string
           user_id?: string
