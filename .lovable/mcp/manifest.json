@@ -1,0 +1,181 @@
+{
+  "version": 1,
+  "sdk_version": "3.0.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://bmdacjpwxieptirqptsr.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "marlowe-your-ai-marketing-partner",
+      "version": "0.1.0",
+      "title": "Marlowe: Your AI Marketing Partner"
+    },
+    "tools": [
+      {
+        "name": "list_brands",
+        "title": "List brand brains",
+        "description": "List the signed-in user's brand brains, newest default first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_brand_brain",
+        "title": "Get a brand brain",
+        "description": "Read one brand's palette, typography, tone of voice, audience and personas.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "brandId": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "Brand id from list_brands."
+            }
+          },
+          "required": [
+            "brandId"
+          ],
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_content",
+        "title": "List posts made so far",
+        "description": "List the posts Marlowe has created, newest first, with captions and status.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "brandId": {
+              "description": "Limit to one brand.",
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "limit": {
+              "description": "How many posts to return (default 12).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_schedule",
+        "title": "List scheduled posts",
+        "description": "List the user's scheduled and published posts, soonest first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "brandId": {
+              "description": "Limit to one brand.",
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "limit": {
+              "description": "How many rows to return (default 25).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "queue_post",
+        "title": "Queue a post",
+        "description": "Create a post for a brand and schedule it on the chosen channels.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "brandId": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "Brand id from list_brands."
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "description": "Short internal title for the post."
+            },
+            "caption": {
+              "description": "The caption to publish.",
+              "type": "string",
+              "maxLength": 2000
+            },
+            "channels": {
+              "minItems": 1,
+              "maxItems": 6,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "description": "Channel names, e.g. Instagram, LinkedIn, TikTok."
+            },
+            "scheduledFor": {
+              "description": "ISO date-time; defaults to tomorrow 07:45.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+            }
+          },
+          "required": [
+            "brandId",
+            "title",
+            "channels"
+          ],
+          "additionalProperties": false
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
