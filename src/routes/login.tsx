@@ -37,10 +37,20 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch() as { next?: string };
+  const next = safeNext(search.next);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  function done() {
+    if (next) {
+      window.location.href = next;
+      return;
+    }
+    navigate({ to: "/app" });
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,12 +62,18 @@ function LoginPage() {
       setError(error.message);
       return;
     }
-    navigate({ to: "/app" });
+    done();
   }
 
   async function onGoogle() {
     setError(null);
     setBusy(true);
+    try {
+      if (next) sessionStorage.setItem("wm.authNext", next);
+      else sessionStorage.removeItem("wm.authNext");
+    } catch {
+      /* storage unavailable */
+    }
     const result = await signInWithGoogle();
     if (result.redirected) return;
     setBusy(false);
@@ -65,7 +81,7 @@ function LoginPage() {
       setError(result.error.message);
       return;
     }
-    navigate({ to: "/app" });
+    done();
   }
 
   return (
