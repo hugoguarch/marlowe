@@ -11,7 +11,17 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { signInWithGoogle } from "@/lib/auth";
 
+function safeNext(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  if (!value.startsWith("/") || value.startsWith("//")) return undefined;
+  return value;
+}
+
 export const Route = createFileRoute("/login")({
+  validateSearch: (s: Record<string, unknown>) => {
+    const next = safeNext(s["next"]);
+    return next ? { next } : {};
+  },
   head: () => ({
     meta: [
       { title: "Log in — Why Media AI" },
@@ -27,10 +37,20 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch() as { next?: string };
+  const next = safeNext(search.next);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  function done() {
+    if (next) {
+      window.location.href = next;
+      return;
+    }
+    navigate({ to: "/app" });
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -42,12 +62,18 @@ function LoginPage() {
       setError(error.message);
       return;
     }
-    navigate({ to: "/app" });
+    done();
   }
 
   async function onGoogle() {
     setError(null);
     setBusy(true);
+    try {
+      if (next) sessionStorage.setItem("wm.authNext", next);
+      else sessionStorage.removeItem("wm.authNext");
+    } catch {
+      /* storage unavailable */
+    }
     const result = await signInWithGoogle();
     if (result.redirected) return;
     setBusy(false);
@@ -55,7 +81,7 @@ function LoginPage() {
       setError(result.error.message);
       return;
     }
-    navigate({ to: "/app" });
+    done();
   }
 
   return (
