@@ -22,14 +22,39 @@ function CallbackPage() {
   useEffect(() => {
     let cancelled = false;
 
+    function pendingNext() {
+      try {
+        const value = sessionStorage.getItem("wm.authNext");
+        if (value && value.startsWith("/") && !value.startsWith("//")) return value;
+      } catch {
+        /* storage unavailable */
+      }
+      return null;
+    }
+
+    function land() {
+      const next = pendingNext();
+      if (next) {
+        try {
+          sessionStorage.removeItem("wm.authNext");
+        } catch {
+          /* ignore */
+        }
+        window.location.replace(next);
+        return;
+      }
+      navigate({ to: "/app", replace: true });
+    }
+
     async function go() {
       const { data } = await supabase.auth.getSession();
       if (cancelled) return;
-      navigate({ to: data.session ? "/app" : "/login", replace: true });
+      if (data.session) land();
+      else navigate({ to: "/login", replace: true });
     }
 
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (session) navigate({ to: "/app", replace: true });
+      if (session) land();
     });
 
     const timer = setTimeout(go, 600);
