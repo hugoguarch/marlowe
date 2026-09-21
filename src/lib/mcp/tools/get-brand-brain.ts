@@ -32,9 +32,6 @@ export default defineTool({
       learned: data.learned ?? null,
     };
 
-    return {
-      content: [{ type: "text", text: JSON.stringify(brain, null, 2) }],
-      structuredContent: { brain: JSON.parse(JSON.stringify(brain)) as Record<string, unknown> },
-    };
+    return { content: [{ type: "text", text: JSON.stringify(brain, null, 2) }] };
   },
 });
