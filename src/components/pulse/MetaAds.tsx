@@ -5,7 +5,7 @@ import { useState } from "react";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { usePulse } from "@/components/pulse/context";
-import { Empty, Loading, Panel, SetupConnection, tooltipStyle } from "@/components/pulse/ui";
+import { Empty, Loading, Panel, tooltipStyle } from "@/components/pulse/ui";
 import { getMetaTab } from "@/lib/pulse/meta.functions";
 import { fmt } from "@/lib/pulse/metrics";
 

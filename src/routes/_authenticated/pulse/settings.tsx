@@ -8,7 +8,7 @@ import { usePulse, type PulseClient } from "@/components/pulse/context";
 import { Empty, PageTitle, Panel } from "@/components/pulse/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { addGscSite, listGscSites, removeGscSite, resyncGsc, resyncGscSite } from "@/lib/pulse/gsc.functions";
-import { metaDiscover, saveMetaConnection } from "@/lib/pulse/meta.functions";
+import { metaDiscover, saveMetaConnection, syncMetaNow } from "@/lib/pulse/meta.functions";
 import { channelLabel } from "@/lib/pulse/metrics";
 
 export const Route = createFileRoute("/_authenticated/pulse/settings")({
@@ -143,6 +143,7 @@ function MetaConnections({ client }: { client: PulseClient }) {
   const { refetchSession } = usePulse();
   const discover = useServerFn(metaDiscover);
   const save = useServerFn(saveMetaConnection);
+  const syncNow = useServerFn(syncMetaNow);
   const assets = useQuery({ queryKey: ["pulse", "metaAssets"], queryFn: () => discover(), staleTime: 10 * 60_000 });
   const cur = client.meta;
   const [page, setPage] = useState(cur?.fb_page_id ?? "");
@@ -162,7 +163,7 @@ function MetaConnections({ client }: { client: PulseClient }) {
         ? { clientId: client.id, fbPageId: null, fbPageName: null, igUserId: null, igUsername: null, adAccountIds: [] }
         : { clientId: client.id, fbPageId: page || null, fbPageName: pg?.name ?? cur?.fb_page_name ?? null, igUserId: ig || null, igUsername: i?.username ?? cur?.ig_username ?? null, adAccountIds: adIds } });
       if (clear) { setPage(""); setIg(""); setAdIds([]); }
-      toast.success(clear ? "Meta disconnected" : "Meta connections saved");
+      toast.success(clear ? "Meta disconnected" : "Meta connections saved and synced");
       refetchSession();
     } catch (e) { toast.error(e instanceof Error ? e.message : "Something went wrong"); }
     finally { setBusy(false); }
@@ -175,21 +176,16 @@ function MetaConnections({ client }: { client: PulseClient }) {
       ) : (
         <div className="grid gap-4 md:grid-cols-3">
           <label className="text-xs text-p-muted">Facebook Page
-            <select className={sel} value={page} onChange={(e) => { setPage(e.target.value); const p = pages.find((x) => x.id === e.target.value); if (p?.ig && !ig) setIg(p.ig.id); }}>
-              <option value="">None</option>
-              {pages.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
+            <SearchSelect options={pages.map((p) => ({ value: p.id, label: p.name, hint: p.ig ? `@${p.ig.username}` : undefined }))} value={page} placeholder="Type a Page name…" onChange={(v) => { setPage(v); const p = pages.find((x) => x.id === v); if (p?.ig && !ig) setIg(p.ig.id); }} />
           </label>
           <label className="text-xs text-p-muted">Instagram account
-            <select className={sel} value={ig} onChange={(e) => setIg(e.target.value)}>
-              <option value="">None</option>
-              {igs.map((x) => <option key={x.id} value={x.id}>@{x.username}</option>)}
-            </select>
+            <SearchSelect options={igs.map((x) => ({ value: x.id, label: `@${x.username}`, hint: `${fmt(x.followers ?? 0)} followers` }))} value={ig} placeholder="Type an Instagram handle…" onChange={setIg} />
           </label>
           <div className="text-xs text-p-muted">Ad accounts
+            {adAccounts.length > 0 && <SearchSelect options={adAccounts.filter((a) => !adIds.includes(a.id)).map((a) => ({ value: a.id, label: a.name, hint: a.id }))} value="" placeholder="Type an ad account to add…" onChange={(v) => v && setAdIds([...adIds, v])} />}
             <div className="mt-1 max-h-40 space-y-1 overflow-auto rounded-lg border border-p-line p-2">
-              {!adAccounts.length && <div>No ad accounts shared</div>}
-              {adAccounts.map((a) => (
+              {!adAccounts.length && <div>No ad accounts are shared with the Meta token yet. In Meta Business Settings, assign the ad accounts to the "AnalyticsDashboard" system user.</div>}
+              {adAccounts.filter((a) => adIds.includes(a.id)).map((a) => (
                 <label key={a.id} className="flex items-center gap-2 text-sm text-p-text">
                   <input type="checkbox" checked={adIds.includes(a.id)} onChange={(e) => setAdIds(e.target.checked ? [...adIds, a.id] : adIds.filter((x) => x !== a.id))} />
                   {a.name} <span className="text-[11px] text-p-muted">{a.currency}</span>
@@ -201,6 +197,7 @@ function MetaConnections({ client }: { client: PulseClient }) {
       )}
       <div className="mt-4 flex gap-2">
         <button disabled={busy || !res?.ok} onClick={() => submit()} className="rounded-lg bg-p-cerulean px-4 py-2 text-sm text-white disabled:opacity-50">{cur ? "Update connections" : "Connect"}</button>
+        {cur && <button disabled={busy} onClick={async () => { setBusy(true); try { const r = await syncNow({ data: { clientId: client.id } }); const bad = Object.entries(r).filter(([, v]) => v !== "ok"); bad.length ? toast.error(bad.map(([k, v]) => `${k}: ${v}`).join("; ")) : toast.success("Meta data refreshed"); refetchSession(); } catch (e) { toast.error(e instanceof Error ? e.message : "Sync failed"); } finally { setBusy(false); } }} className="rounded-lg border border-p-line px-4 py-2 text-sm text-p-text disabled:opacity-50">{busy ? "Syncing…" : "Sync now"}</button>}
         {cur && <button disabled={busy} onClick={() => { if (confirm("Disconnect all Meta accounts from this client?")) void submit(true); }} className="rounded-lg border border-p-line px-4 py-2 text-sm text-p-down disabled:opacity-50">Disconnect Meta</button>}
       </div>
     </Panel>
@@ -320,10 +317,7 @@ function SearchConsole({ client }: { client: PulseClient }) {
         <Empty title="Could not list properties" body={sites.error.message} />
       ) : (
         <div className="flex flex-wrap items-center gap-2">
-          <select value={pick} onChange={(e) => setPick(e.target.value)} className="h-9 min-w-[16rem] rounded-lg border border-p-line bg-p-bg px-3 text-sm text-p-text">
-            <option value="">{available.length ? "Add a website…" : "No more properties available"}</option>
-            {available.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
+          <SearchSelect className="min-w-[20rem]" options={available.map((s) => ({ value: s, label: s.replace(/^sc-domain:/, "").replace(/^https?:\/\//, "").replace(/\/$/, ""), hint: s.startsWith("sc-domain:") ? "domain" : undefined }))} value={pick} placeholder={available.length ? "Type a domain to add…" : "No more properties available"} onChange={setPick} />
           <button disabled={!pick || busy} onClick={() => run(() => add({ data: { clientId: client.id, siteUrl: pick } }), "Website added and synced")} className="h-9 rounded-lg bg-p-cerulean px-4 text-sm text-white disabled:opacity-50">
             {busy ? "Working…" : "Add website"}
           </button>

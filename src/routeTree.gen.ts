@@ -31,7 +31,6 @@ import { Route as AuthenticatedPulseIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPulseAiSearchRouteImport } from './routes/_authenticated/pulse/ai-search'
 import { Route as AuthenticatedPulseCompetitorsRouteImport } from './routes/_authenticated/pulse/competitors'
 import { Route as AuthenticatedPulseGoogleBusinessRouteImport } from './routes/_authenticated/pulse/google-business'
-import { Route as AuthenticatedPulseMetaRouteImport } from './routes/_authenticated/pulse/meta'
 import { Route as AuthenticatedPulseNewsRouteImport } from './routes/_authenticated/pulse/news'
 import { Route as AuthenticatedPulseReportsRouteImport } from './routes/_authenticated/pulse/reports'
 import { Route as AuthenticatedPulseSettingsRouteImport } from './routes/_authenticated/pulse/settings'
@@ -154,11 +153,6 @@ const AuthenticatedPulseGoogleBusinessRoute =
     path: '/google-business',
     getParentRoute: () => AuthenticatedPulseRoute,
   } as any)
-const AuthenticatedPulseMetaRoute = AuthenticatedPulseMetaRouteImport.update({
-  id: '/meta',
-  path: '/meta',
-  getParentRoute: () => AuthenticatedPulseRoute,
-} as any)
 const AuthenticatedPulseNewsRoute = AuthenticatedPulseNewsRouteImport.update({
   id: '/news',
   path: '/news',
@@ -220,7 +214,6 @@ export interface FileRoutesByFullPath {
   '/pulse/ai-search': typeof AuthenticatedPulseAiSearchRoute
   '/pulse/competitors': typeof AuthenticatedPulseCompetitorsRoute
   '/pulse/google-business': typeof AuthenticatedPulseGoogleBusinessRoute
-  '/pulse/meta': typeof AuthenticatedPulseMetaRoute
   '/pulse/news': typeof AuthenticatedPulseNewsRoute
   '/pulse/reports': typeof AuthenticatedPulseReportsRoute
   '/pulse/settings': typeof AuthenticatedPulseSettingsRoute
@@ -249,7 +242,6 @@ export interface FileRoutesByTo {
   '/pulse/ai-search': typeof AuthenticatedPulseAiSearchRoute
   '/pulse/competitors': typeof AuthenticatedPulseCompetitorsRoute
   '/pulse/google-business': typeof AuthenticatedPulseGoogleBusinessRoute
-  '/pulse/meta': typeof AuthenticatedPulseMetaRoute
   '/pulse/news': typeof AuthenticatedPulseNewsRoute
   '/pulse/reports': typeof AuthenticatedPulseReportsRoute
   '/pulse/settings': typeof AuthenticatedPulseSettingsRoute
@@ -282,7 +274,6 @@ export interface FileRoutesById {
   '/_authenticated/pulse/ai-search': typeof AuthenticatedPulseAiSearchRoute
   '/_authenticated/pulse/competitors': typeof AuthenticatedPulseCompetitorsRoute
   '/_authenticated/pulse/google-business': typeof AuthenticatedPulseGoogleBusinessRoute
-  '/_authenticated/pulse/meta': typeof AuthenticatedPulseMetaRoute
   '/_authenticated/pulse/news': typeof AuthenticatedPulseNewsRoute
   '/_authenticated/pulse/reports': typeof AuthenticatedPulseReportsRoute
   '/_authenticated/pulse/settings': typeof AuthenticatedPulseSettingsRoute
@@ -315,7 +306,6 @@ export interface FileRouteTypes {
     | '/pulse/ai-search'
     | '/pulse/competitors'
     | '/pulse/google-business'
-    | '/pulse/meta'
     | '/pulse/news'
     | '/pulse/reports'
     | '/pulse/settings'
@@ -344,7 +334,6 @@ export interface FileRouteTypes {
     | '/pulse/ai-search'
     | '/pulse/competitors'
     | '/pulse/google-business'
-    | '/pulse/meta'
     | '/pulse/news'
     | '/pulse/reports'
     | '/pulse/settings'
@@ -376,7 +365,6 @@ export interface FileRouteTypes {
     | '/_authenticated/pulse/ai-search'
     | '/_authenticated/pulse/competitors'
     | '/_authenticated/pulse/google-business'
-    | '/_authenticated/pulse/meta'
     | '/_authenticated/pulse/news'
     | '/_authenticated/pulse/reports'
     | '/_authenticated/pulse/settings'
@@ -558,13 +546,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPulseGoogleBusinessRouteImport
       parentRoute: typeof AuthenticatedPulseRoute
     }
-    '/_authenticated/pulse/meta': {
-      id: '/_authenticated/pulse/meta'
-      path: '/meta'
-      fullPath: '/pulse/meta'
-      preLoaderRoute: typeof AuthenticatedPulseMetaRouteImport
-      parentRoute: typeof AuthenticatedPulseRoute
-    }
     '/_authenticated/pulse/news': {
       id: '/_authenticated/pulse/news'
       path: '/news'
@@ -642,7 +623,6 @@ interface AuthenticatedPulseRouteChildren {
   AuthenticatedPulseAiSearchRoute: typeof AuthenticatedPulseAiSearchRoute
   AuthenticatedPulseCompetitorsRoute: typeof AuthenticatedPulseCompetitorsRoute
   AuthenticatedPulseGoogleBusinessRoute: typeof AuthenticatedPulseGoogleBusinessRoute
-  AuthenticatedPulseMetaRoute: typeof AuthenticatedPulseMetaRoute
   AuthenticatedPulseNewsRoute: typeof AuthenticatedPulseNewsRoute
   AuthenticatedPulseReportsRoute: typeof AuthenticatedPulseReportsRoute
   AuthenticatedPulseSettingsRoute: typeof AuthenticatedPulseSettingsRoute
@@ -656,7 +636,6 @@ const AuthenticatedPulseRouteChildren: AuthenticatedPulseRouteChildren = {
   AuthenticatedPulseAiSearchRoute: AuthenticatedPulseAiSearchRoute,
   AuthenticatedPulseCompetitorsRoute: AuthenticatedPulseCompetitorsRoute,
   AuthenticatedPulseGoogleBusinessRoute: AuthenticatedPulseGoogleBusinessRoute,
-  AuthenticatedPulseMetaRoute: AuthenticatedPulseMetaRoute,
   AuthenticatedPulseNewsRoute: AuthenticatedPulseNewsRoute,
   AuthenticatedPulseReportsRoute: AuthenticatedPulseReportsRoute,
   AuthenticatedPulseSettingsRoute: AuthenticatedPulseSettingsRoute,
