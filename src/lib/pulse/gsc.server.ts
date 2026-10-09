@@ -32,6 +32,21 @@ export const iso = (d: Date) => d.toISOString().slice(0, 10);
 
 /** Pull ~16 months of daily totals for one site and replace that site's rows. */
 export async function syncSite(clientId: string, siteUrl: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const mark = (patch: Record<string, unknown>) => supabaseAdmin.from("pulse_connections")
+    .update({ last_attempt_at: new Date().toISOString(), ...patch })
+    .eq("client_id", clientId).eq("provider", "search_console").eq("account_ref", siteUrl);
+  try {
+    const n = await syncSiteInner(clientId, siteUrl);
+    await mark({ status: "live", last_error: null });
+    return n;
+  } catch (e) {
+    await mark({ status: "error", last_error: (e instanceof Error ? e.message : "Sync failed").slice(0, 500) });
+    throw e;
+  }
+}
+
+async function syncSiteInner(clientId: string, siteUrl: string) {
   const end = new Date();
   end.setDate(end.getDate() - 2);
   const start = new Date(end);
@@ -84,12 +99,6 @@ export async function syncAllDue() {
     } catch (e) {
       failed++;
       console.error("GSC sync failed", c.account_ref, e);
-      await supabaseAdmin
-        .from("pulse_connections")
-        .update({ status: "error" })
-        .eq("client_id", c.client_id)
-        .eq("provider", "search_console")
-        .eq("account_ref", c.account_ref);
     }
   }
   return { ok, failed };
