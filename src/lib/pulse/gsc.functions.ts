@@ -17,7 +17,7 @@ async function gsc(path: string, body?: unknown) {
   const res = await fetch(`${GATEWAY}${path}`, {
     method: body ? "POST" : "GET",
     headers: headers(),
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? JSON.stringify(body) : null,
   });
   const text = await res.text();
   if (res.status === 403) throw new Error("The connected Google account cannot access this Search Console property");
