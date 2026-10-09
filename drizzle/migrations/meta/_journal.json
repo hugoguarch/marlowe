@@ -50,6 +50,13 @@
       "when": 1791546424277,
       "tag": "0006_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791559806735,
+      "tag": "0007_meta_connections_and_sync_status",
+      "breakpoints": true
     }
   ]
 }
