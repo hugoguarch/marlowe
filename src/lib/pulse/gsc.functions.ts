@@ -71,6 +71,21 @@ export const resyncGsc = createServerFn({ method: "POST" })
     return { days };
   });
 
+export const resyncGscSite = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ clientId: z.string().uuid(), siteUrl: z.string().min(1).max(500) }).parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { verifiedSites, syncSite } = await import("./gsc.server");
+    if (!(await verifiedSites()).includes(data.siteUrl)) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      await supabaseAdmin.from("pulse_connections").update({ status: "error", last_error: "The Google account no longer has access to this property", last_attempt_at: new Date().toISOString() })
+        .eq("client_id", data.clientId).eq("provider", "search_console").eq("account_ref", data.siteUrl);
+      throw new Error("The connected Google account no longer has access to this property");
+    }
+    return { days: await syncSite(data.clientId, data.siteUrl) };
+  });
+
 /** Top queries and pages for the period, current vs prior. Combines sites unless one is chosen. */
 export const getGscTop = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
