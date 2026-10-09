@@ -19,12 +19,17 @@ type Ctx = {
   setChannel: (c: string) => void;
   range: Range;
   setRange: (id: RangeId, custom?: { from: string; to: string }) => void;
+  sites: string[];
+  site: string | null;
+  setSite: (s: string | null) => void;
   dark: boolean;
   setDark: (d: boolean) => void;
   refetchSession: () => void;
 };
 
-const PulseCtx = createContext<Ctx | null>(null);
+// Kept on globalThis so hot reloads reuse the same context instead of orphaning the provider.
+const g = globalThis as { __pulseCtx?: React.Context<Ctx | null> };
+const PulseCtx = (g.__pulseCtx ??= createContext<Ctx | null>(null));
 
 export function PulseProvider({ userId, children }: { userId: string; children: ReactNode }) {
   const fetchSession = useServerFn(getPulseSession);
@@ -33,6 +38,7 @@ export function PulseProvider({ userId, children }: { userId: string; children: 
   const [clientId, setClientIdState] = useState("");
   const [channel, setChannel] = useState("all");
   const [range, setRangeState] = useState<Range>(() => makeRange("28d"));
+  const [site, setSite] = useState<string | null>(null);
   const [dark, setDarkState] = useState(false);
 
   useEffect(() => {
@@ -48,7 +54,14 @@ export function PulseProvider({ userId, children }: { userId: string; children: 
   }, [q.data, clientId, key]);
 
   const client = q.data?.clients.find((c) => c.id === clientId) ?? null;
-  const connected = useMemo(() => client?.connections.map((c) => c.provider) ?? [], [client]);
+  const connected = useMemo(() => [...new Set(client?.connections.map((c) => c.provider) ?? [])], [client]);
+  const sites = useMemo(
+    () => client?.connections.filter((c) => c.provider === "search_console" && c.account_ref).map((c) => c.account_ref!) ?? [],
+    [client],
+  );
+  useEffect(() => {
+    if (site && !sites.includes(site)) setSite(null);
+  }, [sites, site]);
 
   useEffect(() => {
     if (channel !== "all" && client && !connected.includes(channel)) setChannel("all");
@@ -61,7 +74,11 @@ export function PulseProvider({ userId, children }: { userId: string; children: 
     setClientId: (id) => {
       localStorage.setItem(key, id);
       setClientIdState(id);
+      setSite(null);
     },
+    sites,
+    site,
+    setSite,
     client,
     connected,
     channel,
@@ -86,14 +103,15 @@ export function usePulse() {
 
 /** Cached per client + period, so switching back is instant. */
 export function usePulseData(include: ("posts" | "reviews")[] = [], forClient?: string) {
-  const { clientId, range } = usePulse();
+  const { clientId, range, site } = usePulse();
   const id = forClient ?? clientId;
+  const s = forClient ? null : site;
   const fetchData = useServerFn(getPulseData);
   return useQuery({
-    queryKey: ["pulse", "data", id, range.from, range.to, include.join(",")],
+    queryKey: ["pulse", "data", id, range.from, range.to, include.join(","), s],
     queryFn: () =>
       fetchData({
-        data: { clientId: id, from: range.from, to: range.to, priorFrom: range.priorFrom, bucket: range.bucket, include },
+        data: { clientId: id, from: range.from, to: range.to, priorFrom: range.priorFrom, bucket: range.bucket, include, site: s },
       }),
     enabled: !!id && id !== "all",
     staleTime: 5 * 60_000,

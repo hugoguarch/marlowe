@@ -37,6 +37,7 @@ import { Route as AuthenticatedPulseSettingsRouteImport } from './routes/_authen
 import { Route as AuthenticatedPulseSocialRouteImport } from './routes/_authenticated/pulse/social'
 import { Route as AuthenticatedPulseTrendsRouteImport } from './routes/_authenticated/pulse/trends'
 import { Route as AuthenticatedPulseWebsiteRouteImport } from './routes/_authenticated/pulse/website'
+import { Route as ApiPublicHooksPulseSyncRouteImport } from './routes/api/public/hooks/pulse-sync'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -187,6 +188,11 @@ const AuthenticatedPulseWebsiteRoute =
     path: '/website',
     getParentRoute: () => AuthenticatedPulseRoute,
   } as any)
+const ApiPublicHooksPulseSyncRoute = ApiPublicHooksPulseSyncRouteImport.update({
+  id: '/api/public/hooks/pulse-sync',
+  path: '/api/public/hooks/pulse-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -216,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/pulse/website': typeof AuthenticatedPulseWebsiteRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/pulse/': typeof AuthenticatedPulseIndexRoute
+  '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -243,6 +250,7 @@ export interface FileRoutesByTo {
   '/pulse/website': typeof AuthenticatedPulseWebsiteRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/pulse': typeof AuthenticatedPulseIndexRoute
+  '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -274,6 +282,7 @@ export interface FileRoutesById {
   '/_authenticated/pulse/website': typeof AuthenticatedPulseWebsiteRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/pulse/': typeof AuthenticatedPulseIndexRoute
+  '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -305,6 +314,7 @@ export interface FileRouteTypes {
     | '/pulse/website'
     | '/app/'
     | '/pulse/'
+    | '/api/public/hooks/pulse-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -332,6 +342,7 @@ export interface FileRouteTypes {
     | '/pulse/website'
     | '/app'
     | '/pulse'
+    | '/api/public/hooks/pulse-sync'
   id:
     | '__root__'
     | '/'
@@ -362,6 +373,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pulse/website'
     | '/_authenticated/app/'
     | '/_authenticated/pulse/'
+    | '/api/public/hooks/pulse-sync'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -375,6 +387,7 @@ export interface RootRouteChildren {
   AuthCallbackRoute: typeof AuthCallbackRoute
   OauthCallbackRoute: typeof OauthCallbackRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  ApiPublicHooksPulseSyncRoute: typeof ApiPublicHooksPulseSyncRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -575,6 +588,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPulseWebsiteRouteImport
       parentRoute: typeof AuthenticatedPulseRoute
     }
+    '/api/public/hooks/pulse-sync': {
+      id: '/api/public/hooks/pulse-sync'
+      path: '/api/public/hooks/pulse-sync'
+      fullPath: '/api/public/hooks/pulse-sync'
+      preLoaderRoute: typeof ApiPublicHooksPulseSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -653,6 +673,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCallbackRoute: AuthCallbackRoute,
   OauthCallbackRoute: OauthCallbackRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  ApiPublicHooksPulseSyncRoute: ApiPublicHooksPulseSyncRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { usePulse, usePulseData, type PulseClient } from "@/components/pulse/context";
-import { CompareChart, Delta, Empty, Kpi, Loading, PageTitle, Panel, SampleBadge, tooltipStyle } from "@/components/pulse/ui";
+import { CompareChart, Delta, Empty, Kpi, Loading, PageTitle, Panel, tooltipStyle } from "@/components/pulse/ui";
 import {
   avg, buckets, compareSeries, CHANNEL_COLORS, channelLabel, fmt, latest, scopeChannels, SOCIAL, spark, split, sum,
 } from "@/lib/pulse/metrics";
@@ -51,24 +51,25 @@ function ClientOverview({ client }: { client: PulseClient }) {
     return row;
   });
 
+  const na = { soc: !soc.length, web: !connected.includes("website"), gsc: !connected.includes("search_console"), gbp: !connected.includes("gbp") };
   const goalTotal = soc.reduce((a, ch) => a + (client.goals[`${ch}_followers`] ?? 0), 0);
 
   return (
     <div className="space-y-6">
       <PageTitle title={client.name} sub={`${client.sector ?? ""} · ${range.from} to ${range.to}`} />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <Kpi label="Reach" value={reach} prev={reachP} points={spark(cur, "reach", soc)} to="/pulse/social" />
-        <Kpi label="Views" value={sum(cur, "views", soc)} prev={sum(prev, "views", soc)} points={spark(cur, "views", soc)} to="/pulse/social" />
-        <Kpi label="Engagements" value={eng} prev={engP} points={spark(cur, "engagements", soc)} to="/pulse/social" />
-        <Kpi label="Engagement rate" value={reach ? eng / reach : 0} prev={reachP ? engP / reachP : 0} kind="pct" to="/pulse/social" />
-        <Kpi label="Followers" value={fol} prev={folP} points={spark(cur, "followers", soc)} to="/pulse/social" />
-        <Kpi label="Net new followers" value={netNew} prev={netNewP} to="/pulse/social" />
-        <Kpi label="Posts published" value={sum(cur, "posts", soc)} prev={sum(prev, "posts", soc)} to="/pulse/social" />
-        <Kpi label="Website sessions" value={sum(cur, "sessions", ["website"])} prev={sum(prev, "sessions", ["website"])} points={spark(cur, "sessions", ["website"])} to="/pulse/website" />
-        <Kpi label="Conversions" value={sum(cur, "conversions", ["website"])} prev={sum(prev, "conversions", ["website"])} to="/pulse/website" />
-        <Kpi label="Organic clicks" value={sum(cur, "clicks", ["search_console"])} prev={sum(prev, "clicks", ["search_console"])} points={spark(cur, "clicks", ["search_console"])} to="/pulse/website" />
-        <Kpi label="Google rating" value={rating} prev={ratingPrev} kind="dec" to="/pulse/google-business" />
-        <Kpi label="New reviews" value={curReviews.length} prev={prevReviews.length} to="/pulse/google-business" />
+        <Kpi label="Reach" value={reach} prev={reachP} points={spark(cur, "reach", soc)} na={na.soc} to="/pulse/social" />
+        <Kpi label="Views" value={sum(cur, "views", soc)} prev={sum(prev, "views", soc)} points={spark(cur, "views", soc)} na={na.soc} to="/pulse/social" />
+        <Kpi label="Engagements" value={eng} prev={engP} points={spark(cur, "engagements", soc)} na={na.soc} to="/pulse/social" />
+        <Kpi label="Engagement rate" value={reach ? eng / reach : 0} prev={reachP ? engP / reachP : 0} kind="pct" na={na.soc} to="/pulse/social" />
+        <Kpi label="Followers" value={fol} prev={folP} points={spark(cur, "followers", soc)} na={na.soc} to="/pulse/social" />
+        <Kpi label="Net new followers" value={netNew} prev={netNewP} na={na.soc} to="/pulse/social" />
+        <Kpi label="Posts published" value={sum(cur, "posts", soc)} prev={sum(prev, "posts", soc)} na={na.soc} to="/pulse/social" />
+        <Kpi label="Website sessions" value={sum(cur, "sessions", ["website"])} prev={sum(prev, "sessions", ["website"])} points={spark(cur, "sessions", ["website"])} na={na.web} to="/pulse/website" />
+        <Kpi label="Conversions" value={sum(cur, "conversions", ["website"])} prev={sum(prev, "conversions", ["website"])} na={na.web} to="/pulse/website" />
+        <Kpi label="Organic clicks" value={sum(cur, "clicks", ["search_console"])} prev={sum(prev, "clicks", ["search_console"])} points={spark(cur, "clicks", ["search_console"])} na={na.gsc} to="/pulse/website" />
+        <Kpi label="Google rating" value={rating} prev={ratingPrev} kind="dec" na={na.gbp} to="/pulse/google-business" />
+        <Kpi label="New reviews" value={curReviews.length} prev={prevReviews.length} na={na.gbp} to="/pulse/google-business" />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
@@ -122,7 +123,7 @@ function ClientOverview({ client }: { client: PulseClient }) {
                     <td>{fmt(sum(cur, "views", [ch]))}</td>
                     <td>{fmt(r ? sum(cur, "engagements", [ch]) / r : 0, "pct")}</td>
                     <td>{sum(cur, "posts", [ch])}</td>
-                    <td>{c?.status === "sample" ? <SampleBadge /> : c?.status}</td>
+                    <td>{c?.status ?? "not connected"}</td>
                   </tr>
                 );
               })}
@@ -221,7 +222,7 @@ function Portfolio() {
   return (
     <div className="space-y-6">
       <PageTitle title="All clients" sub="Headline KPIs for every retained client, this period vs the last." />
-      <Panel title="League table" conns={clients.flatMap((c) => c.connections).slice(0, 1)}>
+      <Panel title="League table" setup={false}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="text-left text-[11px] uppercase tracking-wider text-p-muted">

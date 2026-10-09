@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { change, fmt } from "@/lib/pulse/metrics";
+import { change, channelLabel, fmt } from "@/lib/pulse/metrics";
 import type { PulseClient } from "./context";
 
 export function SampleBadge() {
@@ -17,13 +17,11 @@ type Conn = PulseClient["connections"][number];
 
 export function SourceLine({ conns }: { conns: Conn[] }) {
   if (!conns.length) return null;
-  const sample = conns.some((c) => c.status === "sample");
   const failed = conns.filter((c) => c.status === "error" || (c.token_expires_at && new Date(c.token_expires_at) < new Date()));
   const last = conns.map((c) => c.last_sync_at).filter(Boolean).sort().pop();
   return (
     <div className="flex flex-wrap items-center gap-2 text-[11px] text-p-muted">
-      {sample && <SampleBadge />}
-      <span>{sample ? "Sample adapter" : conns.map((c) => c.provider).join(", ")}</span>
+      <span className="inline-flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-p-up" />Live · {[...new Set(conns.map((c) => channelLabel(c.provider)))].join(", ")}</span>
       {last && <span>· synced {new Date(last).toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" })}</span>}
       {failed.length > 0 && <span className="text-p-down">· token expired or sync failed</span>}
     </div>
@@ -33,11 +31,13 @@ export function SourceLine({ conns }: { conns: Conn[] }) {
 export function Panel({
   title,
   sub,
-  conns = [],
+  conns,
   action,
   children,
   className = "",
+  setup,
 }: {
+  setup?: boolean | undefined;
   title: string;
   sub?: string | undefined;
   conns?: Conn[] | undefined;
@@ -51,11 +51,11 @@ export function Panel({
         <div className="space-y-1">
           <h2 className="text-base font-medium tracking-tight text-p-text">{title}</h2>
           {sub && <p className="text-xs text-p-muted">{sub}</p>}
-          <SourceLine conns={conns} />
+          <SourceLine conns={conns ?? []} />
         </div>
         {action}
       </div>
-      <div className="p-5">{children}</div>
+      <div className="p-5">{(setup ?? (conns !== undefined && conns.length === 0)) ? <SetupConnection /> : children}</div>
     </section>
   );
 }
@@ -79,7 +79,9 @@ export function Kpi({
   points = [],
   to,
   invert,
+  na,
 }: {
+  na?: boolean | undefined;
   label: string;
   value: number;
   prev: number;
@@ -92,7 +94,7 @@ export function Kpi({
     <div className="flex h-full flex-col rounded-2xl border border-p-line bg-p-card shadow-[0_1px_2px_rgba(0,28,38,0.04)] transition-all hover:-translate-y-0.5 hover:border-p-cerulean/40 hover:shadow-md">
       <div className="flex items-center justify-between border-b border-p-line px-4 py-3">
         <span className="text-xs text-p-muted">{label}</span>
-        {points.length > 1 && (
+        {!na && points.length > 1 && (
           <div className="h-5 w-16">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={points.map((v, i) => ({ i, v }))}>
@@ -103,14 +105,21 @@ export function Kpi({
         )}
       </div>
       <div className="flex flex-1 flex-col justify-end px-4 pb-4 pt-5">
-        <div className="text-3xl font-light tracking-tight text-p-text tabular-nums">{fmt(value, kind)}</div>
+        <div className={`text-3xl font-light tracking-tight tabular-nums ${na ? "text-p-muted" : "text-p-text"}`}>{na ? "N/A" : fmt(value, kind)}</div>
         <div className="mt-2 flex items-center justify-between gap-2">
-          <span className="truncate text-[11px] text-p-muted">{fmt(prev, kind)} last period</span>
-          <Delta cur={value} prev={prev} invert={invert} />
+          {na ? (
+            <span className="truncate text-[11px] text-p-muted">Not connected</span>
+          ) : (
+            <>
+              <span className="truncate text-[11px] text-p-muted">{fmt(prev, kind)} last period</span>
+              <Delta cur={value} prev={prev} invert={invert} />
+            </>
+          )}
         </div>
       </div>
     </div>
   );
+  if (na) return <Link to="/pulse/settings">{body}</Link>;
   return to ? <Link to={to}>{body}</Link> : body;
 }
 
@@ -194,6 +203,25 @@ export function CompareChart({
             <Area dataKey="cur" stroke="var(--p-cerulean)" strokeWidth={2.25} fill="url(#pulseCur)" dot={false} connectNulls activeDot={{ r: 4, fill: "var(--p-sun)", stroke: "var(--p-card)", strokeWidth: 2 }} />
           </AreaChart>
         </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+/** Shown in place of a chart or table when no live account feeds it. */
+export function SetupConnection({ label = "Set up connection" }: { label?: string }) {
+  return (
+    <div className="relative h-56 overflow-hidden rounded-xl">
+      <div className="absolute inset-0 flex items-end gap-2 px-4 pb-4 opacity-[0.12]" aria-hidden>
+        {[40, 55, 35, 70, 50, 80, 60, 75, 45, 90, 65, 85].map((h, i) => (
+          <div key={i} className="flex-1 rounded-t bg-p-cerulean" style={{ height: `${h}%` }} />
+        ))}
+      </div>
+      <div className="relative flex h-full flex-col items-center justify-center gap-3 text-center">
+        <p className="text-xs text-p-muted">No live data is being pulled for this yet.</p>
+        <Link to="/pulse/settings" className="rounded-lg bg-p-cerulean px-4 py-2 text-sm font-medium text-white hover:opacity-90">
+          {label}
+        </Link>
       </div>
     </div>
   );
