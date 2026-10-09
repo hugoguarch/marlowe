@@ -8,3 +8,4 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+- Pulse lives under /pulse with its own shell; all reads go through src/lib/pulse/pulse.functions.ts and pure helpers in src/lib/pulse/metrics.ts, so live adapters only need to write the pulse_* tables (keeps sample and live data interchangeable).
