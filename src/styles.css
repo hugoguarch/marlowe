@@ -43,6 +43,17 @@
   --color-cerulean: var(--cerulean);
   --color-gold: var(--gold);
   --color-brand-green: var(--brand-green);
+  --color-p-bg: var(--p-bg);
+  --color-p-card: var(--p-card);
+  --color-p-line: var(--p-line);
+  --color-p-text: var(--p-text);
+  --color-p-muted: var(--p-muted);
+  --color-p-ink: var(--p-ink);
+  --color-p-sun: var(--p-sun);
+  --color-p-cerulean: var(--p-cerulean);
+  --color-p-soft: var(--p-soft);
+  --color-p-up: var(--p-up);
+  --color-p-down: var(--p-down);
   --color-background: var(--background);
 
   --color-foreground: var(--foreground);
@@ -96,6 +107,18 @@
   --cerulean: oklch(0.62 0.135 245);
   --gold: oklch(0.79 0.11 80);
   --brand-green: oklch(0.52 0.08 165);
+  /* Pulse: Ink #001C26, Tuscan Sun #ECC032, Cerulean #036C89 */
+  --p-ink: #001c26;
+  --p-sun: #ecc032;
+  --p-cerulean: #036c89;
+  --p-bg: #f5f8fa;
+  --p-card: #ffffff;
+  --p-line: #e3eaee;
+  --p-text: #001c26;
+  --p-muted: #5d727c;
+  --p-soft: #e8f2f6;
+  --p-up: #1f7a52;
+  --p-down: #b4412f;
   --background: var(--paper);
   --foreground: var(--ink);
   --card: var(--paper);
