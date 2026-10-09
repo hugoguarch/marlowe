@@ -27,7 +27,9 @@ type Ctx = {
   refetchSession: () => void;
 };
 
-const PulseCtx = createContext<Ctx | null>(null);
+// Kept on globalThis so hot reloads reuse the same context instead of orphaning the provider.
+const g = globalThis as { __pulseCtx?: React.Context<Ctx | null> };
+const PulseCtx = (g.__pulseCtx ??= createContext<Ctx | null>(null));
 
 export function PulseProvider({ userId, children }: { userId: string; children: ReactNode }) {
   const fetchSession = useServerFn(getPulseSession);
