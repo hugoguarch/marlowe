@@ -226,6 +226,44 @@ export type Database = {
           },
         ]
       }
+      client_meta_connections: {
+        Row: {
+          ad_account_ids: string[]
+          client_id: string
+          fb_page_id: string | null
+          fb_page_name: string | null
+          ig_user_id: string | null
+          ig_username: string | null
+          updated_at: string
+        }
+        Insert: {
+          ad_account_ids?: string[]
+          client_id: string
+          fb_page_id?: string | null
+          fb_page_name?: string | null
+          ig_user_id?: string | null
+          ig_username?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ad_account_ids?: string[]
+          client_id?: string
+          fb_page_id?: string | null
+          fb_page_name?: string | null
+          ig_user_id?: string | null
+          ig_username?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_meta_connections_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "pulse_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       connected_accounts: {
         Row: {
           access_token_ciphertext: string | null
@@ -347,6 +385,27 @@ export type Database = {
           },
         ]
       }
+      meta_cache: {
+        Row: {
+          cache_key: string
+          client_id: string
+          fetched_at: string
+          payload: Json
+        }
+        Insert: {
+          cache_key: string
+          client_id: string
+          fetched_at?: string
+          payload: Json
+        }
+        Update: {
+          cache_key?: string
+          client_id?: string
+          fetched_at?: string
+          payload?: Json
+        }
+        Relationships: []
+      }
       metrics: {
         Row: {
           brand_id: string | null
@@ -459,6 +518,8 @@ export type Database = {
           account_ref: string | null
           client_id: string
           id: string
+          last_attempt_at: string | null
+          last_error: string | null
           last_sync_at: string | null
           provider: string
           scopes: string | null
@@ -469,6 +530,8 @@ export type Database = {
           account_ref?: string | null
           client_id: string
           id?: string
+          last_attempt_at?: string | null
+          last_error?: string | null
           last_sync_at?: string | null
           provider: string
           scopes?: string | null
@@ -479,6 +542,8 @@ export type Database = {
           account_ref?: string | null
           client_id?: string
           id?: string
+          last_attempt_at?: string | null
+          last_error?: string | null
           last_sync_at?: string | null
           provider?: string
           scopes?: string | null
