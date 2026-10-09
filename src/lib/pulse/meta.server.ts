@@ -106,7 +106,7 @@ export async function facebook(pageId: string, from: string, to: string) {
   const [overview, ins, posts] = await Promise.all([
     call(`/${pageId}`, { fields: "name,followers_count,fan_count" }, pt),
     insights(`/${pageId}/insights`, FB_PAGE_METRICS, { period: "day", since: unix(from), until: unix(to, true) }, pt),
-    call(`/${pageId}/published_posts`, {
+    call(`/${pageId}/posts`, {
       fields: "id,message,created_time,permalink_url,full_picture,shares,reactions.summary(true),comments.summary(true)",
       since: unix(from), until: unix(to, true), limit: "50",
     }, pt),

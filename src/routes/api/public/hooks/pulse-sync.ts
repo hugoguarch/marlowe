@@ -9,7 +9,9 @@ export const Route = createFileRoute("/api/public/hooks/pulse-sync")({
         if (!token) return Response.json({ error: "Unauthorized" }, { status: 401 });
         const { syncAllDue } = await import("@/lib/pulse/gsc.server");
         const gsc = await syncAllDue();
-        return Response.json({ ok: true, gsc });
+        const { syncAllMeta } = await import("@/lib/pulse/meta-sync.server");
+        const meta = await syncAllMeta().catch((e) => ({ error: String(e) }));
+        return Response.json({ ok: true, gsc, meta });
       },
     },
   },

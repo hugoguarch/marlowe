@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { change, channelLabel, fmt } from "@/lib/pulse/metrics";
@@ -223,6 +223,50 @@ export function SetupConnection({ label = "Set up connection" }: { label?: strin
           {label}
         </Link>
       </div>
+    </div>
+  );
+}
+
+/** Type-to-filter picker: shows matching options as you type, click to choose. */
+export function SearchSelect({
+  options,
+  value,
+  onChange,
+  placeholder = "Type to search…",
+  className = "",
+}: {
+  options: { value: string; label: string; hint?: string | undefined }[];
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  className?: string;
+}) {
+  const [q, setQ] = useState("");
+  const [open, setOpen] = useState(false);
+  const current = options.find((o) => o.value === value);
+  const shown = options.filter((o) => `${o.label} ${o.hint ?? ""}`.toLowerCase().includes(q.toLowerCase())).slice(0, 50);
+  return (
+    <div className={`relative ${className}`}>
+      <input
+        value={open ? q : current?.label ?? ""}
+        placeholder={current?.label ?? placeholder}
+        onFocus={() => { setOpen(true); setQ(""); }}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        onChange={(e) => setQ(e.target.value)}
+        className="h-9 w-full rounded-lg border border-p-line bg-p-bg px-3 text-sm text-p-text"
+      />
+      {open && (
+        <ul className="absolute z-30 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-p-line bg-p-card py-1 text-sm shadow-lg">
+          {value && <li><button type="button" onMouseDown={() => onChange("")} className="w-full px-3 py-1.5 text-left text-p-muted hover:bg-p-bg">None</button></li>}
+          {shown.length ? shown.map((o) => (
+            <li key={o.value}>
+              <button type="button" onMouseDown={() => { onChange(o.value); setOpen(false); }} className={`w-full px-3 py-1.5 text-left hover:bg-p-bg ${o.value === value ? "text-p-cerulean" : "text-p-text"}`}>
+                {o.label}{o.hint && <span className="ml-2 text-[11px] text-p-muted">{o.hint}</span>}
+              </button>
+            </li>
+          )) : <li className="px-3 py-1.5 text-p-muted">No matches</li>}
+        </ul>
+      )}
     </div>
   );
 }
