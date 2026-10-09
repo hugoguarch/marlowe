@@ -501,6 +501,7 @@ export type Database = {
           client_id: string
           date: string
           metric: string
+          site: string
           source: string
           value: number
         }
@@ -509,6 +510,7 @@ export type Database = {
           client_id: string
           date: string
           metric: string
+          site?: string
           source?: string
           value?: number
         }
@@ -517,6 +519,7 @@ export type Database = {
           client_id?: string
           date?: string
           metric?: string
+          site?: string
           source?: string
           value?: number
         }
@@ -783,7 +786,13 @@ export type Database = {
       pulse_is_admin: { Args: { _uid: string }; Returns: boolean }
       pulse_my_role: { Args: never; Returns: string }
       pulse_series: {
-        Args: { _bucket?: string; _client: string; _from: string; _to: string }
+        Args: {
+          _bucket?: string
+          _client: string
+          _from: string
+          _site?: string
+          _to: string
+        }
         Returns: Json
       }
     }
