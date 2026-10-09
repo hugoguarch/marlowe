@@ -17,6 +17,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedPulseRouteImport } from './routes/_authenticated/pulse'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as OauthCallbackRouteImport } from './routes/oauth.callback'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -65,6 +66,11 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
 const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPulseRoute = AuthenticatedPulseRouteImport.update({
+  id: '/pulse',
+  path: '/pulse',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
+  '/pulse': typeof AuthenticatedPulseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/pulse': typeof AuthenticatedPulseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -159,6 +167,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
+  '/_authenticated/pulse': typeof AuthenticatedPulseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/.well-known/oauth-protected-resource'
     | '/app'
+    | '/pulse'
     | '/auth/callback'
     | '/oauth/callback'
     | '/.lovable/oauth/consent'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/.well-known/oauth-protected-resource'
+    | '/pulse'
     | '/auth/callback'
     | '/oauth/callback'
     | '/.lovable/oauth/consent'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/app'
+    | '/_authenticated/pulse'
     | '/auth/callback'
     | '/oauth/callback'
     | '/.lovable/oauth/consent'
@@ -295,6 +307,13 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pulse': {
+      id: '/_authenticated/pulse'
+      path: '/pulse'
+      fullPath: '/pulse'
+      preLoaderRoute: typeof AuthenticatedPulseRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/auth/callback': {
@@ -386,10 +405,12 @@ const AuthenticatedAppRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
+  AuthenticatedPulseRoute: typeof AuthenticatedPulseRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
+  AuthenticatedPulseRoute: AuthenticatedPulseRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
