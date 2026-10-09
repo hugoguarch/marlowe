@@ -29,6 +29,13 @@
       "when": 1789839613267,
       "tag": "0003_brand_bank_and_channel_connections",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791540839158,
+      "tag": "0004_pulse_core_schema",
+      "breakpoints": true
     }
   ]
 }
