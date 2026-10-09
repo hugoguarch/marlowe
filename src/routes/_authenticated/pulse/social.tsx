@@ -36,7 +36,7 @@ function Social() {
       return { k, reach: g.length ? g.reduce((a, p) => a + p.reach, 0) / g.length : 0, eng: g.length ? g.reduce((a, p) => a + engOf(p), 0) / g.length : 0 };
     });
   const byFormat = group((p) => p.format, formats);
-  const byDay = group((p) => DAYS[new Date(p.published_at).getDay()], DAYS);
+  const byDay = group((p) => DAYS[new Date(p.published_at).getDay()] ?? "", DAYS);
   const byHour = group((p) => String(new Date(p.published_at).getHours()), Array.from({ length: 24 }, (_, i) => String(i)));
   const reach = sum(cur, "reach", soc), reachP = sum(prev, "reach", soc);
 

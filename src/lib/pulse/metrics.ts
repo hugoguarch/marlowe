@@ -62,7 +62,7 @@ export function latest(rows: SeriesRow[], m: string, chs: readonly string[], pic
   let total = 0;
   for (const ch of chs) {
     const f = rows.filter((r) => r.m === m && r.ch === ch).sort((a, b) => a.b.localeCompare(b.b));
-    if (f.length) total += pick === "last" ? f[f.length - 1].v : f[0].v;
+    if (f.length) total += pick === "last" ? f[f.length - 1]!.v : f[0]!.v;
   }
   return total;
 }

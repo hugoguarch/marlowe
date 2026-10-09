@@ -44,7 +44,7 @@ export function PulseProvider({ userId, children }: { userId: string; children: 
     if (!clients.length || clientId) return;
     const saved = localStorage.getItem(key);
     const ok = saved && (saved === "all" ? q.data?.role === "admin" : clients.some((c) => c.id === saved));
-    setClientIdState(ok ? saved! : clients[0].id);
+    setClientIdState(ok ? saved! : clients[0]!.id);
   }, [q.data, clientId, key]);
 
   const client = q.data?.clients.find((c) => c.id === clientId) ?? null;

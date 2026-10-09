@@ -38,7 +38,7 @@ export function Panel({
   className = "",
 }: {
   title: string;
-  conns?: Conn[];
+  conns?: Conn[] | undefined;
   action?: ReactNode;
   children: ReactNode;
   className?: string;
@@ -57,7 +57,7 @@ export function Panel({
   );
 }
 
-export function Delta({ cur, prev, invert = false }: { cur: number; prev: number; invert?: boolean }) {
+export function Delta({ cur, prev, invert = false }: { cur: number; prev: number; invert?: boolean | undefined }) {
   const c = change(cur, prev);
   if (c === null) return <span className="text-[11px] text-p-muted">no prior data</span>;
   const good = invert ? c < 0 : c >= 0;
@@ -84,7 +84,7 @@ export function Kpi({
   kind?: "int" | "pct" | "dec";
   points?: number[];
   to?: "/pulse/social" | "/pulse/google-business" | "/pulse/website" | "/pulse/ai-search";
-  invert?: boolean;
+  invert?: boolean | undefined;
 }) {
   const body = (
     <div className="h-full rounded-2xl border border-p-line bg-p-card p-4 transition-colors hover:border-p-cerulean/50">
@@ -117,7 +117,7 @@ export function Empty({ title, body, action }: { title: string; body: string; ac
   );
 }
 
-export function PageTitle({ title, sub }: { title: string; sub?: string }) {
+export function PageTitle({ title, sub }: { title: string; sub?: string | undefined }) {
   return (
     <div className="mb-6">
       <h1 className="text-3xl font-light tracking-tight text-p-text">{title}</h1>

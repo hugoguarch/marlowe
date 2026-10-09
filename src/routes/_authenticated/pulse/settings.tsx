@@ -74,7 +74,7 @@ function ClientEditor({ client }: { client: PulseClient }) {
       .from("pulse_clients")
       .update({ name, sector, seed_terms: terms.split(",").map((t) => t.trim()).filter(Boolean), goals: g })
       .eq("id", client.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Client saved");
     refetchSession();
   }
@@ -99,14 +99,14 @@ function Clients() {
   async function add() {
     if (!name.trim()) return;
     const { error } = await supabase.from("pulse_clients").insert({ name: name.trim(), sector: sector.trim() || null });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setName(""); setSector("");
     toast.success("Client added");
     refetchSession();
   }
   async function toggle(c: PulseClient) {
     const { error } = await supabase.from("pulse_clients").update({ status: c.status === "archived" ? "active" : "archived" }).eq("id", c.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     refetchSession();
   }
   return (
