@@ -74,6 +74,8 @@ export const saveMetaConnection = createServerFn({ method: "POST" })
     if (empty) {
       const del = await context.supabase.from("client_meta_connections").delete().eq("client_id", data.clientId);
       if (del.error) throw new Error(del.error.message);
+      const { syncMetaClient } = await import("./meta-sync.server");
+      await syncMetaClient(data.clientId);
       return { ok: true };
     }
     const up = await context.supabase.from("client_meta_connections").upsert({
@@ -81,7 +83,19 @@ export const saveMetaConnection = createServerFn({ method: "POST" })
       ig_user_id: data.igUserId, ig_username: data.igUsername, ad_account_ids: data.adAccountIds, updated_at: new Date().toISOString(),
     });
     if (up.error) throw new Error(up.error.message);
-    return { ok: true };
+    const { syncMetaClient } = await import("./meta-sync.server");
+    return { ok: true, sync: await syncMetaClient(data.clientId) };
+  });
+
+export const syncMetaNow = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ clientId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    if (!(await isAdmin(context))) throw new Error("Only Pulse admins can manage data sources");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("meta_cache").delete().eq("client_id", data.clientId);
+    const { syncMetaClient } = await import("./meta-sync.server");
+    return syncMetaClient(data.clientId);
   });
 
 const rangeIn = z.object({
