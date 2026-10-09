@@ -31,7 +31,7 @@ export function SourceLine({ conns }: { conns: Conn[] }) {
 export function Panel({
   title,
   sub,
-  conns = [],
+  conns,
   action,
   children,
   className = "",
@@ -51,11 +51,11 @@ export function Panel({
         <div className="space-y-1">
           <h2 className="text-base font-medium tracking-tight text-p-text">{title}</h2>
           {sub && <p className="text-xs text-p-muted">{sub}</p>}
-          <SourceLine conns={conns} />
+          <SourceLine conns={conns ?? []} />
         </div>
         {action}
       </div>
-      <div className="p-5">{(setup ?? conns.length === 0) && setup !== false && (setup || arguments[0].conns !== undefined) ? <SetupConnection /> : children}</div>
+      <div className="p-5">{(setup ?? (conns !== undefined && conns.length === 0)) ? <SetupConnection /> : children}</div>
     </section>
   );
 }
