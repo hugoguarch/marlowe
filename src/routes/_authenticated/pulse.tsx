@@ -97,7 +97,7 @@ function Shell() {
 }
 
 function TopBar({ onMenu }: { onMenu: () => void }) {
-  const { channel, setChannel, connected, clientId, range, setRange, dark, setDark } = usePulse();
+  const { channel, setChannel, connected, clientId, range, setRange, dark, setDark, sites, site, setSite } = usePulse();
   const [custom, setCustom] = useState({ from: range.from, to: range.to });
   const ranges: RangeId[] = ["7d", "28d", "90d", "12m", "custom"];
   const chans = CHANNELS.filter((c) => c.id === "all" || clientId === "all" || connected.includes(c.id));
@@ -120,6 +120,19 @@ function TopBar({ onMenu }: { onMenu: () => void }) {
             </option>
           ))}
         </select>
+        {clientId !== "all" && sites.length > 1 && (
+          <select
+            value={site ?? ""}
+            onChange={(e) => setSite(e.target.value || null)}
+            className="h-9 max-w-[14rem] rounded-lg border border-p-line bg-p-card px-3 text-sm text-p-text"
+            aria-label="Website"
+          >
+            <option value="">All websites ({sites.length})</option>
+            {sites.map((s) => (
+              <option key={s} value={s}>{s.replace(/^sc-domain:/, "").replace(/^https?:\/\//, "").replace(/\/$/, "")}</option>
+            ))}
+          </select>
+        )}
         <div className="flex rounded-lg border border-p-line bg-p-card p-0.5">
           {ranges.map((r) => (
             <button
