@@ -92,3 +92,30 @@ export function scopeChannels(channel: string, connected: string[], group: reado
   const avail = group.filter((c) => connected.includes(c));
   return channel === "all" ? avail : avail.filter((c) => c === channel);
 }
+
+/**
+ * Current period vs the equal-length prior period, aligned bucket-by-bucket
+ * (day 1 vs day 1 of the previous period) so both lines share one x-axis.
+ */
+export function compareSeries(
+  cur: SeriesRow[],
+  prev: SeriesRow[],
+  m: string,
+  chs: readonly string[],
+  mode: "sum" | "avg" = "sum",
+) {
+  const val = (rows: SeriesRow[], b: string) => {
+    const f = rows.filter((r) => r.b === b && r.m === m && chs.includes(r.ch));
+    if (!f.length) return null;
+    const s = f.reduce((a, r) => a + r.v, 0);
+    return mode === "avg" ? s / f.length : s;
+  };
+  const cb = buckets(cur), pb = buckets(prev);
+  const offset = Math.max(0, pb.length - cb.length);
+  return cb.map((b, i) => ({
+    d: b.slice(5),
+    cur: val(cur, b),
+    prior: pb[i + offset] ? val(prev, pb[i + offset]!) : null,
+    priorDate: pb[i + offset]?.slice(5) ?? "",
+  }));
+}

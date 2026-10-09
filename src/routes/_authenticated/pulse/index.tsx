@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { usePulse, usePulseData, type PulseClient } from "@/components/pulse/context";
-import { Delta, Empty, Kpi, Loading, PageTitle, Panel, SampleBadge, tooltipStyle } from "@/components/pulse/ui";
+import { CompareChart, Delta, Empty, Kpi, Loading, PageTitle, Panel, SampleBadge, tooltipStyle } from "@/components/pulse/ui";
 import {
-  avg, buckets, CHANNEL_COLORS, channelLabel, fmt, latest, scopeChannels, SOCIAL, spark, split, sum,
+  avg, buckets, compareSeries, CHANNEL_COLORS, channelLabel, fmt, latest, scopeChannels, SOCIAL, spark, split, sum,
 } from "@/lib/pulse/metrics";
 
 export const Route = createFileRoute("/_authenticated/pulse/")({
@@ -50,10 +50,7 @@ function ClientOverview({ client }: { client: PulseClient }) {
     for (const ch of soc) row[ch] = cur.filter((r) => r.b === d && r.ch === ch && r.m === "reach").reduce((a, r) => a + r.v, 0);
     return row;
   });
-  const folSeries = b.map((d) => ({
-    d: d.slice(5),
-    followers: cur.filter((r) => r.b === d && r.m === "followers" && soc.includes(r.ch as (typeof SOCIAL)[number])).reduce((a, r) => a + r.v, 0),
-  }));
+
   const goalTotal = soc.reduce((a, ch) => a + (client.goals[`${ch}_followers`] ?? 0), 0);
 
   return (
@@ -95,19 +92,12 @@ function ClientOverview({ client }: { client: PulseClient }) {
             <Empty title="No social channel selected" body="Pick All channels or a social channel to see reach." />
           )}
         </Panel>
-        <Panel title="Follower growth" conns={conns([...soc])}>
-          <div className="h-64">
-            <ResponsiveContainer>
-              <LineChart data={folSeries}>
-                <CartesianGrid stroke="var(--p-line)" vertical={false} />
-                <XAxis dataKey="d" tick={{ fontSize: 11, fill: "var(--p-muted)" }} tickLine={false} axisLine={false} minTickGap={24} />
-                <YAxis tick={{ fontSize: 11, fill: "var(--p-muted)" }} tickLine={false} axisLine={false} width={44} tickFormatter={(v) => fmt(v)} domain={["auto", "auto"]} />
-                <Tooltip {...tooltipStyle} />
-                <Line dataKey="followers" stroke="var(--p-cerulean)" strokeWidth={2} dot={false} />
-                {goalTotal > 0 && <ReferenceLine y={goalTotal} stroke="var(--p-sun)" strokeDasharray="4 4" label={{ value: "Target", fontSize: 11, fill: "var(--p-muted)" }} />}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+        <Panel title="Follower growth" sub="Solid: this period · faded: the period before" conns={conns([...soc])}>
+          <CompareChart data={compareSeries(cur, prev, "followers", soc)} label="Followers" />
+          {goalTotal > 0 && <p className="mt-2 text-[11px] text-p-muted">Combined target: {fmt(goalTotal)}</p>}
+        </Panel>
+        <Panel title="Total reach" sub="Every selected social channel, vs the period before" conns={conns([...soc])} className="xl:col-span-2">
+          <CompareChart data={compareSeries(cur, prev, "reach", soc)} label="Reach" />
         </Panel>
       </div>
 
