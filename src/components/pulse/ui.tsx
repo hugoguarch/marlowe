@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Line, LineChart, ResponsiveContainer } from "recharts";
+import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { change, fmt } from "@/lib/pulse/metrics";
 import type { PulseClient } from "./context";
@@ -32,27 +32,30 @@ export function SourceLine({ conns }: { conns: Conn[] }) {
 
 export function Panel({
   title,
+  sub,
   conns = [],
   action,
   children,
   className = "",
 }: {
   title: string;
+  sub?: string | undefined;
   conns?: Conn[] | undefined;
   action?: ReactNode;
   children: ReactNode;
   className?: string;
 }) {
   return (
-    <section className={`rounded-2xl border border-p-line bg-p-card p-5 ${className}`}>
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
+    <section className={`overflow-hidden rounded-2xl border border-p-line bg-p-card shadow-[0_1px_2px_rgba(0,28,38,0.04)] ${className}`}>
+      <div className="flex flex-wrap items-start justify-between gap-2 border-b border-p-line px-5 py-4">
         <div className="space-y-1">
-          <h2 className="text-sm font-medium text-p-text">{title}</h2>
+          <h2 className="text-base font-medium tracking-tight text-p-text">{title}</h2>
+          {sub && <p className="text-xs text-p-muted">{sub}</p>}
           <SourceLine conns={conns} />
         </div>
         {action}
       </div>
-      {children}
+      <div className="p-5">{children}</div>
     </section>
   );
 }
@@ -62,9 +65,8 @@ export function Delta({ cur, prev, invert = false }: { cur: number; prev: number
   if (c === null) return <span className="text-[11px] text-p-muted">no prior data</span>;
   const good = invert ? c < 0 : c >= 0;
   return (
-    <span className={`text-[11px] font-medium ${good ? "text-p-up" : "text-p-down"}`}>
-      {c >= 0 ? "+" : ""}
-      {(c * 100).toFixed(1)}% vs prior
+    <span className={`inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[11px] font-medium ${good ? "bg-p-up/10 text-p-up" : "bg-p-down/10 text-p-down"}`}>
+      {c >= 0 ? "↑" : "↓"} {Math.abs(c * 100).toFixed(1)}%
     </span>
   );
 }
@@ -87,13 +89,11 @@ export function Kpi({
   invert?: boolean | undefined;
 }) {
   const body = (
-    <div className="h-full rounded-2xl border border-p-line bg-p-card p-4 transition-colors hover:border-p-cerulean/50">
-      <div className="text-[11px] uppercase tracking-wider text-p-muted">{label}</div>
-      <div className="mt-2 text-2xl font-light tracking-tight text-p-text">{fmt(value, kind)}</div>
-      <div className="mt-1 flex items-end justify-between gap-2">
-        <Delta cur={value} prev={prev} invert={invert} />
+    <div className="flex h-full flex-col rounded-2xl border border-p-line bg-p-card shadow-[0_1px_2px_rgba(0,28,38,0.04)] transition-all hover:-translate-y-0.5 hover:border-p-cerulean/40 hover:shadow-md">
+      <div className="flex items-center justify-between border-b border-p-line px-4 py-3">
+        <span className="text-xs text-p-muted">{label}</span>
         {points.length > 1 && (
-          <div className="h-7 w-20">
+          <div className="h-5 w-16">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={points.map((v, i) => ({ i, v }))}>
                 <Line dataKey="v" stroke="var(--p-cerulean)" strokeWidth={1.5} dot={false} isAnimationActive={false} />
@@ -101,6 +101,13 @@ export function Kpi({
             </ResponsiveContainer>
           </div>
         )}
+      </div>
+      <div className="flex flex-1 flex-col justify-end px-4 pb-4 pt-5">
+        <div className="text-3xl font-light tracking-tight text-p-text tabular-nums">{fmt(value, kind)}</div>
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <span className="truncate text-[11px] text-p-muted">{fmt(prev, kind)} last period</span>
+          <Delta cur={value} prev={prev} invert={invert} />
+        </div>
       </div>
     </div>
   );
@@ -120,7 +127,7 @@ export function Empty({ title, body, action }: { title: string; body: string; ac
 export function PageTitle({ title, sub }: { title: string; sub?: string | undefined }) {
   return (
     <div className="mb-6">
-      <h1 className="text-3xl font-light tracking-tight text-p-text">{title}</h1>
+      <h1 className="text-3xl font-medium tracking-tight text-p-text md:text-4xl">{title}</h1>
       {sub && <p className="mt-1 text-sm text-p-muted">{sub}</p>}
     </div>
   );
@@ -138,4 +145,56 @@ export const tooltipStyle = {
 
 export function Loading() {
   return <div className="h-40 animate-pulse rounded-2xl bg-p-soft/60" />;
+}
+
+type ComparePoint = { d: string; cur: number | null; prior: number | null; priorDate: string };
+
+/** Big chart: current period solid, the prior period as a lighter ghost behind it. */
+export function CompareChart({
+  data,
+  label,
+  kind = "int",
+  height = 256,
+}: {
+  data: ComparePoint[];
+  label: string;
+  kind?: "int" | "pct" | "dec";
+  height?: number;
+}) {
+  const hasPrior = data.some((p) => p.prior !== null);
+  return (
+    <div>
+      <div className="mb-3 flex items-center gap-4 text-[11px] text-p-muted">
+        <span className="inline-flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-p-cerulean" />This period</span>
+        {hasPrior && <span className="inline-flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-p-cerulean/30" />Previous period</span>}
+      </div>
+      <div style={{ height }}>
+        <ResponsiveContainer>
+          <AreaChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+            <defs>
+              <linearGradient id="pulseCur" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--p-cerulean)" stopOpacity={0.22} />
+                <stop offset="100%" stopColor="var(--p-cerulean)" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid stroke="var(--p-line)" vertical={false} />
+            <XAxis dataKey="d" tick={{ fontSize: 11, fill: "var(--p-muted)" }} tickLine={false} axisLine={false} minTickGap={24} />
+            <YAxis tick={{ fontSize: 11, fill: "var(--p-muted)" }} tickLine={false} axisLine={false} width={44} tickFormatter={(v) => fmt(v, kind)} domain={["auto", "auto"]} />
+            <Tooltip
+              {...tooltipStyle}
+              formatter={(v: number, n: string) => [v === null ? "—" : fmt(v, kind), n === "prior" ? "Previous period" : label]}
+              labelFormatter={(l, p) => {
+                const pd = (p?.[0]?.payload as ComparePoint | undefined)?.priorDate;
+                return pd ? `${l}  (vs ${pd})` : String(l);
+              }}
+            />
+            {hasPrior && (
+              <Area dataKey="prior" stroke="var(--p-cerulean)" strokeOpacity={0.35} strokeWidth={1.5} strokeDasharray="4 3" fill="var(--p-cerulean)" fillOpacity={0.06} dot={false} connectNulls />
+            )}
+            <Area dataKey="cur" stroke="var(--p-cerulean)" strokeWidth={2.25} fill="url(#pulseCur)" dot={false} connectNulls activeDot={{ r: 4, fill: "var(--p-sun)", stroke: "var(--p-card)", strokeWidth: 2 }} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
 }
