@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { usePulse, type PulseClient } from "@/components/pulse/context";
 import { Empty, PageTitle, Panel, SampleBadge } from "@/components/pulse/ui";
 import { supabase } from "@/integrations/supabase/client";
+import { assignGscSite, listGscSites, resyncGsc } from "@/lib/pulse/gsc.functions";
 import { channelLabel } from "@/lib/pulse/metrics";
 
 export const Route = createFileRoute("/_authenticated/pulse/settings")({
@@ -18,6 +21,7 @@ function Settings() {
   return (
     <div className="space-y-6">
       <PageTitle title="Settings / Data sources" sub={`Your role: ${session?.role?.replace("_", " ") ?? "…"}`} />
+      {client && clientId !== "all" && admin && <SearchConsole key={`gsc-${client.id}`} client={client} />}
       {client && clientId !== "all" ? <Connections client={client} /> : <Empty title="Choose a client" body="Connections are managed per client." />}
       {client && clientId !== "all" && admin && <ClientEditor key={client.id} client={client} />}
       {admin && <Clients />}
@@ -38,7 +42,7 @@ function Connections({ client }: { client: PulseClient }) {
               <tr key={c.provider} className="border-t border-p-line">
                 <td className="py-2.5">{channelLabel(c.provider)}</td>
                 <td className="text-p-muted">{c.account_ref}</td>
-                <td>{c.status === "sample" ? <SampleBadge /> : c.status}</td>
+                <td>{c.status === "sample" ? <SampleBadge /> : <span className="rounded-full bg-p-up/10 px-2 py-0.5 text-[11px] font-medium text-p-up">{c.status}</span>}</td>
                 <td className="text-xs">{c.last_sync_at ? new Date(c.last_sync_at).toLocaleString("en-GB") : "never"}</td>
                 <td className="text-xs">{c.token_expires_at ? c.token_expires_at.slice(0, 10) : "—"}</td>
                 <td className="text-right">
@@ -51,7 +55,7 @@ function Connections({ client }: { client: PulseClient }) {
           </tbody>
         </table>
       </div>
-      <p className="mt-3 text-[11px] text-p-muted">Live OAuth for Google (GA4, Search Console, Business Profile) lands in stage 2; Meta, LinkedIn, TikTok and YouTube as each API approval lands.</p>
+      <p className="mt-3 text-[11px] text-p-muted">Search Console is live above. Google Analytics and Business Profile need the agency Google sign-in; Meta, LinkedIn, TikTok and YouTube as each API approval lands.</p>
     </Panel>
   );
 }
@@ -124,6 +128,51 @@ function Clients() {
           </li>
         ))}
       </ul>
+    </Panel>
+  );
+}
+
+function SearchConsole({ client }: { client: PulseClient }) {
+  const { refetchSession } = usePulse();
+  const list = useServerFn(listGscSites);
+  const assign = useServerFn(assignGscSite);
+  const resync = useServerFn(resyncGsc);
+  const sites = useQuery({ queryKey: ["pulse", "gscSites"], queryFn: () => list(), staleTime: 10 * 60_000 });
+  const conn = client.connections.find((c) => c.provider === "search_console");
+  const live = conn?.status === "live";
+  const [pick, setPick] = useState(live ? conn?.account_ref ?? "" : "");
+  const [busy, setBusy] = useState(false);
+  async function run(fn: () => Promise<{ days: number }>) {
+    setBusy(true);
+    try {
+      const r = await fn();
+      toast.success(`Search Console synced: ${r.days} days of live data`);
+      refetchSession();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Sync failed");
+    } finally { setBusy(false); }
+  }
+  return (
+    <Panel title="Google Search Console" sub="Pick the property that belongs to this client. We pull 16 months so year-on-year comparisons work.">
+      {sites.isLoading ? <p className="text-sm text-p-muted">Loading your properties…</p> : sites.error ? (
+        <Empty title="Could not list properties" body={sites.error.message} />
+      ) : !sites.data?.sites.length ? (
+        <Empty title="No verified properties" body="The connected Google account has no verified Search Console properties yet." />
+      ) : (
+        <div className="flex flex-wrap items-center gap-2">
+          <select value={pick} onChange={(e) => setPick(e.target.value)} className="h-9 min-w-[16rem] rounded-lg border border-p-line bg-p-bg px-3 text-sm text-p-text">
+            <option value="">Choose a property…</option>
+            {sites.data.sites.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <button disabled={!pick || busy} onClick={() => run(() => assign({ data: { clientId: client.id, siteUrl: pick } }))} className="h-9 rounded-lg bg-p-cerulean px-4 text-sm text-white disabled:opacity-50">
+            {busy ? "Syncing…" : live && pick === conn?.account_ref ? "Save" : "Connect live data"}
+          </button>
+          {live && (
+            <button disabled={busy} onClick={() => run(() => resync({ data: { clientId: client.id } }))} className="h-9 rounded-lg border border-p-line px-4 text-sm text-p-text disabled:opacity-50">Sync now</button>
+          )}
+          {live && <span className="text-[11px] text-p-muted">Live · last sync {conn?.last_sync_at ? new Date(conn.last_sync_at).toLocaleString("en-GB") : "never"}</span>}
+        </div>
+      )}
     </Panel>
   );
 }

@@ -50,10 +50,7 @@ function ClientOverview({ client }: { client: PulseClient }) {
     for (const ch of soc) row[ch] = cur.filter((r) => r.b === d && r.ch === ch && r.m === "reach").reduce((a, r) => a + r.v, 0);
     return row;
   });
-  const _folSeries = b.map((d) => ({
-    d: d.slice(5),
-    followers: cur.filter((r) => r.b === d && r.m === "followers" && soc.includes(r.ch as (typeof SOCIAL)[number])).reduce((a, r) => a + r.v, 0),
-  }));
+
   const goalTotal = soc.reduce((a, ch) => a + (client.goals[`${ch}_followers`] ?? 0), 0);
 
   return (
