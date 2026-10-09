@@ -117,7 +117,7 @@ function Trend({ title, rows, keys }: { title: string; rows: Record<string, numb
 function merge(series: Record<string, { date: string; value: number }[]>) {
   const m = new Map<string, Record<string, number | string>>();
   for (const [k, pts] of Object.entries(series)) for (const p of pts) m.set(p.date, { ...(m.get(p.date) ?? { date: p.date }), [k]: p.value });
-  return [...m.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  return [...m.values()].sort((a, b) => String(a["date"]).localeCompare(String(b["date"])));
 }
 const total = (s: { value: number }[] | undefined) => (s ?? []).reduce((a, p) => a + p.value, 0);
 
@@ -125,7 +125,7 @@ function Skipped({ list }: { list: string[] }) {
   return list.length ? <p className="text-[11px] text-p-muted">Meta didn't return: {list.join(", ")}</p> : null;
 }
 
-function SortTable<T extends Record<string, any>>({ rows, cols, initial }: { rows: T[]; cols: { k: keyof T & string; label: string; money?: boolean }[]; initial: string }) {
+function SortTable({ rows, cols, initial }: { rows: any[]; cols: { k: string; label: string; money?: boolean }[]; initial: string }) {
   const [sort, setSort] = useState(initial);
   const sorted = [...rows].sort((a, b) => Number(b[sort] ?? 0) - Number(a[sort] ?? 0));
   if (!rows.length) return <Empty title="Nothing in this period" body="No items were published or ran in the selected dates." />;

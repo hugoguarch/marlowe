@@ -58,7 +58,7 @@ async function all(path: string, params: Record<string, string>, accessToken?: s
 }
 
 /** Insights with per-metric fallback: invalid metrics are dropped and reported, the rest still returned. */
-async function insights(path: string, metrics: string[], params: Record<string, string>, accessToken?: string) {
+async function insights(path: string, metrics: string[], params: Record<string, string>, accessToken?: string): Promise<{ data: any[]; skipped: string[] }> {
   try {
     const j = await call(path, { ...params, metric: metrics.join(",") }, accessToken);
     return { data: (j.data ?? []) as any[], skipped: [] as string[] };
@@ -70,7 +70,7 @@ async function insights(path: string, metrics: string[], params: Record<string, 
       }
       throw e;
     }
-    const parts = await Promise.all(metrics.map((m) => insights(path, [m], params, accessToken)));
+    const parts: { data: any[]; skipped: string[] }[] = await Promise.all(metrics.map((m) => insights(path, [m], params, accessToken)));
     return { data: parts.flatMap((p) => p.data), skipped: parts.flatMap((p) => p.skipped) };
   }
 }
@@ -133,10 +133,10 @@ export async function instagram(igId: string, from: string, to: string) {
   const inRange = ((media.data ?? []) as any[]).filter((m) => m.timestamp.slice(0, 10) >= from && m.timestamp.slice(0, 10) <= to).slice(0, 25);
   const skipped = new Set([...totals.skipped, ...growth.skipped]);
   const posts = await Promise.all(inRange.map(async (m) => {
-    let vals: Record<string, number> = {};
+    let vals: any = {};
     try {
       const r = await insights(`/${m.id}/insights`, IG_MEDIA_METRICS, {});
-      r.skipped.forEach((s) => skipped.add(s));
+      r.skipped.forEach((s: string) => skipped.add(s));
       vals = Object.fromEntries(r.data.map((d: any) => [d.name, d.values?.[0]?.value ?? 0]));
     } catch { /* some media types have no insights */ }
     return {
