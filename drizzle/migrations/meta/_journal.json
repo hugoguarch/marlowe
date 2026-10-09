@@ -36,6 +36,13 @@
       "when": 1791540839158,
       "tag": "0004_pulse_core_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791540874935,
+      "tag": "0005_pulse_series_function",
+      "breakpoints": true
     }
   ]
 }

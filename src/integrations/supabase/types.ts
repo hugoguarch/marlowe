@@ -782,6 +782,10 @@ export type Database = {
       pulse_claim_admin: { Args: never; Returns: string }
       pulse_is_admin: { Args: { _uid: string }; Returns: boolean }
       pulse_my_role: { Args: never; Returns: string }
+      pulse_series: {
+        Args: { _bucket?: string; _client: string; _from: string; _to: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
