@@ -7,7 +7,8 @@ import { toast } from "sonner";
 import { usePulse, type PulseClient } from "@/components/pulse/context";
 import { Empty, PageTitle, Panel } from "@/components/pulse/ui";
 import { supabase } from "@/integrations/supabase/client";
-import { addGscSite, listGscSites, removeGscSite, resyncGsc } from "@/lib/pulse/gsc.functions";
+import { addGscSite, listGscSites, removeGscSite, resyncGsc, resyncGscSite } from "@/lib/pulse/gsc.functions";
+import { metaDiscover, saveMetaConnection } from "@/lib/pulse/meta.functions";
 import { channelLabel } from "@/lib/pulse/metrics";
 
 export const Route = createFileRoute("/_authenticated/pulse/settings")({
@@ -23,6 +24,7 @@ function Settings() {
       <PageTitle title="Settings / Data sources" sub={`Your role: ${session?.role?.replace("_", " ") ?? "…"}`} />
       {client && clientId !== "all" && admin && <SearchConsole key={`gsc-${client.id}`} client={client} />}
       {client && clientId !== "all" ? <Connections client={client} /> : <Empty title="Choose a client" body="Connections are managed per client." />}
+      {client && clientId !== "all" && admin && <MetaConnections key={`meta-${client.id}`} client={client} />}
       {client && clientId !== "all" && admin && <ClientEditor key={client.id} client={client} />}
       {admin && <Clients />}
     </div>
@@ -33,16 +35,42 @@ const PROVIDERS: { id: string; needs: string }[] = [
   { id: "search_console", needs: "" },
   { id: "website", needs: "Needs a Google sign-in app for Analytics" },
   { id: "gbp", needs: "Needs Google Business Profile API approval" },
-  { id: "instagram", needs: "Needs a Meta developer app (Instagram + Facebook)" },
-  { id: "facebook", needs: "Needs a Meta developer app (Instagram + Facebook)" },
+  { id: "instagram", needs: "" },
+  { id: "facebook", needs: "" },
+  { id: "meta_ads", needs: "" },
   { id: "linkedin", needs: "Needs LinkedIn Community Management approval" },
   { id: "tiktok", needs: "Needs a TikTok for Business app" },
   { id: "youtube", needs: "Needs a Google sign-in app for YouTube" },
 ];
 
+const STALE_MS = 36 * 3600_000;
+type Conn = PulseClient["connections"][number];
+
+function health(c: Conn) {
+  if (c.status === "error") return { label: "Needs attention", cls: "text-p-down" };
+  if (!c.last_sync_at) return { label: "Never synced", cls: "text-p-down" };
+  if (Date.now() - new Date(c.last_sync_at).getTime() > STALE_MS) return { label: "Stale", cls: "text-p-sun" };
+  return { label: "Healthy", cls: "text-p-up" };
+}
+
 function Connections({ client }: { client: PulseClient }) {
+  const { session, refetchSession } = usePulse();
+  const admin = session?.role === "admin";
+  const resync = useServerFn(resyncGscSite);
+  const remove = useServerFn(removeGscSite);
+  const [busy, setBusy] = useState<string | null>(null);
+  async function run(id: string, fn: () => Promise<unknown>, ok: string) {
+    setBusy(id);
+    try { await fn(); toast.success(ok); } catch (e) { toast.error(e instanceof Error ? e.message : "Something went wrong"); }
+    finally { setBusy(null); refetchSession(); }
+  }
+  const meta = client.meta;
+  const metaRow = (provider: string) =>
+    provider === "facebook" ? (meta?.fb_page_id ? meta.fb_page_name ?? meta.fb_page_id : null)
+    : provider === "instagram" ? (meta?.ig_user_id ? `@${meta.ig_username ?? meta.ig_user_id}` : null)
+    : provider === "meta_ads" ? (meta?.ad_account_ids?.length ? meta.ad_account_ids.join(", ") : null) : null;
   return (
-    <Panel title={`Connected accounts — ${client.name}`} sub="Each client links its own account per channel." setup={false}>
+    <Panel title={`Connected accounts — ${client.name}`} sub="Status, last sync and errors for every source this client uses." setup={false}>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="text-left text-[11px] uppercase tracking-wider text-p-muted">
@@ -51,26 +79,130 @@ function Connections({ client }: { client: PulseClient }) {
           <tbody>
             {PROVIDERS.map((p) => {
               const cs = client.connections.filter((c) => c.provider === p.id);
-              return (
-                <tr key={p.id} className="border-t border-p-line align-top">
-                  <td className="py-2.5">{channelLabel(p.id)}</td>
-                  <td className="text-p-muted">{cs.length ? cs.map((c) => <div key={c.account_ref}>{c.account_ref}</div>) : "N/A"}</td>
-                  <td>{cs.length ? cs.map((c) => <div key={c.account_ref} className={c.status === "error" ? "text-p-down" : "text-p-up"}>{c.status}</div>) : <span className="text-p-muted">not connected</span>}</td>
-                  <td className="text-xs">{cs.length ? cs.map((c) => <div key={c.account_ref}>{c.last_sync_at ? new Date(c.last_sync_at).toLocaleString("en-GB") : "never"}</div>) : "—"}</td>
-                  <td className="text-right">
-                    {p.needs ? (
-                      <button disabled className="rounded-lg border border-p-line px-3 py-1 text-xs text-p-muted" title={p.needs}>Connect account</button>
-                    ) : (
-                      <span className="text-[11px] text-p-muted">Managed above</span>
-                    )}
-                  </td>
-                </tr>
-              );
+              const m = metaRow(p.id);
+              if (m !== null || p.id === "facebook" || p.id === "instagram" || p.id === "meta_ads") {
+                return (
+                  <tr key={p.id} className="border-t border-p-line align-top">
+                    <td className="py-2.5">{p.id === "meta_ads" ? "Meta Ads" : channelLabel(p.id)}</td>
+                    <td className="text-p-muted">{m ?? "N/A"}</td>
+                    <td>{m ? <span className="text-p-up">Linked · live from Meta</span> : <span className="text-p-muted">not connected</span>}</td>
+                    <td className="text-xs">{m ? "on view (cached 1h)" : "—"}</td>
+                    <td className="text-right text-[11px] text-p-muted">Managed in Meta below</td>
+                  </tr>
+                );
+              }
+              if (!cs.length) {
+                return (
+                  <tr key={p.id} className="border-t border-p-line align-top">
+                    <td className="py-2.5">{channelLabel(p.id)}</td>
+                    <td className="text-p-muted">N/A</td>
+                    <td className="text-p-muted">not connected</td>
+                    <td className="text-xs">—</td>
+                    <td className="text-right">
+                      {p.needs ? <button disabled className="rounded-lg border border-p-line px-3 py-1 text-xs text-p-muted" title={p.needs}>Connect account</button> : <span className="text-[11px] text-p-muted">Add a website above</span>}
+                    </td>
+                  </tr>
+                );
+              }
+              return cs.map((c, i) => {
+                const h = health(c);
+                const id = `${p.id}:${c.account_ref}`;
+                return (
+                  <tr key={id} className="border-t border-p-line align-top">
+                    <td className="py-2.5">{i === 0 ? channelLabel(p.id) : ""}</td>
+                    <td className="text-p-muted">{c.account_ref}</td>
+                    <td>
+                      <div className={h.cls}>{h.label}</div>
+                      {c.last_error && <div className="max-w-xs text-[11px] text-p-down">{c.last_error}</div>}
+                    </td>
+                    <td className="text-xs">
+                      <div>{c.last_sync_at ? new Date(c.last_sync_at).toLocaleString("en-GB") : "never"}</div>
+                      {c.last_attempt_at && c.last_attempt_at !== c.last_sync_at && <div className="text-[11px] text-p-muted">last tried {new Date(c.last_attempt_at).toLocaleString("en-GB")}</div>}
+                    </td>
+                    <td className="whitespace-nowrap text-right">
+                      {admin && p.id === "search_console" && (
+                        <span className="flex justify-end gap-3 text-xs">
+                          <button disabled={!!busy} onClick={() => run(id, () => resync({ data: { clientId: client.id, siteUrl: c.account_ref! } }), "Reconnected and synced")} className="text-p-cerulean disabled:opacity-50">{busy === id ? "Working…" : "Reconnect"}</button>
+                          <button disabled={!!busy} onClick={() => { if (confirm(`Disconnect ${c.account_ref}? Its stored data will be removed.`)) void run(id, () => remove({ data: { clientId: client.id, siteUrl: c.account_ref! } }), "Disconnected"); }} className="text-p-down disabled:opacity-50">Disconnect</button>
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              });
             })}
           </tbody>
         </table>
       </div>
-      <p className="mt-3 text-[11px] text-p-muted">Data refreshes automatically every night. Greyed buttons switch on as each platform's developer app is approved; hover them to see what is needed.</p>
+      <p className="mt-3 text-[11px] text-p-muted">Data refreshes automatically every night. "Stale" means no successful sync in the last 36 hours. Greyed buttons switch on as each platform's developer app is approved.</p>
+    </Panel>
+  );
+}
+
+function MetaConnections({ client }: { client: PulseClient }) {
+  const { refetchSession } = usePulse();
+  const discover = useServerFn(metaDiscover);
+  const save = useServerFn(saveMetaConnection);
+  const assets = useQuery({ queryKey: ["pulse", "metaAssets"], queryFn: () => discover(), staleTime: 10 * 60_000 });
+  const cur = client.meta;
+  const [page, setPage] = useState(cur?.fb_page_id ?? "");
+  const [ig, setIg] = useState(cur?.ig_user_id ?? "");
+  const [adIds, setAdIds] = useState<string[]>(cur?.ad_account_ids ?? []);
+  const [busy, setBusy] = useState(false);
+  const res = assets.data;
+  const pages = res?.ok ? res.data.pages : [];
+  const igs = pages.filter((p) => p.ig).map((p) => p.ig!);
+  const adAccounts = res?.ok ? res.data.adAccounts : [];
+  async function submit(clear = false) {
+    setBusy(true);
+    try {
+      const pg = pages.find((p) => p.id === page);
+      const i = igs.find((x) => x.id === ig);
+      await save({ data: clear
+        ? { clientId: client.id, fbPageId: null, fbPageName: null, igUserId: null, igUsername: null, adAccountIds: [] }
+        : { clientId: client.id, fbPageId: page || null, fbPageName: pg?.name ?? cur?.fb_page_name ?? null, igUserId: ig || null, igUsername: i?.username ?? cur?.ig_username ?? null, adAccountIds: adIds } });
+      if (clear) { setPage(""); setIg(""); setAdIds([]); }
+      toast.success(clear ? "Meta disconnected" : "Meta connections saved");
+      refetchSession();
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Something went wrong"); }
+    finally { setBusy(false); }
+  }
+  const sel = "h-9 w-full rounded-lg border border-p-line bg-p-bg px-3 text-sm text-p-text";
+  return (
+    <Panel title="Meta connections" sub="Pick this client's Facebook Page, Instagram account and ad accounts from what Why Media's Meta business can see." setup={false}>
+      {assets.isLoading ? <p className="text-sm text-p-muted">Loading Meta accounts…</p> : !res?.ok ? (
+        <Empty title="Could not list Meta accounts" body={res && !res.ok ? res.message : assets.error?.message ?? "Unknown error"} />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-3">
+          <label className="text-xs text-p-muted">Facebook Page
+            <select className={sel} value={page} onChange={(e) => { setPage(e.target.value); const p = pages.find((x) => x.id === e.target.value); if (p?.ig && !ig) setIg(p.ig.id); }}>
+              <option value="">None</option>
+              {pages.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </label>
+          <label className="text-xs text-p-muted">Instagram account
+            <select className={sel} value={ig} onChange={(e) => setIg(e.target.value)}>
+              <option value="">None</option>
+              {igs.map((x) => <option key={x.id} value={x.id}>@{x.username}</option>)}
+            </select>
+          </label>
+          <div className="text-xs text-p-muted">Ad accounts
+            <div className="mt-1 max-h-40 space-y-1 overflow-auto rounded-lg border border-p-line p-2">
+              {!adAccounts.length && <div>No ad accounts shared</div>}
+              {adAccounts.map((a) => (
+                <label key={a.id} className="flex items-center gap-2 text-sm text-p-text">
+                  <input type="checkbox" checked={adIds.includes(a.id)} onChange={(e) => setAdIds(e.target.checked ? [...adIds, a.id] : adIds.filter((x) => x !== a.id))} />
+                  {a.name} <span className="text-[11px] text-p-muted">{a.currency}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="mt-4 flex gap-2">
+        <button disabled={busy || !res?.ok} onClick={() => submit()} className="rounded-lg bg-p-cerulean px-4 py-2 text-sm text-white disabled:opacity-50">{cur ? "Update connections" : "Connect"}</button>
+        {cur && <button disabled={busy} onClick={() => { if (confirm("Disconnect all Meta accounts from this client?")) void submit(true); }} className="rounded-lg border border-p-line px-4 py-2 text-sm text-p-down disabled:opacity-50">Disconnect Meta</button>}
+      </div>
     </Panel>
   );
 }
