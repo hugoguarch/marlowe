@@ -421,6 +421,256 @@ export type Database = {
         }
         Relationships: []
       }
+      pulse_clients: {
+        Row: {
+          created_at: string
+          goals: Json
+          id: string
+          logo_url: string | null
+          name: string
+          sector: string | null
+          seed_terms: string[]
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          goals?: Json
+          id?: string
+          logo_url?: string | null
+          name: string
+          sector?: string | null
+          seed_terms?: string[]
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          goals?: Json
+          id?: string
+          logo_url?: string | null
+          name?: string
+          sector?: string | null
+          seed_terms?: string[]
+          status?: string
+        }
+        Relationships: []
+      }
+      pulse_connections: {
+        Row: {
+          account_ref: string | null
+          client_id: string
+          id: string
+          last_sync_at: string | null
+          provider: string
+          scopes: string | null
+          status: string
+          token_expires_at: string | null
+        }
+        Insert: {
+          account_ref?: string | null
+          client_id: string
+          id?: string
+          last_sync_at?: string | null
+          provider: string
+          scopes?: string | null
+          status?: string
+          token_expires_at?: string | null
+        }
+        Update: {
+          account_ref?: string | null
+          client_id?: string
+          id?: string
+          last_sync_at?: string | null
+          provider?: string
+          scopes?: string | null
+          status?: string
+          token_expires_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pulse_connections_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "pulse_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pulse_metrics_daily: {
+        Row: {
+          channel: string
+          client_id: string
+          date: string
+          metric: string
+          source: string
+          value: number
+        }
+        Insert: {
+          channel: string
+          client_id: string
+          date: string
+          metric: string
+          source?: string
+          value?: number
+        }
+        Update: {
+          channel?: string
+          client_id?: string
+          date?: string
+          metric?: string
+          source?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pulse_metrics_daily_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "pulse_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pulse_posts: {
+        Row: {
+          caption: string | null
+          channel: string
+          client_id: string
+          comments: number
+          external_id: string | null
+          format: string
+          id: string
+          likes: number
+          permalink: string | null
+          published_at: string
+          reach: number
+          saves: number
+          shares: number
+          source: string
+          thumbnail_url: string | null
+          views: number
+        }
+        Insert: {
+          caption?: string | null
+          channel: string
+          client_id: string
+          comments?: number
+          external_id?: string | null
+          format: string
+          id?: string
+          likes?: number
+          permalink?: string | null
+          published_at: string
+          reach?: number
+          saves?: number
+          shares?: number
+          source?: string
+          thumbnail_url?: string | null
+          views?: number
+        }
+        Update: {
+          caption?: string | null
+          channel?: string
+          client_id?: string
+          comments?: number
+          external_id?: string | null
+          format?: string
+          id?: string
+          likes?: number
+          permalink?: string | null
+          published_at?: string
+          reach?: number
+          saves?: number
+          shares?: number
+          source?: string
+          thumbnail_url?: string | null
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pulse_posts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "pulse_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pulse_reviews: {
+        Row: {
+          author: string | null
+          client_id: string
+          created_at: string
+          external_id: string | null
+          id: string
+          rating: number
+          replied: boolean
+          source: string
+          text: string | null
+        }
+        Insert: {
+          author?: string | null
+          client_id: string
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          rating: number
+          replied?: boolean
+          source?: string
+          text?: string | null
+        }
+        Update: {
+          author?: string | null
+          client_id?: string
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          rating?: number
+          replied?: boolean
+          source?: string
+          text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pulse_reviews_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "pulse_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pulse_user_access: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pulse_user_access_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "pulse_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       schedule: {
         Row: {
           brand_id: string | null
@@ -525,7 +775,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      pulse_can_see: {
+        Args: { _client: string; _uid: string }
+        Returns: boolean
+      }
+      pulse_claim_admin: { Args: never; Returns: string }
+      pulse_is_admin: { Args: { _uid: string }; Returns: boolean }
+      pulse_my_role: { Args: never; Returns: string }
+      pulse_series: {
+        Args: { _bucket?: string; _client: string; _from: string; _to: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

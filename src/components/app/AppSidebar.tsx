@@ -10,6 +10,7 @@ const nav = [
   { label: "Brand", to: "/app/brand" as const },
   { label: "Studio", to: "/app/studio" as const },
   { label: "Growth", to: "/app/growth" as const },
+  { label: "Pulse analytics", to: "/pulse" as const },
 ];
 
 export function AppSidebar({
