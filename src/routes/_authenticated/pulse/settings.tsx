@@ -5,11 +5,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { usePulse, type PulseClient } from "@/components/pulse/context";
-import { Empty, PageTitle, Panel } from "@/components/pulse/ui";
+import { Empty, PageTitle, Panel, SearchSelect } from "@/components/pulse/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { addGscSite, listGscSites, removeGscSite, resyncGsc, resyncGscSite } from "@/lib/pulse/gsc.functions";
 import { metaDiscover, saveMetaConnection, syncMetaNow } from "@/lib/pulse/meta.functions";
-import { channelLabel } from "@/lib/pulse/metrics";
+import { channelLabel, fmt } from "@/lib/pulse/metrics";
 
 export const Route = createFileRoute("/_authenticated/pulse/settings")({
   head: () => ({ meta: [{ title: "Settings / Data sources — Pulse" }, { name: "description", content: "Connections, clients and goals." }] }),
@@ -168,7 +168,6 @@ function MetaConnections({ client }: { client: PulseClient }) {
     } catch (e) { toast.error(e instanceof Error ? e.message : "Something went wrong"); }
     finally { setBusy(false); }
   }
-  const sel = "h-9 w-full rounded-lg border border-p-line bg-p-bg px-3 text-sm text-p-text";
   return (
     <Panel title="Meta connections" sub="Pick this client's Facebook Page, Instagram account and ad accounts from what Why Media's Meta business can see." setup={false}>
       {assets.isLoading ? <p className="text-sm text-p-muted">Loading Meta accounts…</p> : !res?.ok ? (
