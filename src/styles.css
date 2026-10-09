@@ -508,3 +508,15 @@
     transform: none !important;
   }
 }
+
+.pulse-dark {
+  --p-bg: #00131a;
+  --p-card: #062530;
+  --p-line: #12394a;
+  --p-text: #eef4f6;
+  --p-muted: #8fa7b1;
+  --p-soft: #0b3140;
+  --p-cerulean: #3fa6c6;
+  --p-up: #5cc293;
+  --p-down: #f08a74;
+}
