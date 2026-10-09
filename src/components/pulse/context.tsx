@@ -59,9 +59,12 @@ export function PulseProvider({ userId, children }: { userId: string; children: 
     () => client?.connections.filter((c) => c.provider === "search_console" && c.account_ref).map((c) => c.account_ref!) ?? [],
     [client],
   );
+  // Restore this client's remembered website filter once its sites are known.
   useEffect(() => {
-    if (site && !sites.includes(site)) setSite(null);
-  }, [sites, site]);
+    if (!clientId || !sites.length) return;
+    const saved = localStorage.getItem(`pulse.site.${userId}.${clientId}`);
+    setSite(saved && sites.includes(saved) ? saved : null);
+  }, [clientId, sites, userId]);
 
   useEffect(() => {
     if (channel !== "all" && client && !connected.includes(channel)) setChannel("all");
@@ -74,11 +77,17 @@ export function PulseProvider({ userId, children }: { userId: string; children: 
     setClientId: (id) => {
       localStorage.setItem(key, id);
       setClientIdState(id);
-      setSite(null);
     },
     sites,
     site,
-    setSite,
+    setSite: (s) => {
+      if (clientId) {
+        const k = `pulse.site.${userId}.${clientId}`;
+        if (s) localStorage.setItem(k, s);
+        else localStorage.removeItem(k);
+      }
+      setSite(s);
+    },
     client,
     connected,
     channel,

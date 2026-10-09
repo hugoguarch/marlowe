@@ -26,6 +26,7 @@ const NAV = [
   { label: "Social", to: "/pulse/social" },
   { label: "Google Business", to: "/pulse/google-business" },
   { label: "Website & SEO", to: "/pulse/website" },
+  { label: "Meta", to: "/pulse/meta" },
   { label: "AI Search", to: "/pulse/ai-search" },
   { label: "Competitors", to: "/pulse/competitors" },
   { label: "Trends & Ideas", to: "/pulse/trends" },
