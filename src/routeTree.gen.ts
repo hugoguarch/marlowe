@@ -33,6 +33,7 @@ import { Route as AuthenticatedPulseCompetitorsRouteImport } from './routes/_aut
 import { Route as AuthenticatedPulseGoogleBusinessRouteImport } from './routes/_authenticated/pulse/google-business'
 import { Route as AuthenticatedPulseNewsRouteImport } from './routes/_authenticated/pulse/news'
 import { Route as AuthenticatedPulseReportsRouteImport } from './routes/_authenticated/pulse/reports'
+import { Route as AuthenticatedPulseSettingsRouteImport } from './routes/_authenticated/pulse/settings'
 import { Route as AuthenticatedPulseSocialRouteImport } from './routes/_authenticated/pulse/social'
 import { Route as AuthenticatedPulseTrendsRouteImport } from './routes/_authenticated/pulse/trends'
 import { Route as AuthenticatedPulseWebsiteRouteImport } from './routes/_authenticated/pulse/website'
@@ -162,6 +163,12 @@ const AuthenticatedPulseReportsRoute =
     path: '/reports',
     getParentRoute: () => AuthenticatedPulseRoute,
   } as any)
+const AuthenticatedPulseSettingsRoute =
+  AuthenticatedPulseSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedPulseRoute,
+  } as any)
 const AuthenticatedPulseSocialRoute =
   AuthenticatedPulseSocialRouteImport.update({
     id: '/social',
@@ -203,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/pulse/google-business': typeof AuthenticatedPulseGoogleBusinessRoute
   '/pulse/news': typeof AuthenticatedPulseNewsRoute
   '/pulse/reports': typeof AuthenticatedPulseReportsRoute
+  '/pulse/settings': typeof AuthenticatedPulseSettingsRoute
   '/pulse/social': typeof AuthenticatedPulseSocialRoute
   '/pulse/trends': typeof AuthenticatedPulseTrendsRoute
   '/pulse/website': typeof AuthenticatedPulseWebsiteRoute
@@ -229,6 +237,7 @@ export interface FileRoutesByTo {
   '/pulse/google-business': typeof AuthenticatedPulseGoogleBusinessRoute
   '/pulse/news': typeof AuthenticatedPulseNewsRoute
   '/pulse/reports': typeof AuthenticatedPulseReportsRoute
+  '/pulse/settings': typeof AuthenticatedPulseSettingsRoute
   '/pulse/social': typeof AuthenticatedPulseSocialRoute
   '/pulse/trends': typeof AuthenticatedPulseTrendsRoute
   '/pulse/website': typeof AuthenticatedPulseWebsiteRoute
@@ -259,6 +268,7 @@ export interface FileRoutesById {
   '/_authenticated/pulse/google-business': typeof AuthenticatedPulseGoogleBusinessRoute
   '/_authenticated/pulse/news': typeof AuthenticatedPulseNewsRoute
   '/_authenticated/pulse/reports': typeof AuthenticatedPulseReportsRoute
+  '/_authenticated/pulse/settings': typeof AuthenticatedPulseSettingsRoute
   '/_authenticated/pulse/social': typeof AuthenticatedPulseSocialRoute
   '/_authenticated/pulse/trends': typeof AuthenticatedPulseTrendsRoute
   '/_authenticated/pulse/website': typeof AuthenticatedPulseWebsiteRoute
@@ -289,6 +299,7 @@ export interface FileRouteTypes {
     | '/pulse/google-business'
     | '/pulse/news'
     | '/pulse/reports'
+    | '/pulse/settings'
     | '/pulse/social'
     | '/pulse/trends'
     | '/pulse/website'
@@ -315,6 +326,7 @@ export interface FileRouteTypes {
     | '/pulse/google-business'
     | '/pulse/news'
     | '/pulse/reports'
+    | '/pulse/settings'
     | '/pulse/social'
     | '/pulse/trends'
     | '/pulse/website'
@@ -344,6 +356,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pulse/google-business'
     | '/_authenticated/pulse/news'
     | '/_authenticated/pulse/reports'
+    | '/_authenticated/pulse/settings'
     | '/_authenticated/pulse/social'
     | '/_authenticated/pulse/trends'
     | '/_authenticated/pulse/website'
@@ -534,6 +547,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPulseReportsRouteImport
       parentRoute: typeof AuthenticatedPulseRoute
     }
+    '/_authenticated/pulse/settings': {
+      id: '/_authenticated/pulse/settings'
+      path: '/settings'
+      fullPath: '/pulse/settings'
+      preLoaderRoute: typeof AuthenticatedPulseSettingsRouteImport
+      parentRoute: typeof AuthenticatedPulseRoute
+    }
     '/_authenticated/pulse/social': {
       id: '/_authenticated/pulse/social'
       path: '/social'
@@ -585,6 +605,7 @@ interface AuthenticatedPulseRouteChildren {
   AuthenticatedPulseGoogleBusinessRoute: typeof AuthenticatedPulseGoogleBusinessRoute
   AuthenticatedPulseNewsRoute: typeof AuthenticatedPulseNewsRoute
   AuthenticatedPulseReportsRoute: typeof AuthenticatedPulseReportsRoute
+  AuthenticatedPulseSettingsRoute: typeof AuthenticatedPulseSettingsRoute
   AuthenticatedPulseSocialRoute: typeof AuthenticatedPulseSocialRoute
   AuthenticatedPulseTrendsRoute: typeof AuthenticatedPulseTrendsRoute
   AuthenticatedPulseWebsiteRoute: typeof AuthenticatedPulseWebsiteRoute
@@ -597,6 +618,7 @@ const AuthenticatedPulseRouteChildren: AuthenticatedPulseRouteChildren = {
   AuthenticatedPulseGoogleBusinessRoute: AuthenticatedPulseGoogleBusinessRoute,
   AuthenticatedPulseNewsRoute: AuthenticatedPulseNewsRoute,
   AuthenticatedPulseReportsRoute: AuthenticatedPulseReportsRoute,
+  AuthenticatedPulseSettingsRoute: AuthenticatedPulseSettingsRoute,
   AuthenticatedPulseSocialRoute: AuthenticatedPulseSocialRoute,
   AuthenticatedPulseTrendsRoute: AuthenticatedPulseTrendsRoute,
   AuthenticatedPulseWebsiteRoute: AuthenticatedPulseWebsiteRoute,

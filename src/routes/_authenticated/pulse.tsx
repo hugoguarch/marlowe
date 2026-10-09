@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { Toaster } from "@/components/ui/sonner";
 import { PulseProvider, usePulse } from "@/components/pulse/context";
 import yIcon from "@/assets/wm-y-icon-white.svg.asset.json";
 import { CHANNELS, type RangeId } from "@/lib/pulse/metrics";
@@ -39,6 +40,7 @@ function PulseLayout() {
   return (
     <PulseProvider userId={user.id}>
       <Shell />
+      <Toaster />
     </PulseProvider>
   );
 }
