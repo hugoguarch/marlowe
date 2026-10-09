@@ -27,6 +27,10 @@ import { Route as AuthenticatedAppGrowthRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAppMarloweRouteImport } from './routes/_authenticated/app/marlowe'
 import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app/settings'
 import { Route as AuthenticatedAppStudioRouteImport } from './routes/_authenticated/app/studio'
+import { Route as AuthenticatedPulseIndexRouteImport } from './routes/_authenticated/pulse/index'
+import { Route as AuthenticatedPulseGoogleBusinessRouteImport } from './routes/_authenticated/pulse/google-business'
+import { Route as AuthenticatedPulseSocialRouteImport } from './routes/_authenticated/pulse/social'
+import { Route as AuthenticatedPulseWebsiteRouteImport } from './routes/_authenticated/pulse/website'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -119,6 +123,29 @@ const AuthenticatedAppStudioRoute = AuthenticatedAppStudioRouteImport.update({
   path: '/studio',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedPulseIndexRoute = AuthenticatedPulseIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedPulseRoute,
+} as any)
+const AuthenticatedPulseGoogleBusinessRoute =
+  AuthenticatedPulseGoogleBusinessRouteImport.update({
+    id: '/google-business',
+    path: '/google-business',
+    getParentRoute: () => AuthenticatedPulseRoute,
+  } as any)
+const AuthenticatedPulseSocialRoute =
+  AuthenticatedPulseSocialRouteImport.update({
+    id: '/social',
+    path: '/social',
+    getParentRoute: () => AuthenticatedPulseRoute,
+  } as any)
+const AuthenticatedPulseWebsiteRoute =
+  AuthenticatedPulseWebsiteRouteImport.update({
+    id: '/website',
+    path: '/website',
+    getParentRoute: () => AuthenticatedPulseRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -128,7 +155,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
-  '/pulse': typeof AuthenticatedPulseRoute
+  '/pulse': typeof AuthenticatedPulseRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -137,7 +164,11 @@ export interface FileRoutesByFullPath {
   '/app/marlowe': typeof AuthenticatedAppMarloweRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/studio': typeof AuthenticatedAppStudioRoute
+  '/pulse/google-business': typeof AuthenticatedPulseGoogleBusinessRoute
+  '/pulse/social': typeof AuthenticatedPulseSocialRoute
+  '/pulse/website': typeof AuthenticatedPulseWebsiteRoute
   '/app/': typeof AuthenticatedAppIndexRoute
+  '/pulse/': typeof AuthenticatedPulseIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -146,7 +177,6 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
-  '/pulse': typeof AuthenticatedPulseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -155,7 +185,11 @@ export interface FileRoutesByTo {
   '/app/marlowe': typeof AuthenticatedAppMarloweRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/studio': typeof AuthenticatedAppStudioRoute
+  '/pulse/google-business': typeof AuthenticatedPulseGoogleBusinessRoute
+  '/pulse/social': typeof AuthenticatedPulseSocialRoute
+  '/pulse/website': typeof AuthenticatedPulseWebsiteRoute
   '/app': typeof AuthenticatedAppIndexRoute
+  '/pulse': typeof AuthenticatedPulseIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -167,7 +201,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
-  '/_authenticated/pulse': typeof AuthenticatedPulseRoute
+  '/_authenticated/pulse': typeof AuthenticatedPulseRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -176,7 +210,11 @@ export interface FileRoutesById {
   '/_authenticated/app/marlowe': typeof AuthenticatedAppMarloweRoute
   '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
   '/_authenticated/app/studio': typeof AuthenticatedAppStudioRoute
+  '/_authenticated/pulse/google-business': typeof AuthenticatedPulseGoogleBusinessRoute
+  '/_authenticated/pulse/social': typeof AuthenticatedPulseSocialRoute
+  '/_authenticated/pulse/website': typeof AuthenticatedPulseWebsiteRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/pulse/': typeof AuthenticatedPulseIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -197,7 +235,11 @@ export interface FileRouteTypes {
     | '/app/marlowe'
     | '/app/settings'
     | '/app/studio'
+    | '/pulse/google-business'
+    | '/pulse/social'
+    | '/pulse/website'
     | '/app/'
+    | '/pulse/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -206,7 +248,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/.well-known/oauth-protected-resource'
-    | '/pulse'
     | '/auth/callback'
     | '/oauth/callback'
     | '/.lovable/oauth/consent'
@@ -215,7 +256,11 @@ export interface FileRouteTypes {
     | '/app/marlowe'
     | '/app/settings'
     | '/app/studio'
+    | '/pulse/google-business'
+    | '/pulse/social'
+    | '/pulse/website'
     | '/app'
+    | '/pulse'
   id:
     | '__root__'
     | '/'
@@ -235,7 +280,11 @@ export interface FileRouteTypes {
     | '/_authenticated/app/marlowe'
     | '/_authenticated/app/settings'
     | '/_authenticated/app/studio'
+    | '/_authenticated/pulse/google-business'
+    | '/_authenticated/pulse/social'
+    | '/_authenticated/pulse/website'
     | '/_authenticated/app/'
+    | '/_authenticated/pulse/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -379,6 +428,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppStudioRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/pulse/': {
+      id: '/_authenticated/pulse/'
+      path: '/'
+      fullPath: '/pulse/'
+      preLoaderRoute: typeof AuthenticatedPulseIndexRouteImport
+      parentRoute: typeof AuthenticatedPulseRoute
+    }
+    '/_authenticated/pulse/google-business': {
+      id: '/_authenticated/pulse/google-business'
+      path: '/google-business'
+      fullPath: '/pulse/google-business'
+      preLoaderRoute: typeof AuthenticatedPulseGoogleBusinessRouteImport
+      parentRoute: typeof AuthenticatedPulseRoute
+    }
+    '/_authenticated/pulse/social': {
+      id: '/_authenticated/pulse/social'
+      path: '/social'
+      fullPath: '/pulse/social'
+      preLoaderRoute: typeof AuthenticatedPulseSocialRouteImport
+      parentRoute: typeof AuthenticatedPulseRoute
+    }
+    '/_authenticated/pulse/website': {
+      id: '/_authenticated/pulse/website'
+      path: '/website'
+      fullPath: '/pulse/website'
+      preLoaderRoute: typeof AuthenticatedPulseWebsiteRouteImport
+      parentRoute: typeof AuthenticatedPulseRoute
+    }
   }
 }
 
@@ -403,14 +480,31 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
 const AuthenticatedAppRouteWithChildren =
   AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
 
+interface AuthenticatedPulseRouteChildren {
+  AuthenticatedPulseGoogleBusinessRoute: typeof AuthenticatedPulseGoogleBusinessRoute
+  AuthenticatedPulseSocialRoute: typeof AuthenticatedPulseSocialRoute
+  AuthenticatedPulseWebsiteRoute: typeof AuthenticatedPulseWebsiteRoute
+  AuthenticatedPulseIndexRoute: typeof AuthenticatedPulseIndexRoute
+}
+
+const AuthenticatedPulseRouteChildren: AuthenticatedPulseRouteChildren = {
+  AuthenticatedPulseGoogleBusinessRoute: AuthenticatedPulseGoogleBusinessRoute,
+  AuthenticatedPulseSocialRoute: AuthenticatedPulseSocialRoute,
+  AuthenticatedPulseWebsiteRoute: AuthenticatedPulseWebsiteRoute,
+  AuthenticatedPulseIndexRoute: AuthenticatedPulseIndexRoute,
+}
+
+const AuthenticatedPulseRouteWithChildren =
+  AuthenticatedPulseRoute._addFileChildren(AuthenticatedPulseRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
-  AuthenticatedPulseRoute: typeof AuthenticatedPulseRoute
+  AuthenticatedPulseRoute: typeof AuthenticatedPulseRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
-  AuthenticatedPulseRoute: AuthenticatedPulseRoute,
+  AuthenticatedPulseRoute: AuthenticatedPulseRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
