@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 
 import { usePulse, usePulseData } from "@/components/pulse/context";
-import { CompareChart, Delta, Empty, Kpi, Loading, PageTitle, Panel } from "@/components/pulse/ui";
+import { CompareChart, Delta, Empty, Kpi, Loading, PageTitle, Panel, SetupConnection } from "@/components/pulse/ui";
 import { getGscTop } from "@/lib/pulse/gsc.functions";
 import { avg, compareSeries, fmt, spark, split, sum } from "@/lib/pulse/metrics";
 
@@ -13,12 +13,12 @@ export const Route = createFileRoute("/_authenticated/pulse/website")({
 });
 
 function Website() {
-  const { client, clientId, range } = usePulse();
+  const { client, clientId, range, site, connected } = usePulse();
   const q = usePulseData();
   const fetchTop = useServerFn(getGscTop);
   const top = useQuery({
-    queryKey: ["pulse", "gscTop", clientId, range.from, range.to],
-    queryFn: () => fetchTop({ data: { clientId, from: range.from, to: range.to, priorFrom: range.priorFrom } }),
+    queryKey: ["pulse", "gscTop", clientId, range.from, range.to, site],
+    queryFn: () => fetchTop({ data: { clientId, from: range.from, to: range.to, priorFrom: range.priorFrom, site } }),
     enabled: !!clientId && clientId !== "all",
     staleTime: 30 * 60_000,
   });
@@ -30,17 +30,18 @@ function Website() {
   const gsc = client.connections.filter((c) => c.provider === "search_console");
   const clicks = sum(cur, "clicks", s), impr = sum(cur, "impressions", s);
   const clicksP = sum(prev, "clicks", s), imprP = sum(prev, "impressions", s);
+  const gaNa = !connected.includes("website"), gscNa = !connected.includes("search_console");
   return (
     <div className="space-y-6">
       <PageTitle title="Website & SEO" sub="Traffic from Google Analytics and search performance from Search Console." />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Kpi label="Sessions" value={sum(cur, "sessions", w)} prev={sum(prev, "sessions", w)} points={spark(cur, "sessions", w)} />
-        <Kpi label="Conversions" value={sum(cur, "conversions", w)} prev={sum(prev, "conversions", w)} />
-        <Kpi label="AI referral sessions" value={sum(cur, "ai_sessions", w)} prev={sum(prev, "ai_sessions", w)} points={spark(cur, "ai_sessions", w)} />
-        <Kpi label="Organic clicks" value={clicks} prev={clicksP} points={spark(cur, "clicks", s)} />
-        <Kpi label="Impressions" value={impr} prev={imprP} />
-        <Kpi label="CTR" kind="pct" value={impr ? clicks / impr : 0} prev={imprP ? clicksP / imprP : 0} />
-        <Kpi label="Avg position" kind="dec" invert value={avg(cur, "position", s)} prev={avg(prev, "position", s)} />
+        <Kpi na={gaNa} label="Sessions" value={sum(cur, "sessions", w)} prev={sum(prev, "sessions", w)} points={spark(cur, "sessions", w)} />
+        <Kpi na={gaNa} label="Conversions" value={sum(cur, "conversions", w)} prev={sum(prev, "conversions", w)} />
+        <Kpi na={gaNa} label="AI referral sessions" value={sum(cur, "ai_sessions", w)} prev={sum(prev, "ai_sessions", w)} points={spark(cur, "ai_sessions", w)} />
+        <Kpi na={gscNa} label="Organic clicks" value={clicks} prev={clicksP} points={spark(cur, "clicks", s)} />
+        <Kpi na={gscNa} label="Impressions" value={impr} prev={imprP} />
+        <Kpi na={gscNa} label="CTR" kind="pct" value={impr ? clicks / impr : 0} prev={imprP ? clicksP / imprP : 0} />
+        <Kpi na={gscNa} label="Avg position" kind="dec" invert value={avg(cur, "position", s)} prev={avg(prev, "position", s)} />
       </div>
       <div className="grid gap-6 xl:grid-cols-2">
         <Panel title="Organic clicks" sub="From Google Search, vs the period before" conns={gsc}>
@@ -74,7 +75,7 @@ function TopTable({ title, rows, live, loading, error, conns, page }: {
       {loading ? <Loading /> : error ? (
         <Empty title="Search Console could not be reached" body={error} />
       ) : !live ? (
-        <Empty title="Connect Search Console for this client" body="Choose the client's property in Settings / Data sources to see live queries and pages." />
+        <SetupConnection />
       ) : !rows?.length ? (
         <Empty title="No search data in this period" body="Try a longer date range." />
       ) : (

@@ -15,7 +15,7 @@ function Gbp() {
   if (clientId === "all") return <Empty title="Choose a client" body="Google Business detail is per client." />;
   if (!q.data || !client) return <Loading />;
   const conns = client.connections.filter((c) => c.provider === "gbp");
-  if (!conns.length) return <Empty title="Google Business Profile not connected" body="Connect it in Settings / Data sources." />;
+  if (!conns.length) return <div className="space-y-6"><PageTitle title="Google Business Profile" /><Panel title="Not connected" sub="Link this client's Business Profile in Settings to see rating, reviews and profile actions." setup>{null}</Panel></div>;
   const { cur, prev } = split(q.data.series, range.from);
   const reviews = q.data.reviews;
   const curR = reviews.filter((r) => r.created_at >= range.from);

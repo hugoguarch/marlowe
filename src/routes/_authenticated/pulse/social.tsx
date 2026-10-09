@@ -44,7 +44,7 @@ function Social() {
     <div className="space-y-6">
       <PageTitle title="Social" sub={soc.map(channelLabel).join(", ") || "No social channels selected"} />
       {!soc.length ? (
-        <Empty title="No social channel in this filter" body="Choose All channels or a social platform." />
+        <Panel title="No social account connected" sub="Link each client's own Instagram, Facebook, LinkedIn, TikTok or YouTube account in Settings." setup>{null}</Panel>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
@@ -100,7 +100,7 @@ function Social() {
             </div>
           </Panel>
           <Panel title="Audience" conns={conns}>
-            <Empty title="Audience breakdown arrives with live platform data" body="Age, gender, cities and countries come from the Meta, LinkedIn and TikTok APIs once connected. The sample adapter does not invent them." />
+            <Empty title="Audience breakdown" body="Age, gender, cities and countries appear here when the platform provides them." />
           </Panel>
         </>
       )}
