@@ -35,6 +35,7 @@ const rangeInput = z.object({
   priorFrom: z.string(),
   bucket: z.enum(["day", "week"]),
   include: z.array(z.enum(["posts", "reviews"])).default([]),
+  site: z.string().max(500).nullable().optional(),
 });
 
 export const getPulseData = createServerFn({ method: "POST" })
@@ -47,6 +48,7 @@ export const getPulseData = createServerFn({ method: "POST" })
       _from: data.priorFrom,
       _to: data.to,
       _bucket: data.bucket,
+      ...(data.site ? { _site: data.site } : {}),
     });
     const postsP = data.include.includes("posts")
       ? sb
