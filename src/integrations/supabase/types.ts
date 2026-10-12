@@ -515,36 +515,42 @@ export type Database = {
       }
       pulse_connections: {
         Row: {
+          account_name: string | null
           account_ref: string | null
           client_id: string
           id: string
           last_attempt_at: string | null
           last_error: string | null
           last_sync_at: string | null
+          oauth_account_id: string | null
           provider: string
           scopes: string | null
           status: string
           token_expires_at: string | null
         }
         Insert: {
+          account_name?: string | null
           account_ref?: string | null
           client_id: string
           id?: string
           last_attempt_at?: string | null
           last_error?: string | null
           last_sync_at?: string | null
+          oauth_account_id?: string | null
           provider: string
           scopes?: string | null
           status?: string
           token_expires_at?: string | null
         }
         Update: {
+          account_name?: string | null
           account_ref?: string | null
           client_id?: string
           id?: string
           last_attempt_at?: string | null
           last_error?: string | null
           last_sync_at?: string | null
+          oauth_account_id?: string | null
           provider?: string
           scopes?: string | null
           status?: string
@@ -559,6 +565,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pulse_google_accounts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          refresh_token_enc: string
+          scopes: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          refresh_token_enc: string
+          scopes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          refresh_token_enc?: string
+          scopes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       pulse_metrics_daily: {
         Row: {
