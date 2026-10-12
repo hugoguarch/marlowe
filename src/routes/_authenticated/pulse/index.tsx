@@ -168,7 +168,7 @@ export function TopPosts({ posts }: { posts: Post[] }) {
               <div className="text-[11px] text-p-muted">{fmt(p.reach ? eng / p.reach : 0, "pct")} eng.</div>
             </div>
             {p.permalink && (
-              <a href={p.permalink} target="_blank" rel="noreferrer" className="text-xs text-p-cerulean hover:underline">
+              <a href={p.permalink} target="_blank" rel="noopener noreferrer" className="relative z-10 text-xs text-p-cerulean hover:underline">
                 Open
               </a>
             )}

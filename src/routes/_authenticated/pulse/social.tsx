@@ -202,7 +202,7 @@ function Organic({ tab }: { tab: string }) {
                   return (
                     <tr key={p.id} className={`border-t border-p-line ${above ? "bg-p-sun/10" : ""}`}>
                       <td className="max-w-64 py-2">
-                        {p.permalink ? <a href={p.permalink} target="_blank" rel="noreferrer" className="block truncate hover:text-p-cerulean">{p.caption || "(no caption)"}</a> : <div className="truncate">{p.caption}</div>}
+                        {p.permalink ? <a href={p.permalink} target="_blank" rel="noopener noreferrer" className="block truncate text-p-text underline-offset-2 hover:text-p-cerulean hover:underline">{p.caption || "(no caption)"} <span className="text-[11px] text-p-cerulean">Open ↗</span></a> : <div className="truncate">{p.caption}</div>}
                         <div className="text-[11px] text-p-muted">
                           {channelLabel(p.channel)} · {p.format}
                           {above && <span className="ml-2 rounded bg-p-sun/40 px-1.5 py-0.5 text-[10px] font-medium text-p-text">Above average</span>}
