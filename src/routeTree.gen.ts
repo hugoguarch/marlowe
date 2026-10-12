@@ -38,6 +38,7 @@ import { Route as AuthenticatedPulseSocialRouteImport } from './routes/_authenti
 import { Route as AuthenticatedPulseTrendsRouteImport } from './routes/_authenticated/pulse/trends'
 import { Route as AuthenticatedPulseWebsiteRouteImport } from './routes/_authenticated/pulse/website'
 import { Route as ApiPublicHooksPulseSyncRouteImport } from './routes/api/public/hooks/pulse-sync'
+import { Route as ApiPublicOauthGoogleCallbackRouteImport } from './routes/api/public/oauth/google/callback'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -193,6 +194,12 @@ const ApiPublicHooksPulseSyncRoute = ApiPublicHooksPulseSyncRouteImport.update({
   path: '/api/public/hooks/pulse-sync',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicOauthGoogleCallbackRoute =
+  ApiPublicOauthGoogleCallbackRouteImport.update({
+    id: '/api/public/oauth/google/callback',
+    path: '/api/public/oauth/google/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -223,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AuthenticatedAppIndexRoute
   '/pulse/': typeof AuthenticatedPulseIndexRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
+  '/api/public/oauth/google/callback': typeof ApiPublicOauthGoogleCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -251,6 +259,7 @@ export interface FileRoutesByTo {
   '/app': typeof AuthenticatedAppIndexRoute
   '/pulse': typeof AuthenticatedPulseIndexRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
+  '/api/public/oauth/google/callback': typeof ApiPublicOauthGoogleCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -283,6 +292,7 @@ export interface FileRoutesById {
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/pulse/': typeof AuthenticatedPulseIndexRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
+  '/api/public/oauth/google/callback': typeof ApiPublicOauthGoogleCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/pulse/'
     | '/api/public/hooks/pulse-sync'
+    | '/api/public/oauth/google/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/pulse'
     | '/api/public/hooks/pulse-sync'
+    | '/api/public/oauth/google/callback'
   id:
     | '__root__'
     | '/'
@@ -374,6 +386,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/'
     | '/_authenticated/pulse/'
     | '/api/public/hooks/pulse-sync'
+    | '/api/public/oauth/google/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -388,6 +401,7 @@ export interface RootRouteChildren {
   OauthCallbackRoute: typeof OauthCallbackRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ApiPublicHooksPulseSyncRoute: typeof ApiPublicHooksPulseSyncRoute
+  ApiPublicOauthGoogleCallbackRoute: typeof ApiPublicOauthGoogleCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -595,6 +609,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksPulseSyncRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/oauth/google/callback': {
+      id: '/api/public/oauth/google/callback'
+      path: '/api/public/oauth/google/callback'
+      fullPath: '/api/public/oauth/google/callback'
+      preLoaderRoute: typeof ApiPublicOauthGoogleCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -674,6 +695,7 @@ const rootRouteChildren: RootRouteChildren = {
   OauthCallbackRoute: OauthCallbackRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ApiPublicHooksPulseSyncRoute: ApiPublicHooksPulseSyncRoute,
+  ApiPublicOauthGoogleCallbackRoute: ApiPublicOauthGoogleCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
