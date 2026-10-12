@@ -46,7 +46,7 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={`overflow-hidden rounded-2xl border border-p-line bg-p-card shadow-[0_1px_2px_rgba(0,28,38,0.04)] ${className}`}>
+    <section className={`rounded-2xl border border-p-line bg-p-card shadow-[0_1px_2px_rgba(0,28,38,0.04)] ${className}`}>
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-p-line px-5 py-4">
         <div className="space-y-1">
           <h2 className="text-base font-medium tracking-tight text-p-text">{title}</h2>
@@ -119,7 +119,7 @@ export function Kpi({
       </div>
     </div>
   );
-  if (na) return <Link to="/pulse/settings">{body}</Link>;
+  if (na) return <Link to={to ?? "/pulse/settings"}>{body}</Link>;
   return to ? <Link to={to}>{body}</Link> : body;
 }
 
@@ -251,8 +251,9 @@ export function SearchSelect({
         value={open ? q : current?.label ?? ""}
         placeholder={current?.label ?? placeholder}
         onFocus={() => { setOpen(true); setQ(""); }}
+        onClick={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
-        onChange={(e) => setQ(e.target.value)}
+        onChange={(e) => { setQ(e.target.value); setOpen(true); }}
         className="h-9 w-full rounded-lg border border-p-line bg-p-bg px-3 text-sm text-p-text"
       />
       {open && (
