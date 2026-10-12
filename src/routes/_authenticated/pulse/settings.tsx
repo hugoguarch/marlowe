@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { usePulse, type PulseClient } from "@/components/pulse/context";
 import { Empty, PageTitle, Panel, SearchSelect } from "@/components/pulse/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { addGscSite, listGscSites, removeGscSite, resyncGsc, resyncGscSite } from "@/lib/pulse/gsc.functions";
+import { addGoogleConnection, googleAssets, googleConnectUrl, removeGoogleConnection, resyncGoogle } from "@/lib/pulse/google.functions";
 import { metaDiscover, saveMetaConnection, syncMetaNow } from "@/lib/pulse/meta.functions";
 import { channelLabel, fmt } from "@/lib/pulse/metrics";
 
@@ -24,6 +25,7 @@ function Settings() {
       <PageTitle title="Settings / Data sources" sub={`Your role: ${session?.role?.replace("_", " ") ?? "…"}`} />
       {client && clientId !== "all" && admin && <SearchConsole key={`gsc-${client.id}`} client={client} />}
       {client && clientId !== "all" ? <Connections client={client} /> : <Empty title="Choose a client" body="Connections are managed per client." />}
+      {client && clientId !== "all" && admin && <GoogleConnections key={`g-${client.id}`} client={client} />}
       {client && clientId !== "all" && admin && <MetaConnections key={`meta-${client.id}`} client={client} />}
       {client && clientId !== "all" && admin && <ClientEditor key={client.id} client={client} />}
       {admin && <Clients />}
@@ -34,13 +36,13 @@ function Settings() {
 const PROVIDERS: { id: string; needs: string }[] = [
   { id: "search_console", needs: "" },
   { id: "website", needs: "Needs a Google sign-in app for Analytics" },
-  { id: "gbp", needs: "Needs Google Business Profile API approval" },
+  { id: "gbp", needs: "" },
   { id: "instagram", needs: "" },
   { id: "facebook", needs: "" },
   { id: "meta_ads", needs: "" },
   { id: "linkedin", needs: "Needs LinkedIn Community Management approval" },
   { id: "tiktok", needs: "Needs a TikTok for Business app" },
-  { id: "youtube", needs: "Needs a Google sign-in app for YouTube" },
+  { id: "youtube", needs: "" },
 ];
 
 const STALE_MS = 36 * 3600_000;
@@ -58,6 +60,8 @@ function Connections({ client }: { client: PulseClient }) {
   const admin = session?.role === "admin";
   const resync = useServerFn(resyncGscSite);
   const remove = useServerFn(removeGscSite);
+  const gResync = useServerFn(resyncGoogle);
+  const gRemove = useServerFn(removeGoogleConnection);
   const [busy, setBusy] = useState<string | null>(null);
   async function run(id: string, fn: () => Promise<unknown>, ok: string) {
     setBusy(id);
@@ -99,7 +103,7 @@ function Connections({ client }: { client: PulseClient }) {
                     <td className="text-p-muted">not connected</td>
                     <td className="text-xs">—</td>
                     <td className="text-right">
-                      {p.needs ? <button disabled className="rounded-lg border border-p-line px-3 py-1 text-xs text-p-muted" title={p.needs}>Connect account</button> : <span className="text-[11px] text-p-muted">Add a website above</span>}
+                      {p.needs ? <button disabled className="rounded-lg border border-p-line px-3 py-1 text-xs text-p-muted" title={p.needs}>Connect account</button> : <span className="text-[11px] text-p-muted">{p.id === "search_console" ? "Add a website above" : "Connect in Google below"}</span>}
                     </td>
                   </tr>
                 );
@@ -110,7 +114,7 @@ function Connections({ client }: { client: PulseClient }) {
                 return (
                   <tr key={id} className="border-t border-p-line align-top">
                     <td className="py-2.5">{i === 0 ? channelLabel(p.id) : ""}</td>
-                    <td className="text-p-muted">{c.account_ref}</td>
+                    <td className="text-p-muted">{c.account_name ?? c.account_ref}</td>
                     <td>
                       <div className={h.cls}>{h.label}</div>
                       {c.last_error && <div className="max-w-xs text-[11px] text-p-down">{c.last_error}</div>}
@@ -120,6 +124,12 @@ function Connections({ client }: { client: PulseClient }) {
                       {c.last_attempt_at && c.last_attempt_at !== c.last_sync_at && <div className="text-[11px] text-p-muted">last tried {new Date(c.last_attempt_at).toLocaleString("en-GB")}</div>}
                     </td>
                     <td className="whitespace-nowrap text-right">
+                      {admin && (p.id === "youtube" || p.id === "gbp") && (
+                        <span className="flex justify-end gap-3 text-xs">
+                          <button disabled={!!busy} onClick={() => run(id, () => gResync({ data: { clientId: client.id, provider: p.id as "youtube", ref: c.account_ref! } }), "Synced")} className="text-p-cerulean disabled:opacity-50">{busy === id ? "Working…" : "Sync now"}</button>
+                          <button disabled={!!busy} onClick={() => { if (confirm(`Disconnect ${c.account_name ?? c.account_ref}?`)) void run(id, () => gRemove({ data: { clientId: client.id, provider: p.id as "youtube", ref: c.account_ref! } }), "Disconnected"); }} className="text-p-down disabled:opacity-50">Disconnect</button>
+                        </span>
+                      )}
                       {admin && p.id === "search_console" && (
                         <span className="flex justify-end gap-3 text-xs">
                           <button disabled={!!busy} onClick={() => run(id, () => resync({ data: { clientId: client.id, siteUrl: c.account_ref! } }), "Reconnected and synced")} className="text-p-cerulean disabled:opacity-50">{busy === id ? "Working…" : "Reconnect"}</button>
@@ -325,6 +335,56 @@ function SearchConsole({ client }: { client: PulseClient }) {
           )}
         </div>
       )}
+    </Panel>
+  );
+}
+
+function GoogleConnections({ client }: { client: PulseClient }) {
+  const { refetchSession } = usePulse();
+  const connectUrl = useServerFn(googleConnectUrl);
+  const list = useServerFn(googleAssets);
+  const add = useServerFn(addGoogleConnection);
+  const assets = useQuery({ queryKey: ["pulse", "googleAssets"], queryFn: () => list(), staleTime: 10 * 60_000 });
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    const on = (e: MessageEvent) => { if (e.data === "pulse-google-connected") { void assets.refetch(); refetchSession(); } };
+    window.addEventListener("message", on);
+    return () => window.removeEventListener("message", on);
+  }, [assets, refetchSession]);
+  const linked = new Set(client.connections.filter((c) => c.provider === "youtube" || c.provider === "gbp").map((c) => `${c.provider}:${c.account_ref}`));
+  const accts = assets.data ?? [];
+  const opts = (kind: "channels" | "locations") => accts.flatMap((a) => a[kind].filter((x) => !linked.has(`${kind === "channels" ? "youtube" : "gbp"}:${x.id}`)).map((x) => ({ value: `${a.id}|${x.id}|${x.name}`, label: x.name, hint: a.email })));
+  async function link(provider: "youtube" | "gbp", v: string) {
+    if (!v) return;
+    const [accountId, ref, ...n] = v.split("|");
+    setBusy(true);
+    try { await add({ data: { clientId: client.id, provider, accountId: accountId!, ref: ref!, name: n.join("|") } }); toast.success("Linked and synced"); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
+    finally { setBusy(false); refetchSession(); }
+  }
+  async function connect() {
+    const w = window.open("", "_blank");
+    try { const { url } = await connectUrl({ data: { clientId: client.id, origin: window.location.origin } }); if (w) w.location.href = url; else window.location.href = url; }
+    catch (e) { w?.close(); toast.error(e instanceof Error ? e.message : "Failed"); }
+  }
+  return (
+    <Panel title="Google — YouTube & Business Profile" sub="Sign in with the Google account that owns this client's channel or Business Profile. Refreshed automatically each night." setup={false}>
+      <div className="flex flex-wrap items-end gap-3">
+        <button onClick={connect} className="h-9 rounded-lg bg-p-cerulean px-4 text-sm text-white">Connect a Google account</button>
+        {assets.isLoading && <span className="text-xs text-p-muted">Loading accounts…</span>}
+        {accts.map((a) => <span key={a.id} className="text-xs text-p-muted">{a.email}{a.error && <span className="ml-1 text-p-down">({a.error})</span>}</span>)}
+      </div>
+      {accts.length > 0 && (
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <label className="block text-xs text-p-muted">YouTube channel
+            <SearchSelect className="mt-1" options={opts("channels")} value="" placeholder="Type a channel name…" onChange={(v) => void link("youtube", v)} />
+          </label>
+          <label className="block text-xs text-p-muted">Business Profile location
+            <SearchSelect className="mt-1" options={opts("locations")} value="" placeholder="Type a business name…" onChange={(v) => void link("gbp", v)} />
+          </label>
+        </div>
+      )}
+      {busy && <p className="mt-2 text-xs text-p-muted">Linking and pulling data…</p>}
     </Panel>
   );
 }

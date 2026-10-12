@@ -11,7 +11,9 @@ export const Route = createFileRoute("/api/public/hooks/pulse-sync")({
         const gsc = await syncAllDue();
         const { syncAllMeta } = await import("@/lib/pulse/meta-sync.server");
         const meta = await syncAllMeta().catch((e) => ({ error: String(e) }));
-        return Response.json({ ok: true, gsc, meta });
+        const { syncAllGoogle } = await import("@/lib/pulse/google.server");
+        const google = await syncAllGoogle().catch((e) => ({ error: String(e) }));
+        return Response.json({ ok: true, gsc, meta, google });
       },
     },
   },

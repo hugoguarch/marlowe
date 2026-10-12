@@ -17,7 +17,7 @@ export const getPulseSession = createServerFn({ method: "POST" })
       .order("name");
     const { data: conns } = await context.supabase
       .from("pulse_connections")
-      .select("client_id, provider, status, last_sync_at, token_expires_at, account_ref, last_error, last_attempt_at");
+      .select("client_id, provider, status, last_sync_at, token_expires_at, account_ref, account_name, last_error, last_attempt_at");
     const { data: meta } = await context.supabase.from("client_meta_connections").select("client_id, fb_page_id, fb_page_name, ig_user_id, ig_username, ad_account_ids, updated_at");
     return {
       role: (role ?? "none") as PulseRole,
