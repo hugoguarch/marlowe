@@ -150,7 +150,7 @@ function BrandPage() {
       <PageHeader
         eyebrow="The brand brain"
         title={brain.name}
-        subtitle="Everything Marlowe uses to write, design and post. Edit anything and it applies from the next post."
+        subtitle="Everything the agents use to write, design and post. Edit anything and it applies from the next post."
         action={
           <div className="flex flex-wrap items-center gap-2">
             {brands.length > 1 ? (

@@ -99,9 +99,9 @@ function Dashboard() {
 
       <div className="grid grid-cols-2 gap-4 2xl:grid-cols-4">
         <KpiCard k={{ id: "leads", label: "Agent tasks this month", value: null, prev: null, kind: "int", points: [] }} icon={Zap} />
-        <KpiCard k={byKey.reach!} icon={Eye} loading={q.isLoading} sub="Across connected social profiles" />
-        <KpiCard k={byKey.leads!} icon={Target} loading={q.isLoading} sub="Website conversions" />
-        <KpiCard k={byKey.spend!} icon={PoundSterling} loading={q.isLoading} sub="Meta ads, this period" />
+        <KpiCard k={byKey["reach"]!} icon={Eye} loading={q.isLoading} sub="Across connected social profiles" />
+        <KpiCard k={byKey["leads"]!} icon={Target} loading={q.isLoading} sub="Website conversions" />
+        <KpiCard k={byKey["spend"]!} icon={PoundSterling} loading={q.isLoading} sub="Meta ads, this period" />
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.75fr)_minmax(0,1fr)]">
