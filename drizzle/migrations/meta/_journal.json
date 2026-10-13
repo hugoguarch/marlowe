@@ -78,6 +78,13 @@
       "when": 1791879018269,
       "tag": "0010_pulse_reports",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791894797540,
+      "tag": "0011_email_site_cms",
+      "breakpoints": true
     }
   ]
 }
