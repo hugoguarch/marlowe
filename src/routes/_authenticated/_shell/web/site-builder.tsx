@@ -83,18 +83,21 @@ function SiteBuilder() {
       .then(({ data }) => setVersions((data ?? []) as unknown as Version[]));
   }, [page]);
 
-  // Autosave.
+  // Autosave (keyed on sections only so page-list updates don't cancel a pending save).
+  const pageRef = useRef(page);
+  pageRef.current = page;
   useEffect(() => {
-    if (!page || loadedFor.current !== page.id || sections === page.sections) return;
+    const pg = pageRef.current;
+    if (!pg || loadedFor.current !== pg.id || sections === pg.sections) return;
     setSaved("saving");
     const t = setTimeout(async () => {
       const updated_at = new Date().toISOString();
-      await supabase.from("site_pages").update({ sections: sections as never, updated_at }).eq("id", page.id);
-      setPages((ps) => ps.map((p) => (p.id === page.id ? { ...p, sections, updated_at } : p)));
+      await supabase.from("site_pages").update({ sections: sections as never, updated_at }).eq("id", pg.id);
+      setPages((ps) => ps.map((p) => (p.id === pg.id ? { ...p, sections, updated_at } : p)));
       setSaved("saved");
     }, 900);
     return () => clearTimeout(t);
-  }, [sections, page]);
+  }, [sections]);
 
   async function snapshot(note: string, s = sections) {
     if (!page) return;
