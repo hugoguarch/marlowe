@@ -97,7 +97,7 @@
 }
 
 :root {
-  --radius: 0.5rem;
+  --radius: 0.125rem;
   /* Brand: #003341 deep teal + white */
   --ink: oklch(0.288 0.0447 214.5);
   --paper: oklch(1 0 0);
