@@ -24,9 +24,11 @@ import { Route as OauthCallbackRouteImport } from './routes/oauth.callback'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedShellAgentRouteImport } from './routes/_authenticated/_shell/agent'
 import { Route as AuthenticatedShellDashboardRouteImport } from './routes/_authenticated/_shell/dashboard'
+import { Route as AuthenticatedShellSettingsRouteImport } from './routes/_authenticated/_shell/settings'
 import { Route as AuthenticatedAppSplatRouteImport } from './routes/_authenticated/app.$'
 import { Route as AuthenticatedPulseSplatRouteImport } from './routes/_authenticated/pulse.$'
 import { Route as AuthenticatedShellDesignBrandRouteImport } from './routes/_authenticated/_shell/design/brand'
+import { Route as AuthenticatedShellMarketingAnalyticsRouteImport } from './routes/_authenticated/_shell/marketing/analytics'
 import { Route as AuthenticatedShellMarketingSchedulerRouteImport } from './routes/_authenticated/_shell/marketing/scheduler'
 import { Route as AuthenticatedShellMarketingSocialRouteImport } from './routes/_authenticated/_shell/marketing/social'
 import { Route as AuthenticatedShellSettingsIndexRouteImport } from './routes/_authenticated/_shell/settings/index'
@@ -118,6 +120,12 @@ const AuthenticatedShellDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => AuthenticatedShellRoute,
   } as any)
+const AuthenticatedShellSettingsRoute =
+  AuthenticatedShellSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
 const AuthenticatedAppSplatRoute = AuthenticatedAppSplatRouteImport.update({
   id: '/$',
   path: '/$',
@@ -134,6 +142,12 @@ const AuthenticatedShellDesignBrandRoute =
     path: '/design/brand',
     getParentRoute: () => AuthenticatedShellRoute,
   } as any)
+const AuthenticatedShellMarketingAnalyticsRoute =
+  AuthenticatedShellMarketingAnalyticsRouteImport.update({
+    id: '/marketing/analytics',
+    path: '/marketing/analytics',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
 const AuthenticatedShellMarketingSchedulerRoute =
   AuthenticatedShellMarketingSchedulerRouteImport.update({
     id: '/marketing/scheduler',
@@ -148,15 +162,15 @@ const AuthenticatedShellMarketingSocialRoute =
   } as any)
 const AuthenticatedShellSettingsIndexRoute =
   AuthenticatedShellSettingsIndexRouteImport.update({
-    id: '/settings/',
-    path: '/settings/',
-    getParentRoute: () => AuthenticatedShellRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedShellSettingsRoute,
   } as any)
 const AuthenticatedShellSettingsDataSourcesRoute =
   AuthenticatedShellSettingsDataSourcesRouteImport.update({
-    id: '/settings/data-sources',
-    path: '/settings/data-sources',
-    getParentRoute: () => AuthenticatedShellRoute,
+    id: '/data-sources',
+    path: '/data-sources',
+    getParentRoute: () => AuthenticatedShellSettingsRoute,
   } as any)
 const AuthenticatedShellWebAiSearchRoute =
   AuthenticatedShellWebAiSearchRouteImport.update({
@@ -171,45 +185,45 @@ const ApiPublicHooksPulseSyncRoute = ApiPublicHooksPulseSyncRouteImport.update({
 } as any)
 const AuthenticatedShellMarketingAnalyticsIndexRoute =
   AuthenticatedShellMarketingAnalyticsIndexRouteImport.update({
-    id: '/marketing/analytics/',
-    path: '/marketing/analytics/',
-    getParentRoute: () => AuthenticatedShellRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedShellMarketingAnalyticsRoute,
   } as any)
 const AuthenticatedShellMarketingAnalyticsCompetitorsRoute =
   AuthenticatedShellMarketingAnalyticsCompetitorsRouteImport.update({
-    id: '/marketing/analytics/competitors',
-    path: '/marketing/analytics/competitors',
-    getParentRoute: () => AuthenticatedShellRoute,
+    id: '/competitors',
+    path: '/competitors',
+    getParentRoute: () => AuthenticatedShellMarketingAnalyticsRoute,
   } as any)
 const AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute =
   AuthenticatedShellMarketingAnalyticsGoogleBusinessRouteImport.update({
-    id: '/marketing/analytics/google-business',
-    path: '/marketing/analytics/google-business',
-    getParentRoute: () => AuthenticatedShellRoute,
+    id: '/google-business',
+    path: '/google-business',
+    getParentRoute: () => AuthenticatedShellMarketingAnalyticsRoute,
   } as any)
 const AuthenticatedShellMarketingAnalyticsNewsRoute =
   AuthenticatedShellMarketingAnalyticsNewsRouteImport.update({
-    id: '/marketing/analytics/news',
-    path: '/marketing/analytics/news',
-    getParentRoute: () => AuthenticatedShellRoute,
+    id: '/news',
+    path: '/news',
+    getParentRoute: () => AuthenticatedShellMarketingAnalyticsRoute,
   } as any)
 const AuthenticatedShellMarketingAnalyticsReportsRoute =
   AuthenticatedShellMarketingAnalyticsReportsRouteImport.update({
-    id: '/marketing/analytics/reports',
-    path: '/marketing/analytics/reports',
-    getParentRoute: () => AuthenticatedShellRoute,
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthenticatedShellMarketingAnalyticsRoute,
   } as any)
 const AuthenticatedShellMarketingAnalyticsTrendsRoute =
   AuthenticatedShellMarketingAnalyticsTrendsRouteImport.update({
-    id: '/marketing/analytics/trends',
-    path: '/marketing/analytics/trends',
-    getParentRoute: () => AuthenticatedShellRoute,
+    id: '/trends',
+    path: '/trends',
+    getParentRoute: () => AuthenticatedShellMarketingAnalyticsRoute,
   } as any)
 const AuthenticatedShellMarketingAnalyticsWebsiteRoute =
   AuthenticatedShellMarketingAnalyticsWebsiteRouteImport.update({
-    id: '/marketing/analytics/website',
-    path: '/marketing/analytics/website',
-    getParentRoute: () => AuthenticatedShellRoute,
+    id: '/website',
+    path: '/website',
+    getParentRoute: () => AuthenticatedShellMarketingAnalyticsRoute,
   } as any)
 const ApiPublicOauthGoogleCallbackRoute =
   ApiPublicOauthGoogleCallbackRouteImport.update({
@@ -238,9 +252,11 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/agent': typeof AuthenticatedShellAgentRoute
   '/dashboard': typeof AuthenticatedShellDashboardRoute
+  '/settings': typeof AuthenticatedShellSettingsRouteWithChildren
   '/app/$': typeof AuthenticatedAppSplatRoute
   '/pulse/$': typeof AuthenticatedPulseSplatRoute
   '/design/brand': typeof AuthenticatedShellDesignBrandRoute
+  '/marketing/analytics': typeof AuthenticatedShellMarketingAnalyticsRouteWithChildren
   '/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
   '/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
   '/settings/data-sources': typeof AuthenticatedShellSettingsDataSourcesRoute
@@ -307,9 +323,11 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/_shell/agent': typeof AuthenticatedShellAgentRoute
   '/_authenticated/_shell/dashboard': typeof AuthenticatedShellDashboardRoute
+  '/_authenticated/_shell/settings': typeof AuthenticatedShellSettingsRouteWithChildren
   '/_authenticated/app/$': typeof AuthenticatedAppSplatRoute
   '/_authenticated/pulse/$': typeof AuthenticatedPulseSplatRoute
   '/_authenticated/_shell/design/brand': typeof AuthenticatedShellDesignBrandRoute
+  '/_authenticated/_shell/marketing/analytics': typeof AuthenticatedShellMarketingAnalyticsRouteWithChildren
   '/_authenticated/_shell/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
   '/_authenticated/_shell/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
   '/_authenticated/_shell/settings/data-sources': typeof AuthenticatedShellSettingsDataSourcesRoute
@@ -342,9 +360,11 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/agent'
     | '/dashboard'
+    | '/settings'
     | '/app/$'
     | '/pulse/$'
     | '/design/brand'
+    | '/marketing/analytics'
     | '/marketing/scheduler'
     | '/marketing/social'
     | '/settings/data-sources'
@@ -410,9 +430,11 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/_authenticated/_shell/agent'
     | '/_authenticated/_shell/dashboard'
+    | '/_authenticated/_shell/settings'
     | '/_authenticated/app/$'
     | '/_authenticated/pulse/$'
     | '/_authenticated/_shell/design/brand'
+    | '/_authenticated/_shell/marketing/analytics'
     | '/_authenticated/_shell/marketing/scheduler'
     | '/_authenticated/_shell/marketing/social'
     | '/_authenticated/_shell/settings/data-sources'
@@ -553,6 +575,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellDashboardRouteImport
       parentRoute: typeof AuthenticatedShellRoute
     }
+    '/_authenticated/_shell/settings': {
+      id: '/_authenticated/_shell/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedShellSettingsRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
     '/_authenticated/app/$': {
       id: '/_authenticated/app/$'
       path: '/$'
@@ -574,6 +603,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellDesignBrandRouteImport
       parentRoute: typeof AuthenticatedShellRoute
     }
+    '/_authenticated/_shell/marketing/analytics': {
+      id: '/_authenticated/_shell/marketing/analytics'
+      path: '/marketing/analytics'
+      fullPath: '/marketing/analytics'
+      preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
     '/_authenticated/_shell/marketing/scheduler': {
       id: '/_authenticated/_shell/marketing/scheduler'
       path: '/marketing/scheduler'
@@ -590,17 +626,17 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/_shell/settings/': {
       id: '/_authenticated/_shell/settings/'
-      path: '/settings'
+      path: '/'
       fullPath: '/settings/'
       preLoaderRoute: typeof AuthenticatedShellSettingsIndexRouteImport
-      parentRoute: typeof AuthenticatedShellRoute
+      parentRoute: typeof AuthenticatedShellSettingsRoute
     }
     '/_authenticated/_shell/settings/data-sources': {
       id: '/_authenticated/_shell/settings/data-sources'
-      path: '/settings/data-sources'
+      path: '/data-sources'
       fullPath: '/settings/data-sources'
       preLoaderRoute: typeof AuthenticatedShellSettingsDataSourcesRouteImport
-      parentRoute: typeof AuthenticatedShellRoute
+      parentRoute: typeof AuthenticatedShellSettingsRoute
     }
     '/_authenticated/_shell/web/ai-search': {
       id: '/_authenticated/_shell/web/ai-search'
@@ -618,52 +654,52 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/_shell/marketing/analytics/': {
       id: '/_authenticated/_shell/marketing/analytics/'
-      path: '/marketing/analytics'
+      path: '/'
       fullPath: '/marketing/analytics/'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsIndexRouteImport
-      parentRoute: typeof AuthenticatedShellRoute
+      parentRoute: typeof AuthenticatedShellMarketingAnalyticsRoute
     }
     '/_authenticated/_shell/marketing/analytics/competitors': {
       id: '/_authenticated/_shell/marketing/analytics/competitors'
-      path: '/marketing/analytics/competitors'
+      path: '/competitors'
       fullPath: '/marketing/analytics/competitors'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsCompetitorsRouteImport
-      parentRoute: typeof AuthenticatedShellRoute
+      parentRoute: typeof AuthenticatedShellMarketingAnalyticsRoute
     }
     '/_authenticated/_shell/marketing/analytics/google-business': {
       id: '/_authenticated/_shell/marketing/analytics/google-business'
-      path: '/marketing/analytics/google-business'
+      path: '/google-business'
       fullPath: '/marketing/analytics/google-business'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsGoogleBusinessRouteImport
-      parentRoute: typeof AuthenticatedShellRoute
+      parentRoute: typeof AuthenticatedShellMarketingAnalyticsRoute
     }
     '/_authenticated/_shell/marketing/analytics/news': {
       id: '/_authenticated/_shell/marketing/analytics/news'
-      path: '/marketing/analytics/news'
+      path: '/news'
       fullPath: '/marketing/analytics/news'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsNewsRouteImport
-      parentRoute: typeof AuthenticatedShellRoute
+      parentRoute: typeof AuthenticatedShellMarketingAnalyticsRoute
     }
     '/_authenticated/_shell/marketing/analytics/reports': {
       id: '/_authenticated/_shell/marketing/analytics/reports'
-      path: '/marketing/analytics/reports'
+      path: '/reports'
       fullPath: '/marketing/analytics/reports'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsReportsRouteImport
-      parentRoute: typeof AuthenticatedShellRoute
+      parentRoute: typeof AuthenticatedShellMarketingAnalyticsRoute
     }
     '/_authenticated/_shell/marketing/analytics/trends': {
       id: '/_authenticated/_shell/marketing/analytics/trends'
-      path: '/marketing/analytics/trends'
+      path: '/trends'
       fullPath: '/marketing/analytics/trends'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsTrendsRouteImport
-      parentRoute: typeof AuthenticatedShellRoute
+      parentRoute: typeof AuthenticatedShellMarketingAnalyticsRoute
     }
     '/_authenticated/_shell/marketing/analytics/website': {
       id: '/_authenticated/_shell/marketing/analytics/website'
-      path: '/marketing/analytics/website'
+      path: '/website'
       fullPath: '/marketing/analytics/website'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsWebsiteRouteImport
-      parentRoute: typeof AuthenticatedShellRoute
+      parentRoute: typeof AuthenticatedShellMarketingAnalyticsRoute
     }
     '/api/public/oauth/google/callback': {
       id: '/api/public/oauth/google/callback'
@@ -682,15 +718,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthenticatedShellRouteChildren {
-  AuthenticatedShellAgentRoute: typeof AuthenticatedShellAgentRoute
-  AuthenticatedShellDashboardRoute: typeof AuthenticatedShellDashboardRoute
-  AuthenticatedShellDesignBrandRoute: typeof AuthenticatedShellDesignBrandRoute
-  AuthenticatedShellMarketingSchedulerRoute: typeof AuthenticatedShellMarketingSchedulerRoute
-  AuthenticatedShellMarketingSocialRoute: typeof AuthenticatedShellMarketingSocialRoute
+interface AuthenticatedShellSettingsRouteChildren {
   AuthenticatedShellSettingsDataSourcesRoute: typeof AuthenticatedShellSettingsDataSourcesRoute
-  AuthenticatedShellWebAiSearchRoute: typeof AuthenticatedShellWebAiSearchRoute
   AuthenticatedShellSettingsIndexRoute: typeof AuthenticatedShellSettingsIndexRoute
+}
+
+const AuthenticatedShellSettingsRouteChildren: AuthenticatedShellSettingsRouteChildren =
+  {
+    AuthenticatedShellSettingsDataSourcesRoute:
+      AuthenticatedShellSettingsDataSourcesRoute,
+    AuthenticatedShellSettingsIndexRoute: AuthenticatedShellSettingsIndexRoute,
+  }
+
+const AuthenticatedShellSettingsRouteWithChildren =
+  AuthenticatedShellSettingsRoute._addFileChildren(
+    AuthenticatedShellSettingsRouteChildren,
+  )
+
+interface AuthenticatedShellMarketingAnalyticsRouteChildren {
   AuthenticatedShellMarketingAnalyticsCompetitorsRoute: typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
   AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute: typeof AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute
   AuthenticatedShellMarketingAnalyticsNewsRoute: typeof AuthenticatedShellMarketingAnalyticsNewsRoute
@@ -700,32 +745,52 @@ interface AuthenticatedShellRouteChildren {
   AuthenticatedShellMarketingAnalyticsIndexRoute: typeof AuthenticatedShellMarketingAnalyticsIndexRoute
 }
 
+const AuthenticatedShellMarketingAnalyticsRouteChildren: AuthenticatedShellMarketingAnalyticsRouteChildren =
+  {
+    AuthenticatedShellMarketingAnalyticsCompetitorsRoute:
+      AuthenticatedShellMarketingAnalyticsCompetitorsRoute,
+    AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute:
+      AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute,
+    AuthenticatedShellMarketingAnalyticsNewsRoute:
+      AuthenticatedShellMarketingAnalyticsNewsRoute,
+    AuthenticatedShellMarketingAnalyticsReportsRoute:
+      AuthenticatedShellMarketingAnalyticsReportsRoute,
+    AuthenticatedShellMarketingAnalyticsTrendsRoute:
+      AuthenticatedShellMarketingAnalyticsTrendsRoute,
+    AuthenticatedShellMarketingAnalyticsWebsiteRoute:
+      AuthenticatedShellMarketingAnalyticsWebsiteRoute,
+    AuthenticatedShellMarketingAnalyticsIndexRoute:
+      AuthenticatedShellMarketingAnalyticsIndexRoute,
+  }
+
+const AuthenticatedShellMarketingAnalyticsRouteWithChildren =
+  AuthenticatedShellMarketingAnalyticsRoute._addFileChildren(
+    AuthenticatedShellMarketingAnalyticsRouteChildren,
+  )
+
+interface AuthenticatedShellRouteChildren {
+  AuthenticatedShellAgentRoute: typeof AuthenticatedShellAgentRoute
+  AuthenticatedShellDashboardRoute: typeof AuthenticatedShellDashboardRoute
+  AuthenticatedShellSettingsRoute: typeof AuthenticatedShellSettingsRouteWithChildren
+  AuthenticatedShellDesignBrandRoute: typeof AuthenticatedShellDesignBrandRoute
+  AuthenticatedShellMarketingAnalyticsRoute: typeof AuthenticatedShellMarketingAnalyticsRouteWithChildren
+  AuthenticatedShellMarketingSchedulerRoute: typeof AuthenticatedShellMarketingSchedulerRoute
+  AuthenticatedShellMarketingSocialRoute: typeof AuthenticatedShellMarketingSocialRoute
+  AuthenticatedShellWebAiSearchRoute: typeof AuthenticatedShellWebAiSearchRoute
+}
+
 const AuthenticatedShellRouteChildren: AuthenticatedShellRouteChildren = {
   AuthenticatedShellAgentRoute: AuthenticatedShellAgentRoute,
   AuthenticatedShellDashboardRoute: AuthenticatedShellDashboardRoute,
+  AuthenticatedShellSettingsRoute: AuthenticatedShellSettingsRouteWithChildren,
   AuthenticatedShellDesignBrandRoute: AuthenticatedShellDesignBrandRoute,
+  AuthenticatedShellMarketingAnalyticsRoute:
+    AuthenticatedShellMarketingAnalyticsRouteWithChildren,
   AuthenticatedShellMarketingSchedulerRoute:
     AuthenticatedShellMarketingSchedulerRoute,
   AuthenticatedShellMarketingSocialRoute:
     AuthenticatedShellMarketingSocialRoute,
-  AuthenticatedShellSettingsDataSourcesRoute:
-    AuthenticatedShellSettingsDataSourcesRoute,
   AuthenticatedShellWebAiSearchRoute: AuthenticatedShellWebAiSearchRoute,
-  AuthenticatedShellSettingsIndexRoute: AuthenticatedShellSettingsIndexRoute,
-  AuthenticatedShellMarketingAnalyticsCompetitorsRoute:
-    AuthenticatedShellMarketingAnalyticsCompetitorsRoute,
-  AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute:
-    AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute,
-  AuthenticatedShellMarketingAnalyticsNewsRoute:
-    AuthenticatedShellMarketingAnalyticsNewsRoute,
-  AuthenticatedShellMarketingAnalyticsReportsRoute:
-    AuthenticatedShellMarketingAnalyticsReportsRoute,
-  AuthenticatedShellMarketingAnalyticsTrendsRoute:
-    AuthenticatedShellMarketingAnalyticsTrendsRoute,
-  AuthenticatedShellMarketingAnalyticsWebsiteRoute:
-    AuthenticatedShellMarketingAnalyticsWebsiteRoute,
-  AuthenticatedShellMarketingAnalyticsIndexRoute:
-    AuthenticatedShellMarketingAnalyticsIndexRoute,
 }
 
 const AuthenticatedShellRouteWithChildren =
