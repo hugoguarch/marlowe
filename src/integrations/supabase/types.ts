@@ -593,6 +593,42 @@ export type Database = {
         }
         Relationships: []
       }
+      pulse_linkedin_accounts: {
+        Row: {
+          access_token_enc: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          member_id: string
+          name: string | null
+          refresh_token_enc: string | null
+          scopes: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token_enc: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          member_id: string
+          name?: string | null
+          refresh_token_enc?: string | null
+          scopes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token_enc?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          member_id?: string
+          name?: string | null
+          refresh_token_enc?: string | null
+          scopes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       pulse_metrics_daily: {
         Row: {
           channel: string
