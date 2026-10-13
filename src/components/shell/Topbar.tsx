@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { usePulse } from "@/components/pulse/context";
 import type { RangeId } from "@/lib/pulse/metrics";
+import { AgentBar } from "./AgentBar";
 import { crumbs } from "./nav";
 import { btnPrimary } from "./ui";
 
@@ -15,12 +16,12 @@ const RANGES: { id: RangeId; label: string }[] = [
   { id: "custom", label: "Custom" },
 ];
 
-export function Topbar({ onNewTask }: { onNewTask: () => void }) {
+export function Topbar({ onNewTask, agentOpen, setAgentOpen }: { onNewTask: () => void; agentOpen: boolean; setAgentOpen: (v: boolean) => void }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [dept, page] = crumbs(path);
   return (
     <header className="sticky top-0 z-30 flex h-[60px] shrink-0 items-center gap-4 border-b border-app-line bg-app-card px-6 lg:px-8">
-      <div className="flex min-w-0 items-center gap-2 text-[13.5px]">
+      <div className="flex min-w-0 shrink-0 items-center gap-2 text-[13.5px]">
         <span className="text-ink-navy/55">{dept}</span>
         {page ? (
           <>
@@ -29,7 +30,10 @@ export function Topbar({ onNewTask }: { onNewTask: () => void }) {
           </>
         ) : null}
       </div>
-      <div className="ml-auto flex items-center gap-2.5">
+      <div className="flex min-w-0 flex-1 justify-center px-2">
+        {path.startsWith("/agent") ? null : <AgentBar open={agentOpen} setOpen={setAgentOpen} />}
+      </div>
+      <div className="flex shrink-0 items-center gap-2.5">
         <DateRange />
         <Notifications />
         <button onClick={onNewTask} className={btnPrimary}>

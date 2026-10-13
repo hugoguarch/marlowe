@@ -6,7 +6,6 @@ import fLight from "@/assets/report/hn-Light.otf.asset.json";
 import fMedium from "@/assets/report/hn-Medium.otf.asset.json";
 import fRoman from "@/assets/report/hn-Roman.otf.asset.json";
 import { PulseProvider } from "@/components/pulse/context";
-import { AgentBar } from "@/components/shell/AgentBar";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { Topbar } from "@/components/shell/Topbar";
 import { Toaster } from "@/components/ui/sonner";
@@ -70,12 +69,11 @@ function Frame({ userId, email }: { userId: string; email: string }) {
     <div className="wm-shell flex min-h-screen bg-app-bg font-sans text-ink-navy">
       <Sidebar name={name || email.split("@")[0] || "You"} role={role} onSignOut={signOut} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar onNewTask={() => setAgentOpen(true)} />
-        <main key={path.split("/").slice(0, 3).join("/")} className={`wm-fade flex-1 ${onAgent ? "" : "px-6 pt-7 pb-28 lg:px-8"}`}>
+        <Topbar onNewTask={() => setAgentOpen(true)} agentOpen={agentOpen} setAgentOpen={setAgentOpen} />
+        <main key={path.split("/").slice(0, 3).join("/")} className={`wm-fade flex-1 ${onAgent ? "" : "px-6 pt-7 pb-12 lg:px-8"}`}>
           <Outlet />
         </main>
       </div>
-      {onAgent ? null : <AgentBar open={agentOpen} setOpen={setAgentOpen} />}
     </div>
   );
 }
