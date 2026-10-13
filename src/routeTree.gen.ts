@@ -28,6 +28,8 @@ import { Route as AuthenticatedShellSettingsRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppSplatRouteImport } from './routes/_authenticated/app.$'
 import { Route as AuthenticatedPulseSplatRouteImport } from './routes/_authenticated/pulse.$'
 import { Route as AuthenticatedShellDesignBrandRouteImport } from './routes/_authenticated/_shell/design/brand'
+import { Route as AuthenticatedShellDesignEmailDesignerRouteImport } from './routes/_authenticated/_shell/design/email-designer'
+import { Route as AuthenticatedShellDesignGraphicsRouteImport } from './routes/_authenticated/_shell/design/graphics'
 import { Route as AuthenticatedShellMarketingAdsRouteImport } from './routes/_authenticated/_shell/marketing/ads'
 import { Route as AuthenticatedShellMarketingAnalyticsRouteImport } from './routes/_authenticated/_shell/marketing/analytics'
 import { Route as AuthenticatedShellMarketingEmailRouteImport } from './routes/_authenticated/_shell/marketing/email'
@@ -35,7 +37,10 @@ import { Route as AuthenticatedShellMarketingSchedulerRouteImport } from './rout
 import { Route as AuthenticatedShellMarketingSocialRouteImport } from './routes/_authenticated/_shell/marketing/social'
 import { Route as AuthenticatedShellSettingsIndexRouteImport } from './routes/_authenticated/_shell/settings/index'
 import { Route as AuthenticatedShellSettingsDataSourcesRouteImport } from './routes/_authenticated/_shell/settings/data-sources'
+import { Route as AuthenticatedShellVideoLibraryRouteImport } from './routes/_authenticated/_shell/video/library'
+import { Route as AuthenticatedShellVideoMotionRouteImport } from './routes/_authenticated/_shell/video/motion'
 import { Route as AuthenticatedShellWebAiSearchRouteImport } from './routes/_authenticated/_shell/web/ai-search'
+import { Route as AuthenticatedShellWebArticlesRouteImport } from './routes/_authenticated/_shell/web/articles'
 import { Route as ApiPublicHooksPulseSyncRouteImport } from './routes/api/public/hooks/pulse-sync'
 import { Route as AuthenticatedShellMarketingAnalyticsIndexRouteImport } from './routes/_authenticated/_shell/marketing/analytics/index'
 import { Route as AuthenticatedShellMarketingAnalyticsCompetitorsRouteImport } from './routes/_authenticated/_shell/marketing/analytics/competitors'
@@ -144,6 +149,18 @@ const AuthenticatedShellDesignBrandRoute =
     path: '/design/brand',
     getParentRoute: () => AuthenticatedShellRoute,
   } as any)
+const AuthenticatedShellDesignEmailDesignerRoute =
+  AuthenticatedShellDesignEmailDesignerRouteImport.update({
+    id: '/design/email-designer',
+    path: '/design/email-designer',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
+const AuthenticatedShellDesignGraphicsRoute =
+  AuthenticatedShellDesignGraphicsRouteImport.update({
+    id: '/design/graphics',
+    path: '/design/graphics',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
 const AuthenticatedShellMarketingAdsRoute =
   AuthenticatedShellMarketingAdsRouteImport.update({
     id: '/marketing/ads',
@@ -186,10 +203,28 @@ const AuthenticatedShellSettingsDataSourcesRoute =
     path: '/data-sources',
     getParentRoute: () => AuthenticatedShellSettingsRoute,
   } as any)
+const AuthenticatedShellVideoLibraryRoute =
+  AuthenticatedShellVideoLibraryRouteImport.update({
+    id: '/video/library',
+    path: '/video/library',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
+const AuthenticatedShellVideoMotionRoute =
+  AuthenticatedShellVideoMotionRouteImport.update({
+    id: '/video/motion',
+    path: '/video/motion',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
 const AuthenticatedShellWebAiSearchRoute =
   AuthenticatedShellWebAiSearchRouteImport.update({
     id: '/web/ai-search',
     path: '/web/ai-search',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
+const AuthenticatedShellWebArticlesRoute =
+  AuthenticatedShellWebArticlesRouteImport.update({
+    id: '/web/articles',
+    path: '/web/articles',
     getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const ApiPublicHooksPulseSyncRoute = ApiPublicHooksPulseSyncRouteImport.update({
@@ -270,13 +305,18 @@ export interface FileRoutesByFullPath {
   '/app/$': typeof AuthenticatedAppSplatRoute
   '/pulse/$': typeof AuthenticatedPulseSplatRoute
   '/design/brand': typeof AuthenticatedShellDesignBrandRoute
+  '/design/email-designer': typeof AuthenticatedShellDesignEmailDesignerRoute
+  '/design/graphics': typeof AuthenticatedShellDesignGraphicsRoute
   '/marketing/ads': typeof AuthenticatedShellMarketingAdsRoute
   '/marketing/analytics': typeof AuthenticatedShellMarketingAnalyticsRouteWithChildren
   '/marketing/email': typeof AuthenticatedShellMarketingEmailRoute
   '/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
   '/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
   '/settings/data-sources': typeof AuthenticatedShellSettingsDataSourcesRoute
+  '/video/library': typeof AuthenticatedShellVideoLibraryRoute
+  '/video/motion': typeof AuthenticatedShellVideoMotionRoute
   '/web/ai-search': typeof AuthenticatedShellWebAiSearchRoute
+  '/web/articles': typeof AuthenticatedShellWebArticlesRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
   '/settings/': typeof AuthenticatedShellSettingsIndexRoute
   '/marketing/analytics/competitors': typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
@@ -306,12 +346,17 @@ export interface FileRoutesByTo {
   '/app/$': typeof AuthenticatedAppSplatRoute
   '/pulse/$': typeof AuthenticatedPulseSplatRoute
   '/design/brand': typeof AuthenticatedShellDesignBrandRoute
+  '/design/email-designer': typeof AuthenticatedShellDesignEmailDesignerRoute
+  '/design/graphics': typeof AuthenticatedShellDesignGraphicsRoute
   '/marketing/ads': typeof AuthenticatedShellMarketingAdsRoute
   '/marketing/email': typeof AuthenticatedShellMarketingEmailRoute
   '/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
   '/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
   '/settings/data-sources': typeof AuthenticatedShellSettingsDataSourcesRoute
+  '/video/library': typeof AuthenticatedShellVideoLibraryRoute
+  '/video/motion': typeof AuthenticatedShellVideoMotionRoute
   '/web/ai-search': typeof AuthenticatedShellWebAiSearchRoute
+  '/web/articles': typeof AuthenticatedShellWebArticlesRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
   '/settings': typeof AuthenticatedShellSettingsIndexRoute
   '/marketing/analytics/competitors': typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
@@ -345,13 +390,18 @@ export interface FileRoutesById {
   '/_authenticated/app/$': typeof AuthenticatedAppSplatRoute
   '/_authenticated/pulse/$': typeof AuthenticatedPulseSplatRoute
   '/_authenticated/_shell/design/brand': typeof AuthenticatedShellDesignBrandRoute
+  '/_authenticated/_shell/design/email-designer': typeof AuthenticatedShellDesignEmailDesignerRoute
+  '/_authenticated/_shell/design/graphics': typeof AuthenticatedShellDesignGraphicsRoute
   '/_authenticated/_shell/marketing/ads': typeof AuthenticatedShellMarketingAdsRoute
   '/_authenticated/_shell/marketing/analytics': typeof AuthenticatedShellMarketingAnalyticsRouteWithChildren
   '/_authenticated/_shell/marketing/email': typeof AuthenticatedShellMarketingEmailRoute
   '/_authenticated/_shell/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
   '/_authenticated/_shell/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
   '/_authenticated/_shell/settings/data-sources': typeof AuthenticatedShellSettingsDataSourcesRoute
+  '/_authenticated/_shell/video/library': typeof AuthenticatedShellVideoLibraryRoute
+  '/_authenticated/_shell/video/motion': typeof AuthenticatedShellVideoMotionRoute
   '/_authenticated/_shell/web/ai-search': typeof AuthenticatedShellWebAiSearchRoute
+  '/_authenticated/_shell/web/articles': typeof AuthenticatedShellWebArticlesRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
   '/_authenticated/_shell/settings/': typeof AuthenticatedShellSettingsIndexRoute
   '/_authenticated/_shell/marketing/analytics/competitors': typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
@@ -384,13 +434,18 @@ export interface FileRouteTypes {
     | '/app/$'
     | '/pulse/$'
     | '/design/brand'
+    | '/design/email-designer'
+    | '/design/graphics'
     | '/marketing/ads'
     | '/marketing/analytics'
     | '/marketing/email'
     | '/marketing/scheduler'
     | '/marketing/social'
     | '/settings/data-sources'
+    | '/video/library'
+    | '/video/motion'
     | '/web/ai-search'
+    | '/web/articles'
     | '/api/public/hooks/pulse-sync'
     | '/settings/'
     | '/marketing/analytics/competitors'
@@ -420,12 +475,17 @@ export interface FileRouteTypes {
     | '/app/$'
     | '/pulse/$'
     | '/design/brand'
+    | '/design/email-designer'
+    | '/design/graphics'
     | '/marketing/ads'
     | '/marketing/email'
     | '/marketing/scheduler'
     | '/marketing/social'
     | '/settings/data-sources'
+    | '/video/library'
+    | '/video/motion'
     | '/web/ai-search'
+    | '/web/articles'
     | '/api/public/hooks/pulse-sync'
     | '/settings'
     | '/marketing/analytics/competitors'
@@ -458,13 +518,18 @@ export interface FileRouteTypes {
     | '/_authenticated/app/$'
     | '/_authenticated/pulse/$'
     | '/_authenticated/_shell/design/brand'
+    | '/_authenticated/_shell/design/email-designer'
+    | '/_authenticated/_shell/design/graphics'
     | '/_authenticated/_shell/marketing/ads'
     | '/_authenticated/_shell/marketing/analytics'
     | '/_authenticated/_shell/marketing/email'
     | '/_authenticated/_shell/marketing/scheduler'
     | '/_authenticated/_shell/marketing/social'
     | '/_authenticated/_shell/settings/data-sources'
+    | '/_authenticated/_shell/video/library'
+    | '/_authenticated/_shell/video/motion'
     | '/_authenticated/_shell/web/ai-search'
+    | '/_authenticated/_shell/web/articles'
     | '/api/public/hooks/pulse-sync'
     | '/_authenticated/_shell/settings/'
     | '/_authenticated/_shell/marketing/analytics/competitors'
@@ -629,6 +694,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellDesignBrandRouteImport
       parentRoute: typeof AuthenticatedShellRoute
     }
+    '/_authenticated/_shell/design/email-designer': {
+      id: '/_authenticated/_shell/design/email-designer'
+      path: '/design/email-designer'
+      fullPath: '/design/email-designer'
+      preLoaderRoute: typeof AuthenticatedShellDesignEmailDesignerRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
+    '/_authenticated/_shell/design/graphics': {
+      id: '/_authenticated/_shell/design/graphics'
+      path: '/design/graphics'
+      fullPath: '/design/graphics'
+      preLoaderRoute: typeof AuthenticatedShellDesignGraphicsRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
     '/_authenticated/_shell/marketing/ads': {
       id: '/_authenticated/_shell/marketing/ads'
       path: '/marketing/ads'
@@ -678,11 +757,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellSettingsDataSourcesRouteImport
       parentRoute: typeof AuthenticatedShellSettingsRoute
     }
+    '/_authenticated/_shell/video/library': {
+      id: '/_authenticated/_shell/video/library'
+      path: '/video/library'
+      fullPath: '/video/library'
+      preLoaderRoute: typeof AuthenticatedShellVideoLibraryRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
+    '/_authenticated/_shell/video/motion': {
+      id: '/_authenticated/_shell/video/motion'
+      path: '/video/motion'
+      fullPath: '/video/motion'
+      preLoaderRoute: typeof AuthenticatedShellVideoMotionRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
     '/_authenticated/_shell/web/ai-search': {
       id: '/_authenticated/_shell/web/ai-search'
       path: '/web/ai-search'
       fullPath: '/web/ai-search'
       preLoaderRoute: typeof AuthenticatedShellWebAiSearchRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
+    '/_authenticated/_shell/web/articles': {
+      id: '/_authenticated/_shell/web/articles'
+      path: '/web/articles'
+      fullPath: '/web/articles'
+      preLoaderRoute: typeof AuthenticatedShellWebArticlesRouteImport
       parentRoute: typeof AuthenticatedShellRoute
     }
     '/api/public/hooks/pulse-sync': {
@@ -813,12 +913,17 @@ interface AuthenticatedShellRouteChildren {
   AuthenticatedShellDashboardRoute: typeof AuthenticatedShellDashboardRoute
   AuthenticatedShellSettingsRoute: typeof AuthenticatedShellSettingsRouteWithChildren
   AuthenticatedShellDesignBrandRoute: typeof AuthenticatedShellDesignBrandRoute
+  AuthenticatedShellDesignEmailDesignerRoute: typeof AuthenticatedShellDesignEmailDesignerRoute
+  AuthenticatedShellDesignGraphicsRoute: typeof AuthenticatedShellDesignGraphicsRoute
   AuthenticatedShellMarketingAdsRoute: typeof AuthenticatedShellMarketingAdsRoute
   AuthenticatedShellMarketingAnalyticsRoute: typeof AuthenticatedShellMarketingAnalyticsRouteWithChildren
   AuthenticatedShellMarketingEmailRoute: typeof AuthenticatedShellMarketingEmailRoute
   AuthenticatedShellMarketingSchedulerRoute: typeof AuthenticatedShellMarketingSchedulerRoute
   AuthenticatedShellMarketingSocialRoute: typeof AuthenticatedShellMarketingSocialRoute
+  AuthenticatedShellVideoLibraryRoute: typeof AuthenticatedShellVideoLibraryRoute
+  AuthenticatedShellVideoMotionRoute: typeof AuthenticatedShellVideoMotionRoute
   AuthenticatedShellWebAiSearchRoute: typeof AuthenticatedShellWebAiSearchRoute
+  AuthenticatedShellWebArticlesRoute: typeof AuthenticatedShellWebArticlesRoute
 }
 
 const AuthenticatedShellRouteChildren: AuthenticatedShellRouteChildren = {
@@ -826,6 +931,9 @@ const AuthenticatedShellRouteChildren: AuthenticatedShellRouteChildren = {
   AuthenticatedShellDashboardRoute: AuthenticatedShellDashboardRoute,
   AuthenticatedShellSettingsRoute: AuthenticatedShellSettingsRouteWithChildren,
   AuthenticatedShellDesignBrandRoute: AuthenticatedShellDesignBrandRoute,
+  AuthenticatedShellDesignEmailDesignerRoute:
+    AuthenticatedShellDesignEmailDesignerRoute,
+  AuthenticatedShellDesignGraphicsRoute: AuthenticatedShellDesignGraphicsRoute,
   AuthenticatedShellMarketingAdsRoute: AuthenticatedShellMarketingAdsRoute,
   AuthenticatedShellMarketingAnalyticsRoute:
     AuthenticatedShellMarketingAnalyticsRouteWithChildren,
@@ -834,7 +942,10 @@ const AuthenticatedShellRouteChildren: AuthenticatedShellRouteChildren = {
     AuthenticatedShellMarketingSchedulerRoute,
   AuthenticatedShellMarketingSocialRoute:
     AuthenticatedShellMarketingSocialRoute,
+  AuthenticatedShellVideoLibraryRoute: AuthenticatedShellVideoLibraryRoute,
+  AuthenticatedShellVideoMotionRoute: AuthenticatedShellVideoMotionRoute,
   AuthenticatedShellWebAiSearchRoute: AuthenticatedShellWebAiSearchRoute,
+  AuthenticatedShellWebArticlesRoute: AuthenticatedShellWebArticlesRoute,
 }
 
 const AuthenticatedShellRouteWithChildren =
