@@ -17,10 +17,15 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedShellRouteImport } from './routes/_authenticated/_shell'
+import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedPulseRouteImport } from './routes/_authenticated/pulse'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as OauthCallbackRouteImport } from './routes/oauth.callback'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedShellAgentRouteImport } from './routes/_authenticated/_shell/agent'
+import { Route as AuthenticatedShellDashboardRouteImport } from './routes/_authenticated/_shell/dashboard'
+import { Route as AuthenticatedAppSplatRouteImport } from './routes/_authenticated/app.$'
+import { Route as AuthenticatedPulseSplatRouteImport } from './routes/_authenticated/pulse.$'
 import { Route as AuthenticatedShellDesignBrandRouteImport } from './routes/_authenticated/_shell/design/brand'
 import { Route as AuthenticatedShellMarketingSchedulerRouteImport } from './routes/_authenticated/_shell/marketing/scheduler'
 import { Route as AuthenticatedShellMarketingSocialRouteImport } from './routes/_authenticated/_shell/marketing/social'
@@ -77,6 +82,16 @@ const AuthenticatedShellRoute = AuthenticatedShellRouteImport.update({
   id: '/_shell',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPulseRoute = AuthenticatedPulseRouteImport.update({
+  id: '/pulse',
+  path: '/pulse',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
@@ -96,6 +111,22 @@ const AuthenticatedShellAgentRoute = AuthenticatedShellAgentRouteImport.update({
   id: '/agent',
   path: '/agent',
   getParentRoute: () => AuthenticatedShellRoute,
+} as any)
+const AuthenticatedShellDashboardRoute =
+  AuthenticatedShellDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
+const AuthenticatedAppSplatRoute = AuthenticatedAppSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedPulseSplatRoute = AuthenticatedPulseSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => AuthenticatedPulseRoute,
 } as any)
 const AuthenticatedShellDesignBrandRoute =
   AuthenticatedShellDesignBrandRouteImport.update({
@@ -200,10 +231,15 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/app': typeof AuthenticatedAppRouteWithChildren
+  '/pulse': typeof AuthenticatedPulseRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/agent': typeof AuthenticatedShellAgentRoute
+  '/dashboard': typeof AuthenticatedShellDashboardRoute
+  '/app/$': typeof AuthenticatedAppSplatRoute
+  '/pulse/$': typeof AuthenticatedPulseSplatRoute
   '/design/brand': typeof AuthenticatedShellDesignBrandRoute
   '/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
   '/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
@@ -228,10 +264,15 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/app': typeof AuthenticatedAppRouteWithChildren
+  '/pulse': typeof AuthenticatedPulseRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/agent': typeof AuthenticatedShellAgentRoute
+  '/dashboard': typeof AuthenticatedShellDashboardRoute
+  '/app/$': typeof AuthenticatedAppSplatRoute
+  '/pulse/$': typeof AuthenticatedPulseSplatRoute
   '/design/brand': typeof AuthenticatedShellDesignBrandRoute
   '/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
   '/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
@@ -259,10 +300,15 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/_shell': typeof AuthenticatedShellRouteWithChildren
+  '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
+  '/_authenticated/pulse': typeof AuthenticatedPulseRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/_shell/agent': typeof AuthenticatedShellAgentRoute
+  '/_authenticated/_shell/dashboard': typeof AuthenticatedShellDashboardRoute
+  '/_authenticated/app/$': typeof AuthenticatedAppSplatRoute
+  '/_authenticated/pulse/$': typeof AuthenticatedPulseSplatRoute
   '/_authenticated/_shell/design/brand': typeof AuthenticatedShellDesignBrandRoute
   '/_authenticated/_shell/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
   '/_authenticated/_shell/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
@@ -289,10 +335,15 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/.well-known/oauth-protected-resource'
+    | '/app'
+    | '/pulse'
     | '/auth/callback'
     | '/oauth/callback'
     | '/.lovable/oauth/consent'
     | '/agent'
+    | '/dashboard'
+    | '/app/$'
+    | '/pulse/$'
     | '/design/brand'
     | '/marketing/scheduler'
     | '/marketing/social'
@@ -317,10 +368,15 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/.well-known/oauth-protected-resource'
+    | '/app'
+    | '/pulse'
     | '/auth/callback'
     | '/oauth/callback'
     | '/.lovable/oauth/consent'
     | '/agent'
+    | '/dashboard'
+    | '/app/$'
+    | '/pulse/$'
     | '/design/brand'
     | '/marketing/scheduler'
     | '/marketing/social'
@@ -347,10 +403,15 @@ export interface FileRouteTypes {
     | '/signup'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/_shell'
+    | '/_authenticated/app'
+    | '/_authenticated/pulse'
     | '/auth/callback'
     | '/oauth/callback'
     | '/.lovable/oauth/consent'
     | '/_authenticated/_shell/agent'
+    | '/_authenticated/_shell/dashboard'
+    | '/_authenticated/app/$'
+    | '/_authenticated/pulse/$'
     | '/_authenticated/_shell/design/brand'
     | '/_authenticated/_shell/marketing/scheduler'
     | '/_authenticated/_shell/marketing/social'
@@ -443,6 +504,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app': {
+      id: '/_authenticated/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pulse': {
+      id: '/_authenticated/pulse'
+      path: '/pulse'
+      fullPath: '/pulse'
+      preLoaderRoute: typeof AuthenticatedPulseRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/auth/callback': {
       id: '/auth/callback'
       path: '/auth/callback'
@@ -470,6 +545,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/agent'
       preLoaderRoute: typeof AuthenticatedShellAgentRouteImport
       parentRoute: typeof AuthenticatedShellRoute
+    }
+    '/_authenticated/_shell/dashboard': {
+      id: '/_authenticated/_shell/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedShellDashboardRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
+    '/_authenticated/app/$': {
+      id: '/_authenticated/app/$'
+      path: '/$'
+      fullPath: '/app/$'
+      preLoaderRoute: typeof AuthenticatedAppSplatRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/pulse/$': {
+      id: '/_authenticated/pulse/$'
+      path: '/$'
+      fullPath: '/pulse/$'
+      preLoaderRoute: typeof AuthenticatedPulseSplatRouteImport
+      parentRoute: typeof AuthenticatedPulseRoute
     }
     '/_authenticated/_shell/design/brand': {
       id: '/_authenticated/_shell/design/brand'
@@ -588,6 +684,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedShellRouteChildren {
   AuthenticatedShellAgentRoute: typeof AuthenticatedShellAgentRoute
+  AuthenticatedShellDashboardRoute: typeof AuthenticatedShellDashboardRoute
   AuthenticatedShellDesignBrandRoute: typeof AuthenticatedShellDesignBrandRoute
   AuthenticatedShellMarketingSchedulerRoute: typeof AuthenticatedShellMarketingSchedulerRoute
   AuthenticatedShellMarketingSocialRoute: typeof AuthenticatedShellMarketingSocialRoute
@@ -605,6 +702,7 @@ interface AuthenticatedShellRouteChildren {
 
 const AuthenticatedShellRouteChildren: AuthenticatedShellRouteChildren = {
   AuthenticatedShellAgentRoute: AuthenticatedShellAgentRoute,
+  AuthenticatedShellDashboardRoute: AuthenticatedShellDashboardRoute,
   AuthenticatedShellDesignBrandRoute: AuthenticatedShellDesignBrandRoute,
   AuthenticatedShellMarketingSchedulerRoute:
     AuthenticatedShellMarketingSchedulerRoute,
@@ -633,12 +731,38 @@ const AuthenticatedShellRouteChildren: AuthenticatedShellRouteChildren = {
 const AuthenticatedShellRouteWithChildren =
   AuthenticatedShellRoute._addFileChildren(AuthenticatedShellRouteChildren)
 
+interface AuthenticatedAppRouteChildren {
+  AuthenticatedAppSplatRoute: typeof AuthenticatedAppSplatRoute
+}
+
+const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
+  AuthenticatedAppSplatRoute: AuthenticatedAppSplatRoute,
+}
+
+const AuthenticatedAppRouteWithChildren =
+  AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
+
+interface AuthenticatedPulseRouteChildren {
+  AuthenticatedPulseSplatRoute: typeof AuthenticatedPulseSplatRoute
+}
+
+const AuthenticatedPulseRouteChildren: AuthenticatedPulseRouteChildren = {
+  AuthenticatedPulseSplatRoute: AuthenticatedPulseSplatRoute,
+}
+
+const AuthenticatedPulseRouteWithChildren =
+  AuthenticatedPulseRoute._addFileChildren(AuthenticatedPulseRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedShellRoute: typeof AuthenticatedShellRouteWithChildren
+  AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
+  AuthenticatedPulseRoute: typeof AuthenticatedPulseRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedShellRoute: AuthenticatedShellRouteWithChildren,
+  AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
+  AuthenticatedPulseRoute: AuthenticatedPulseRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
