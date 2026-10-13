@@ -21,7 +21,9 @@ export function MetaAds() {
   if (!q.data) return <Loading />;
   if (!q.data.connected) return <Panel title="Meta Ads" sub="No ad account linked to this client yet." setup>{null}</Panel>;
   if (!q.data.result.ok) return <Empty title="Couldn't load Meta Ads" body={q.data.result.message} />;
-  return <Ads d={q.data.result.data as any} />;
+  const d = q.data.result.data as any;
+  if (!d.totals?.impressions && !d.campaigns?.length) return <Empty title="No ad activity in these dates" body="The ad account is linked and working, but no ads ran in this period. Try a longer date range (for example 90 days) to see past campaigns." />;
+  return <Ads d={d} />;
 }
 
 function Card({ label, value }: { label: string; value: string }) {

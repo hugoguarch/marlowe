@@ -732,6 +732,53 @@ export type Database = {
           },
         ]
       }
+      pulse_reports: {
+        Row: {
+          client_id: string
+          created_at: string
+          created_by: string | null
+          data: Json
+          id: string
+          period_from: string
+          period_label: string
+          period_to: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          data?: Json
+          id?: string
+          period_from: string
+          period_label: string
+          period_to: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          data?: Json
+          id?: string
+          period_from?: string
+          period_label?: string
+          period_to?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pulse_reports_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "pulse_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pulse_reviews: {
         Row: {
           author: string | null
