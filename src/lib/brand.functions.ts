@@ -35,6 +35,13 @@ export type BrandBrain = {
   audience: string;
   learned: string[];
   assets: BrandAsset[];
+  /** Brand kit extras shown on the guidelines board. */
+  values: { title: string; detail: string }[];
+  icons: { icon: string; label: string }[];
+  version: string;
+  locked: boolean;
+  agentLog: string[];
+  socialLine: string;
 };
 
 const emptyTypography: Typography = { headline: "", body: "", notes: "" };
@@ -57,7 +64,7 @@ async function loadBrain(ctx: Ctx, brandId: string): Promise<BrandBrain | null> 
 
   const { data: brain } = await supabase
     .from("brand_brain")
-    .select("palette, typography, tone_of_voice, personas, audience, learned, logo_url")
+    .select("palette, typography, tone_of_voice, personas, audience, learned, logo_url, kit_version, locked, brand_values, icons, agent_log, social_line")
     .eq("brand_id", brandId)
     .eq("user_id", userId)
     .maybeSingle();
@@ -77,7 +84,7 @@ async function loadBrain(ctx: Ctx, brandId: string): Promise<BrandBrain | null> 
       file_path: a.file_path,
       is_primary: Boolean(a.is_primary),
       url:
-        a.kind === "logo" || a.kind === "image" ? await signed(supabase, a.file_path) : null,
+        a.kind === "logo" || a.kind === "image" || a.kind === "font" ? await signed(supabase, a.file_path) : null,
     })),
   );
 
@@ -104,6 +111,12 @@ async function loadBrain(ctx: Ctx, brandId: string): Promise<BrandBrain | null> 
     audience: (brain?.audience as string | null) ?? "",
     learned: (brain?.learned as string[]) ?? [],
     assets,
+    values: (brain?.brand_values as BrandBrain["values"]) ?? [],
+    icons: (brain?.icons as BrandBrain["icons"]) ?? [],
+    version: (brain?.kit_version as string) ?? "1.0",
+    locked: Boolean(brain?.locked),
+    agentLog: (brain?.agent_log as string[]) ?? [],
+    socialLine: (brain?.social_line as string | null) ?? "",
   };
 }
 
@@ -321,6 +334,12 @@ export const saveBrandBrain = createServerFn({ method: "POST" })
       toneOfVoice?: string[];
       personas?: Persona[];
       audience?: string;
+      values?: BrandBrain["values"];
+      icons?: BrandBrain["icons"];
+      version?: string;
+      locked?: boolean;
+      agentLog?: string[];
+      socialLine?: string;
     }) => ({
       brandId: String(input.brandId),
       name: input.name?.trim().slice(0, 120),
@@ -330,6 +349,12 @@ export const saveBrandBrain = createServerFn({ method: "POST" })
       toneOfVoice: Array.isArray(input.toneOfVoice) ? input.toneOfVoice.slice(0, 12) : undefined,
       personas: Array.isArray(input.personas) ? input.personas.slice(0, 8) : undefined,
       audience: input.audience?.slice(0, 2000),
+      values: Array.isArray(input.values) ? input.values.slice(0, 8) : undefined,
+      icons: Array.isArray(input.icons) ? input.icons.slice(0, 12) : undefined,
+      version: input.version?.slice(0, 12),
+      locked: typeof input.locked === "boolean" ? input.locked : undefined,
+      agentLog: Array.isArray(input.agentLog) ? input.agentLog.slice(-20) : undefined,
+      socialLine: input.socialLine?.slice(0, 200),
     }),
   )
   .middleware([requireSupabaseAuth])
@@ -350,6 +375,12 @@ export const saveBrandBrain = createServerFn({ method: "POST" })
     if (data.toneOfVoice !== undefined) brainPatch["tone_of_voice"] = data.toneOfVoice;
     if (data.personas !== undefined) brainPatch["personas"] = data.personas;
     if (data.audience !== undefined) brainPatch["audience"] = data.audience;
+    if (data.values !== undefined) brainPatch["brand_values"] = data.values;
+    if (data.icons !== undefined) brainPatch["icons"] = data.icons;
+    if (data.version !== undefined) brainPatch["kit_version"] = data.version;
+    if (data.locked !== undefined) brainPatch["locked"] = data.locked;
+    if (data.agentLog !== undefined) brainPatch["agent_log"] = data.agentLog;
+    if (data.socialLine !== undefined) brainPatch["social_line"] = data.socialLine;
 
     const { data: existing } = await supabase
       .from("brand_brain")
@@ -503,4 +534,52 @@ export const setPrimaryAsset = createServerFn({ method: "POST" })
       }
     }
     return loadBrain(ctx, data.brandId);
+  });
+
+const ICON_NAMES = ["pound", "building", "key", "home", "shield", "trend", "clock", "users", "map", "chart", "leaf", "star"];
+
+/** Ask the design agent to change the brand kit. Returns patches only; the caller saves them. */
+export const reviseBrandKit = createServerFn({ method: "POST" })
+  .inputValidator((input: { brandId: string; request: string }) => ({
+    brandId: String(input.brandId),
+    request: String(input.request ?? "").slice(0, 1500),
+  }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const ctx = context as unknown as Ctx;
+    const brain = await loadBrain(ctx, data.brandId);
+    if (!brain) throw new Error("Brand not found.");
+    if (brain.locked) throw new Error("This brand kit is locked. Unlock it to make changes.");
+    const { generateJSON } = await import("./ai.server");
+    const str = { type: "string" };
+    const schema = {
+      type: "object",
+      additionalProperties: false,
+      required: ["reply", "palette", "typography", "toneOfVoice", "values", "icons", "socialLine", "audience"],
+      properties: {
+        reply: str,
+        palette: { type: ["array", "null"], items: { type: "object", additionalProperties: false, required: ["name", "hex"], properties: { name: str, hex: str } } },
+        typography: { anyOf: [{ type: "null" }, { type: "object", additionalProperties: false, required: ["headline", "body", "notes"], properties: { headline: str, body: str, notes: str } }] },
+        toneOfVoice: { type: ["array", "null"], items: str },
+        values: { type: ["array", "null"], items: { type: "object", additionalProperties: false, required: ["title", "detail"], properties: { title: str, detail: str } } },
+        icons: { type: ["array", "null"], items: { type: "object", additionalProperties: false, required: ["icon", "label"], properties: { icon: { type: "string", enum: ICON_NAMES }, label: str } } },
+        socialLine: { type: ["string", "null"] },
+        audience: { type: ["string", "null"] },
+      },
+    };
+    const current = {
+      name: brain.name, website: brain.website, palette: brain.palette, typography: brain.typography,
+      toneOfVoice: brain.toneOfVoice, values: brain.values, icons: brain.icons, socialLine: brain.socialLine, audience: brain.audience,
+    };
+    const out = await generateJSON<{
+      reply: string; palette: PaletteColour[] | null; typography: Typography | null; toneOfVoice: string[] | null;
+      values: BrandBrain["values"] | null; icons: BrandBrain["icons"] | null; socialLine: string | null; audience: string | null;
+    }>({
+      system:
+        "You are the design agent maintaining a brand kit. Apply the user's request to the kit and return only the fields that change; set every unchanged field to null. When a field is empty and the request asks you to complete the kit, fill it sensibly from the brand's name, website and existing fields. Hex values are six-digit with #. Up to 6 colours, 4 values, 8 icons, 6 tone lines. socialLine is a short headline for the brand's social template. reply is one or two plain sentences telling the user what you changed. No emoji.",
+      prompt: `Current kit:\n${JSON.stringify(current)}\n\nRequest: ${data.request}`,
+      schemaName: "brand_kit_patch",
+      schema,
+    });
+    return out;
   });

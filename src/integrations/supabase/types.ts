@@ -104,42 +104,60 @@ export type Database = {
       }
       brand_brain: {
         Row: {
+          agent_log: Json
           audience: string | null
           brand_id: string
+          brand_values: Json
           created_at: string
+          icons: Json
           id: string
+          kit_version: string
           learned: Json
+          locked: boolean
           logo_url: string | null
           palette: Json
           personas: Json
+          social_line: string | null
           tone_of_voice: Json
           typography: Json
           updated_at: string
           user_id: string
         }
         Insert: {
+          agent_log?: Json
           audience?: string | null
           brand_id: string
+          brand_values?: Json
           created_at?: string
+          icons?: Json
           id?: string
+          kit_version?: string
           learned?: Json
+          locked?: boolean
           logo_url?: string | null
           palette?: Json
           personas?: Json
+          social_line?: string | null
           tone_of_voice?: Json
           typography?: Json
           updated_at?: string
           user_id: string
         }
         Update: {
+          agent_log?: Json
           audience?: string | null
           brand_id?: string
+          brand_values?: Json
           created_at?: string
+          icons?: Json
           id?: string
+          kit_version?: string
           learned?: Json
+          locked?: boolean
           logo_url?: string | null
           palette?: Json
           personas?: Json
+          social_line?: string | null
           tone_of_voice?: Json
           typography?: Json
           updated_at?: string
@@ -1012,11 +1030,47 @@ export type Database = {
           },
         ]
       }
+      site_page_versions: {
+        Row: {
+          created_at: string
+          id: string
+          note: string | null
+          page_id: string
+          sections: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          page_id: string
+          sections?: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          page_id?: string
+          sections?: Json
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_page_versions_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "site_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       site_pages: {
         Row: {
           brand_id: string | null
           created_at: string
           id: string
+          published_at: string | null
           sections: Json
           slug: string
           status: string
@@ -1028,6 +1082,7 @@ export type Database = {
           brand_id?: string | null
           created_at?: string
           id?: string
+          published_at?: string | null
           sections?: Json
           slug?: string
           status?: string
@@ -1039,6 +1094,7 @@ export type Database = {
           brand_id?: string | null
           created_at?: string
           id?: string
+          published_at?: string | null
           sections?: Json
           slug?: string
           status?: string

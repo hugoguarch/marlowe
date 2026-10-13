@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 
+import { BrandWorkspace } from "@/components/brand/BrandWorkspace";
 import { Sphere } from "@/components/app/Sphere";
 import { Card, CardLabel, PageHeader, pillClass, pillPrimaryClass } from "@/components/app/ui";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,8 +30,8 @@ const MAX_UPLOAD_MB = 50;
 export const Route = createFileRoute("/_authenticated/_shell/design/brand")({
   head: () => ({
     meta: [
-      { title: "Brand Brain — Why Media AI" },
-      { name: "description", content: "Everything the agent knows about your brand." },
+      { title: "Brand Guidelines — Why Media AI" },
+      { name: "description", content: "Brand kits per account: logos, palette, typography, values and templates." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -146,296 +147,37 @@ function BrandPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
-      <PageHeader
-        eyebrow="Brand Guidelines"
-        title={brain.name}
-        subtitle="Everything the agents use to write, design and post. Edit anything and it applies from the next post."
-        action={
-          <div className="flex flex-wrap items-center gap-2">
-            {brands.length > 1 ? (
-              <select
-                value={brain.brandId}
-                onChange={(e) => select(e.target.value)}
-                className="rounded-full border border-app-line bg-app-card px-4 py-2 text-xs tracking-[0.12em] text-ink-navy uppercase"
-              >
-                {brands.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
-            ) : null}
-            {!brain.isDefault ? (
-              <button
-                onClick={async () => {
-                  await makeDefault({ data: { brandId: brain.brandId } });
-                  setBrands((await all()) as any);
-                  await reload(brain.brandId);
-                }}
-                className={pillClass}
-              >
-                Make default
-              </button>
-            ) : (
-              <span className="rounded-full border border-cerulean/40 bg-cerulean/10 px-4 py-2 text-[0.6rem] tracking-[0.16em] text-cerulean uppercase">
-                Default
-              </span>
-            )}
-            <button
-              onClick={async () => {
-                if (
-                  !window.confirm(
-                    `Delete "${brain.name}"? Its posts, schedule and uploads go with it. This cannot be undone.`,
-                  )
-                )
-                  return;
-                await removeBrand({ data: { brandId: brain.brandId } });
-                const list = (await all()) as any[];
-                setBrands(list);
-                remember(list[0]?.id ?? null);
-                setBrain(list.length ? await one({ data: { brandId: list[0].id } }) : null);
-              }}
-              className={pillClass}
-            >
-              Delete
-            </button>
-            <button onClick={() => setCreating(true)} className={pillClass}>
-              New brand brain
-            </button>
-          </div>
+    <BrandWorkspace
+      brain={brain}
+      brands={brands}
+      status={status}
+      onSelect={select}
+      persist={async (patch) => persist({ brandId: brain.brandId, ...patch })}
+      upload={async (file, kind) => { const p = await upload(file, kind, brain.brandId); await reload(brain.brandId); return p; }}
+      analyse={async (filePath) => {
+        setStatus("Reading your guidelines…");
+        try {
+          const found = await analyse({ data: { brandId: brain.brandId, filePath, brandName: brain.name } });
+          await persist({ brandId: brain.brandId, ...found, agentLog: [...brain.agentLog, "Read the new guidelines document"] });
+        } catch (e) {
+          setError(e instanceof Error ? e.message : "Couldn't read that document.");
+          setStatus(null);
         }
-      />
-
-      {status ? <p className="text-xs tracking-[0.18em] text-cerulean uppercase">{status}</p> : null}
-      {error ? <p className="text-xs text-red-600">{error}</p> : null}
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardLabel>Logo</CardLabel>
-          <div className="mt-5 flex items-center gap-5 rounded-[8px] border border-app-line bg-app-bg/60 p-6">
-            {brain.logoUrl ? (
-              <img src={brain.logoUrl} alt="Brand logo" className="h-14 w-auto object-contain" />
-            ) : (
-              <Sphere size={56} />
-            )}
-            <div>
-              <p className="text-sm text-ink-navy">{brain.name}</p>
-              <p className="mt-1 text-xs text-ink-navy/45">
-                {brain.logoUrl ? "Primary mark" : "No logo uploaded yet"}
-              </p>
-            </div>
-          </div>
-          <FilePick
-            label={brain.logoUrl ? "Replace logo" : "Upload logo"}
-            accept="image/*"
-            onPick={async (file) => {
-              await upload(file, "logo", brain.brandId);
-              setBrain(await one({ data: { brandId: brain.brandId } }));
-            }}
-          />
-        </Card>
-
-        <Card>
-          <CardLabel>Colour palette</CardLabel>
-          <PaletteEditor
-            value={brain.palette}
-            onSave={(palette) => persist({ brandId: brain.brandId, palette })}
-          />
-        </Card>
-
-        <Card>
-          <CardLabel>Typography</CardLabel>
-          <TypographyEditor
-            value={brain.typography}
-            fonts={brain.assets.filter((a) => a.kind === "font")}
-            onSave={(typography) => persist({ brandId: brain.brandId, typography })}
-            onUploadFont={async (file) => {
-              await upload(file, "font", brain.brandId);
-              setBrain(await one({ data: { brandId: brain.brandId } }));
-            }}
-          />
-        </Card>
-
-        <Card>
-          <CardLabel>Tone of voice</CardLabel>
-          <LineEditor
-            value={brain.toneOfVoice}
-            placeholder="Confident, never loud."
-            onSave={(toneOfVoice) => persist({ brandId: brain.brandId, toneOfVoice })}
-          />
-        </Card>
-
-        <Card className="lg:col-span-2">
-          <CardLabel>Audience and personas</CardLabel>
-          <AudienceEditor
-            audience={brain.audience}
-            personas={brain.personas}
-            onSave={(audience, personas) => persist({ brandId: brain.brandId, audience, personas })}
-          />
-        </Card>
-
-        <Card>
-          <CardLabel>How much to post</CardLabel>
-          <p className="mt-3 text-sm text-ink-navy/55">
-            the agent aims for this many posts a day for {brain.name}.
-          </p>
-          <div className="mt-4 flex items-center gap-3">
-            <input
-              type="number"
-              min={0}
-              max={20}
-              defaultValue={brain.dailyTarget}
-              onBlur={async (e) => {
-                await setTarget({
-                  data: { brandId: brain.brandId, dailyTarget: Number(e.target.value) },
-                });
-                await reload(brain.brandId);
-                setStatus("Saved");
-                setTimeout(() => setStatus(null), 1500);
-              }}
-              className={`${inputClass} w-24`}
-            />
-            <span className="text-sm text-ink-navy/55">posts a day</span>
-          </div>
-        </Card>
-
-        <Card>
-          <CardLabel>Logos</CardLabel>
-          <div className="mt-5 flex flex-wrap gap-3">
-            {brain.assets
-              .filter((a) => a.kind === "logo")
-              .map((a) => (
-                <div key={a.id} className="w-24">
-                  <button
-                    onClick={async () => {
-                      await makePrimary({ data: { assetId: a.id, brandId: brain.brandId, kind: a.kind } });
-                      await reload(brain.brandId);
-                    }}
-                    className={`flex h-24 w-24 items-center justify-center rounded-[8px] border bg-app-bg/60 p-3 ${
-                      a.is_primary ? "border-cerulean" : "border-app-line"
-                    }`}
-                  >
-                    {a.url ? (
-                      <img src={a.url} alt="" className="max-h-full max-w-full object-contain" />
-                    ) : (
-                      <span className="text-[0.6rem] text-ink-navy/45">{a.file_name}</span>
-                    )}
-                  </button>
-                  <div className="mt-1 flex items-center justify-between">
-                    <span className="text-[0.6rem] text-ink-navy/45">
-                      {a.is_primary ? "Primary" : "Use"}
-                    </span>
-                    <button
-                      onClick={async () => {
-                        await removeAsset({ data: { assetId: a.id, brandId: brain.brandId } });
-                        await reload(brain.brandId);
-                      }}
-                      className="text-[0.6rem] text-ink-navy/40 hover:text-red-600"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              ))}
-          </div>
-          <FilePick
-            label="Add a logo"
-            accept="image/*"
-            onPick={async (file) => {
-              await upload(file, "logo", brain.brandId);
-              await reload(brain.brandId);
-            }}
-          />
-        </Card>
-
-        <Card className="lg:col-span-2">
-          <CardLabel>Image bank</CardLabel>
-          <p className="mt-3 text-sm text-ink-navy/55">
-            Your own photography. Anything here can be picked in the Studio instead of letting
-            the agent generate a picture.
-          </p>
-          <div className="mt-5 grid grid-cols-3 gap-3 sm:grid-cols-5">
-            {brain.assets
-              .filter((a) => a.kind === "image")
-              .map((a) => (
-                <div key={a.id}>
-                  <div className="aspect-square overflow-hidden rounded-[8px] border border-app-line">
-                    {a.url ? (
-                      <img src={a.url} alt="" className="h-full w-full object-cover" />
-                    ) : null}
-                  </div>
-                  <button
-                    onClick={async () => {
-                      await removeAsset({ data: { assetId: a.id, brandId: brain.brandId } });
-                      await reload(brain.brandId);
-                    }}
-                    className="mt-1 text-[0.6rem] text-ink-navy/40 hover:text-red-600"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-          </div>
-          <FilePick
-            label="Add images"
-            accept="image/*"
-            onPick={async (file) => {
-              await upload(file, "image", brain.brandId);
-              await reload(brain.brandId);
-            }}
-          />
-        </Card>
-
-        <Card className="lg:col-span-2">
-          <CardLabel>Brand guidelines</CardLabel>
-          <p className="mt-3 text-sm text-ink-navy/55">
-            Upload a guidelines document and the agent reads it, then fills the cards above for you to
-            check.
-          </p>
-          <ul className="mt-4 space-y-2">
-            {brain.assets
-              .filter((a) => a.kind === "document")
-              .map((a) => (
-                <li key={a.id} className="text-sm text-ink-navy/70">
-                  {a.file_name}
-                </li>
-              ))}
-          </ul>
-          <FilePick
-            label="Upload guidelines and read them"
-            accept=".pdf,.doc,.docx,.txt,.md"
-            onPick={async (file) => {
-              setStatus("Reading your guidelines…");
-              try {
-                const path = await upload(file, "document", brain.brandId);
-                const found = await analyse({
-                  data: { brandId: brain.brandId, filePath: path, brandName: brain.name },
-                });
-                await persist({ brandId: brain.brandId, ...found });
-              } catch (e) {
-                setError(e instanceof Error ? e.message : "Couldn't read that document.");
-                setStatus(null);
-              }
-            }}
-          />
-        </Card>
-
-        {brain.learned.length ? (
-          <Card dark className="lg:col-span-2">
-            <CardLabel>What's working for this brand</CardLabel>
-            <ul className="mt-5 grid gap-4 md:grid-cols-2">
-              {brain.learned.map((l) => (
-                <li key={l} className="flex gap-3 text-sm leading-relaxed text-white/85">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
-                  {l}
-                </li>
-              ))}
-            </ul>
-          </Card>
-        ) : null}
-      </div>
-    </div>
+      }}
+      onNewBrand={() => setCreating(true)}
+      onMakeDefault={async () => { await makeDefault({ data: { brandId: brain.brandId } }); setBrands((await all()) as any); await reload(brain.brandId); }}
+      onDeleteBrand={async () => {
+        if (!window.confirm(`Delete "${brain.name}"? Its posts, schedule and uploads go with it. This cannot be undone.`)) return;
+        await removeBrand({ data: { brandId: brain.brandId } });
+        const list = (await all()) as any[];
+        setBrands(list);
+        remember(list[0]?.id ?? null);
+        setBrain(list.length ? await one({ data: { brandId: list[0].id } }) : null);
+      }}
+      onDeleteAsset={async (assetId) => { await removeAsset({ data: { assetId, brandId: brain.brandId } }); await reload(brain.brandId); }}
+      onPrimary={async (assetId, kind) => { await makePrimary({ data: { assetId, brandId: brain.brandId, kind } }); await reload(brain.brandId); }}
+      onTarget={async (n) => { await setTarget({ data: { brandId: brain.brandId, dailyTarget: n } }); await reload(brain.brandId); }}
+    />
   );
 }
 
