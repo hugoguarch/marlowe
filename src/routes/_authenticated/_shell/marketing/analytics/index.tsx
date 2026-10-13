@@ -3,6 +3,7 @@ import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, X
 
 import { usePulse, usePulseData, type PulseClient } from "@/components/pulse/context";
 import { CompareChart, Delta, Empty, Kpi, Loading, PageTitle, Panel, tooltipStyle } from "@/components/pulse/ui";
+import { AnalyticsHero } from "@/components/pulse/AnalyticsHero";
 import {
   avg, buckets, compareSeries, CHANNEL_COLORS, channelLabel, fmt, latest, scopeChannels, SOCIAL, spark, split, sum,
 } from "@/lib/pulse/metrics";
@@ -56,6 +57,7 @@ function ClientOverview({ client }: { client: PulseClient }) {
 
   return (
     <div className="space-y-6">
+      <AnalyticsHero />
       <PageTitle title={client.name} sub={`${client.sector ?? ""} · ${range.from} to ${range.to}`} />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         <Kpi label="Reach" value={reach} prev={reachP} points={spark(cur, "reach", soc)} na={na.soc} to="/marketing/social" />

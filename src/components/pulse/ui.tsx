@@ -136,7 +136,7 @@ export function Empty({ title, body, action }: { title: string; body: string; ac
 export function PageTitle({ title, sub }: { title: string; sub?: string | undefined }) {
   return (
     <div className="mb-6">
-      <h1 className="text-3xl font-medium tracking-tight text-p-text md:text-4xl">{title}</h1>
+      <h2 className="text-xl font-light tracking-tight text-p-text">{title}</h2>
       {sub && <p className="mt-1 text-sm text-p-muted">{sub}</p>}
     </div>
   );
