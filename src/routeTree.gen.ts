@@ -45,6 +45,8 @@ import { Route as AuthenticatedShellVideoStudioRouteImport } from './routes/_aut
 import { Route as AuthenticatedShellWebAiSearchRouteImport } from './routes/_authenticated/_shell/web/ai-search'
 import { Route as AuthenticatedShellWebArticlesRouteImport } from './routes/_authenticated/_shell/web/articles'
 import { Route as AuthenticatedShellWebBugsRouteImport } from './routes/_authenticated/_shell/web/bugs'
+import { Route as AuthenticatedShellWebCmsRouteImport } from './routes/_authenticated/_shell/web/cms'
+import { Route as AuthenticatedShellWebSiteBuilderRouteImport } from './routes/_authenticated/_shell/web/site-builder'
 import { Route as ApiPublicHooksPulseSyncRouteImport } from './routes/api/public/hooks/pulse-sync'
 import { Route as AuthenticatedShellMarketingAnalyticsIndexRouteImport } from './routes/_authenticated/_shell/marketing/analytics/index'
 import { Route as AuthenticatedShellMarketingAnalyticsCompetitorsRouteImport } from './routes/_authenticated/_shell/marketing/analytics/competitors'
@@ -255,6 +257,18 @@ const AuthenticatedShellWebBugsRoute =
     path: '/web/bugs',
     getParentRoute: () => AuthenticatedShellRoute,
   } as any)
+const AuthenticatedShellWebCmsRoute =
+  AuthenticatedShellWebCmsRouteImport.update({
+    id: '/web/cms',
+    path: '/web/cms',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
+const AuthenticatedShellWebSiteBuilderRoute =
+  AuthenticatedShellWebSiteBuilderRouteImport.update({
+    id: '/web/site-builder',
+    path: '/web/site-builder',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
 const ApiPublicHooksPulseSyncRoute = ApiPublicHooksPulseSyncRouteImport.update({
   id: '/api/public/hooks/pulse-sync',
   path: '/api/public/hooks/pulse-sync',
@@ -349,6 +363,8 @@ export interface FileRoutesByFullPath {
   '/web/ai-search': typeof AuthenticatedShellWebAiSearchRoute
   '/web/articles': typeof AuthenticatedShellWebArticlesRoute
   '/web/bugs': typeof AuthenticatedShellWebBugsRoute
+  '/web/cms': typeof AuthenticatedShellWebCmsRoute
+  '/web/site-builder': typeof AuthenticatedShellWebSiteBuilderRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
   '/settings/': typeof AuthenticatedShellSettingsIndexRoute
   '/marketing/analytics/competitors': typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
@@ -393,6 +409,8 @@ export interface FileRoutesByTo {
   '/web/ai-search': typeof AuthenticatedShellWebAiSearchRoute
   '/web/articles': typeof AuthenticatedShellWebArticlesRoute
   '/web/bugs': typeof AuthenticatedShellWebBugsRoute
+  '/web/cms': typeof AuthenticatedShellWebCmsRoute
+  '/web/site-builder': typeof AuthenticatedShellWebSiteBuilderRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
   '/settings': typeof AuthenticatedShellSettingsIndexRoute
   '/marketing/analytics/competitors': typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
@@ -442,6 +460,8 @@ export interface FileRoutesById {
   '/_authenticated/_shell/web/ai-search': typeof AuthenticatedShellWebAiSearchRoute
   '/_authenticated/_shell/web/articles': typeof AuthenticatedShellWebArticlesRoute
   '/_authenticated/_shell/web/bugs': typeof AuthenticatedShellWebBugsRoute
+  '/_authenticated/_shell/web/cms': typeof AuthenticatedShellWebCmsRoute
+  '/_authenticated/_shell/web/site-builder': typeof AuthenticatedShellWebSiteBuilderRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
   '/_authenticated/_shell/settings/': typeof AuthenticatedShellSettingsIndexRoute
   '/_authenticated/_shell/marketing/analytics/competitors': typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
@@ -490,6 +510,8 @@ export interface FileRouteTypes {
     | '/web/ai-search'
     | '/web/articles'
     | '/web/bugs'
+    | '/web/cms'
+    | '/web/site-builder'
     | '/api/public/hooks/pulse-sync'
     | '/settings/'
     | '/marketing/analytics/competitors'
@@ -534,6 +556,8 @@ export interface FileRouteTypes {
     | '/web/ai-search'
     | '/web/articles'
     | '/web/bugs'
+    | '/web/cms'
+    | '/web/site-builder'
     | '/api/public/hooks/pulse-sync'
     | '/settings'
     | '/marketing/analytics/competitors'
@@ -582,6 +606,8 @@ export interface FileRouteTypes {
     | '/_authenticated/_shell/web/ai-search'
     | '/_authenticated/_shell/web/articles'
     | '/_authenticated/_shell/web/bugs'
+    | '/_authenticated/_shell/web/cms'
+    | '/_authenticated/_shell/web/site-builder'
     | '/api/public/hooks/pulse-sync'
     | '/_authenticated/_shell/settings/'
     | '/_authenticated/_shell/marketing/analytics/competitors'
@@ -865,6 +891,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellWebBugsRouteImport
       parentRoute: typeof AuthenticatedShellRoute
     }
+    '/_authenticated/_shell/web/cms': {
+      id: '/_authenticated/_shell/web/cms'
+      path: '/web/cms'
+      fullPath: '/web/cms'
+      preLoaderRoute: typeof AuthenticatedShellWebCmsRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
+    '/_authenticated/_shell/web/site-builder': {
+      id: '/_authenticated/_shell/web/site-builder'
+      path: '/web/site-builder'
+      fullPath: '/web/site-builder'
+      preLoaderRoute: typeof AuthenticatedShellWebSiteBuilderRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
     '/api/public/hooks/pulse-sync': {
       id: '/api/public/hooks/pulse-sync'
       path: '/api/public/hooks/pulse-sync'
@@ -1008,6 +1048,8 @@ interface AuthenticatedShellRouteChildren {
   AuthenticatedShellWebAiSearchRoute: typeof AuthenticatedShellWebAiSearchRoute
   AuthenticatedShellWebArticlesRoute: typeof AuthenticatedShellWebArticlesRoute
   AuthenticatedShellWebBugsRoute: typeof AuthenticatedShellWebBugsRoute
+  AuthenticatedShellWebCmsRoute: typeof AuthenticatedShellWebCmsRoute
+  AuthenticatedShellWebSiteBuilderRoute: typeof AuthenticatedShellWebSiteBuilderRoute
 }
 
 const AuthenticatedShellRouteChildren: AuthenticatedShellRouteChildren = {
@@ -1035,6 +1077,8 @@ const AuthenticatedShellRouteChildren: AuthenticatedShellRouteChildren = {
   AuthenticatedShellWebAiSearchRoute: AuthenticatedShellWebAiSearchRoute,
   AuthenticatedShellWebArticlesRoute: AuthenticatedShellWebArticlesRoute,
   AuthenticatedShellWebBugsRoute: AuthenticatedShellWebBugsRoute,
+  AuthenticatedShellWebCmsRoute: AuthenticatedShellWebCmsRoute,
+  AuthenticatedShellWebSiteBuilderRoute: AuthenticatedShellWebSiteBuilderRoute,
 }
 
 const AuthenticatedShellRouteWithChildren =
