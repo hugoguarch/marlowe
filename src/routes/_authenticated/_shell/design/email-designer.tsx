@@ -43,7 +43,7 @@ function EmailDesigner() {
     if (!brain) return;
     const { data: u } = await supabase.auth.getUser();
     const { data, error } = await supabase.from("email_designs").insert({ user_id: u.user!.id, brand_id: brain.brandId, name: "New email", blocks: DEFAULT_BLOCKS() as never }).select("id").single();
-    if (error) return toast.error("Couldn't create the email.");
+    if (error) { toast.error("Couldn't create the email."); return; }
     navigate({ search: { id: data.id } });
   }
 
@@ -53,7 +53,7 @@ function EmailDesigner() {
     setSaving(true);
     const { error } = await supabase.from("email_designs").update({ name: next.name, subject: next.subject, status: next.status, blocks: next.blocks as never, scheduled_for: next.scheduled_for, updated_at: new Date().toISOString() }).eq("id", d.id);
     setSaving(false);
-    if (error) return toast.error("Couldn't save.");
+    if (error) { toast.error("Couldn't save."); return; }
     setD(next);
     setList((l) => l.map((x) => (x.id === next.id ? next : x)));
     toast.success("Saved");

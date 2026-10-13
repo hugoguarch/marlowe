@@ -43,7 +43,7 @@ function EmailPage() {
     if (!brain) return;
     const { data: u } = await supabase.auth.getUser();
     const { data, error } = await supabase.from("email_designs").insert({ user_id: u.user!.id, brand_id: brain.brandId, name: "New email", subject: "", blocks: DEFAULT_BLOCKS() as never }).select("id").single();
-    if (error) return toast.error("Couldn't create the email.");
+    if (error) { toast.error("Couldn't create the email."); return; }
     navigate({ to: "/design/email-designer", search: { id: data.id } as never });
   }
 

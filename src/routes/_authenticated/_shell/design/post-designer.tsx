@@ -98,7 +98,7 @@ function PostDesigner() {
 
   async function schedule() {
     if (!brain || !copy) return;
-    if (!channels.length) return toast.error("Choose at least one channel.");
+    if (!channels.length) { toast.error("Choose at least one channel."); return; }
     setBusy("sched");
     try {
       const r = await queue({
