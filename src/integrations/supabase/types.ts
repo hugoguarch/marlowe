@@ -264,6 +264,59 @@ export type Database = {
           },
         ]
       }
+      cms_entries: {
+        Row: {
+          author: string
+          body: string
+          brand_id: string | null
+          category: string
+          collection: string
+          created_at: string
+          id: string
+          meta: Json
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          author?: string
+          body?: string
+          brand_id?: string | null
+          category?: string
+          collection?: string
+          created_at?: string
+          id?: string
+          meta?: Json
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          author?: string
+          body?: string
+          brand_id?: string | null
+          category?: string
+          collection?: string
+          created_at?: string
+          id?: string
+          meta?: Json
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cms_entries_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       connected_accounts: {
         Row: {
           access_token_ciphertext: string | null
@@ -378,6 +431,53 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "content_items_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_designs: {
+        Row: {
+          blocks: Json
+          brand_id: string | null
+          created_at: string
+          id: string
+          name: string
+          scheduled_for: string | null
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          blocks?: Json
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          scheduled_for?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          blocks?: Json
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          scheduled_for?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_designs_brand_id_fkey"
             columns: ["brand_id"]
             isOneToOne: false
             referencedRelation: "brands"
@@ -908,6 +1008,50 @@ export type Database = {
             columns: ["content_item_id"]
             isOneToOne: false
             referencedRelation: "content_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_pages: {
+        Row: {
+          brand_id: string | null
+          created_at: string
+          id: string
+          sections: Json
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          sections?: Json
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          sections?: Json
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_pages_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
             referencedColumns: ["id"]
           },
         ]
