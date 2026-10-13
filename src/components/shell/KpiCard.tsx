@@ -20,7 +20,7 @@ export function KpiCard({ k, icon: Icon, sub, loading }: { k: HeadKpi; icon?: Lu
           {d ? (
             <span className={`mb-0.5 rounded-full px-1.5 py-0.5 text-[11.5px] font-medium ${good ? "bg-brand-green/10 text-brand-green" : "bg-wm-grey-2 text-ink-navy/70"}`}>{d}</span>
           ) : null}
-          <span className="ml-auto"><Spark points={k.points} /></span>
+          {k.value !== null ? <span className="ml-auto"><Spark points={k.points} /></span> : null}
         </div>
       )}
       <p className="text-[12px] text-ink-navy/55">{k.value === null ? "Connect a channel to see this" : (sub ?? "vs previous period")}</p>
