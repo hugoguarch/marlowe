@@ -233,7 +233,7 @@ function StudioPage() {
                   <button
                     key={`${s.title}-${i}`}
                     onClick={() => setSlide(i)}
-                    className={`h-20 w-16 shrink-0 rounded-xl border px-2 py-2 text-left text-[0.58rem] leading-snug transition-all ${
+                    className={`h-20 w-16 shrink-0 rounded-[8px] border px-2 py-2 text-left text-[0.58rem] leading-snug transition-all ${
                       i === slide
                         ? "border-cerulean bg-cerulean/10 text-ink-navy"
                         : "border-app-line bg-app-card text-ink-navy/55"
@@ -253,7 +253,7 @@ function StudioPage() {
               onChange={(e) => setTopic(e.target.value)}
               rows={3}
               placeholder="What is this post about? Leave it blank and Marlowe decides."
-              className="mt-3 w-full rounded-2xl border border-app-line bg-app-bg/60 px-4 py-3 text-sm text-ink-navy outline-none focus:border-cerulean"
+              className="mt-3 w-full rounded-[8px] border border-app-line bg-app-bg/60 px-4 py-3 text-sm text-ink-navy outline-none focus:border-cerulean"
             />
 
             <p className="mt-5 text-[0.62rem] tracking-[0.24em] text-ink-navy/45 uppercase">
@@ -282,7 +282,7 @@ function StudioPage() {
               <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   onClick={() => setBankPath(null)}
-                  className={`h-16 w-16 rounded-xl border text-[0.55rem] leading-tight ${
+                  className={`h-16 w-16 rounded-[8px] border text-[0.55rem] leading-tight ${
                     bankPath === null
                       ? "border-ink-navy bg-ink-navy text-white"
                       : "border-app-line bg-app-card text-ink-navy/55"
@@ -294,7 +294,7 @@ function StudioPage() {
                   <button
                     key={a.id}
                     onClick={() => setBankPath(a.file_path)}
-                    className={`h-16 w-16 overflow-hidden rounded-xl border ${
+                    className={`h-16 w-16 overflow-hidden rounded-[8px] border ${
                       bankPath === a.file_path ? "border-cerulean" : "border-app-line"
                     }`}
                   >
@@ -325,7 +325,7 @@ function StudioPage() {
                   value={copy.caption}
                   onChange={(e) => setCopy({ ...copy, caption: e.target.value })}
                   rows={4}
-                  className="mt-3 w-full rounded-2xl border border-app-line bg-app-bg/60 px-4 py-3 text-sm leading-relaxed text-ink-navy outline-none focus:border-cerulean"
+                  className="mt-3 w-full rounded-[8px] border border-app-line bg-app-bg/60 px-4 py-3 text-sm leading-relaxed text-ink-navy outline-none focus:border-cerulean"
                 />
                 {copy.hashtags?.length ? (
                   <p className="mt-2 text-xs text-cerulean">

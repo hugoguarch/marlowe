@@ -127,7 +127,7 @@ function SettingsPage() {
             <button
               key={opt.key}
               onClick={() => choose(opt.key)}
-              className={`rounded-2xl border p-5 text-left transition-all duration-300 ${
+              className={`rounded-[8px] border p-5 text-left transition-all duration-300 ${
                 autonomy === opt.key
                   ? "border-ink-navy bg-ink-navy text-white"
                   : "border-app-line bg-app-bg/60 text-ink-navy hover:-translate-y-0.5 hover:border-cerulean/60"

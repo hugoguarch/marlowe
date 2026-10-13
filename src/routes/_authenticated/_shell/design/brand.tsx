@@ -38,7 +38,7 @@ export const Route = createFileRoute("/_authenticated/_shell/design/brand")({
 });
 
 const inputClass =
-  "w-full rounded-xl border border-app-line bg-app-bg/60 px-3 py-2 text-sm text-ink-navy outline-none focus:border-cerulean";
+  "w-full rounded-[8px] border border-app-line bg-app-bg/60 px-3 py-2 text-sm text-ink-navy outline-none focus:border-cerulean";
 
 function BrandPage() {
   const { user } = Route.useRouteContext();
@@ -213,7 +213,7 @@ function BrandPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardLabel>Logo</CardLabel>
-          <div className="mt-5 flex items-center gap-5 rounded-2xl border border-app-line bg-app-bg/60 p-6">
+          <div className="mt-5 flex items-center gap-5 rounded-[8px] border border-app-line bg-app-bg/60 p-6">
             {brain.logoUrl ? (
               <img src={brain.logoUrl} alt="Brand logo" className="h-14 w-auto object-contain" />
             ) : (
@@ -312,7 +312,7 @@ function BrandPage() {
                       await makePrimary({ data: { assetId: a.id, brandId: brain.brandId, kind: a.kind } });
                       await reload(brain.brandId);
                     }}
-                    className={`flex h-24 w-24 items-center justify-center rounded-2xl border bg-app-bg/60 p-3 ${
+                    className={`flex h-24 w-24 items-center justify-center rounded-[8px] border bg-app-bg/60 p-3 ${
                       a.is_primary ? "border-cerulean" : "border-app-line"
                     }`}
                   >
@@ -360,7 +360,7 @@ function BrandPage() {
               .filter((a) => a.kind === "image")
               .map((a) => (
                 <div key={a.id}>
-                  <div className="aspect-square overflow-hidden rounded-2xl border border-app-line">
+                  <div className="aspect-square overflow-hidden rounded-[8px] border border-app-line">
                     {a.url ? (
                       <img src={a.url} alt="" className="h-full w-full object-cover" />
                     ) : null}
@@ -493,7 +493,7 @@ function PaletteEditor({
         {colours.map((c, i) => (
           <div key={i}>
             <div
-              className="h-20 rounded-2xl border border-app-line"
+              className="h-20 rounded-[8px] border border-app-line"
               style={{ backgroundColor: c.hex }}
             />
             {editing ? (
@@ -713,7 +713,7 @@ function AudienceEditor({
 
       <div className="mt-4 grid gap-4 md:grid-cols-3">
         {people.map((p, i) => (
-          <div key={i} className="rounded-2xl border border-app-line bg-app-bg/60 p-5">
+          <div key={i} className="rounded-[8px] border border-app-line bg-app-bg/60 p-5">
             {editing ? (
               <>
                 <input
@@ -898,7 +898,7 @@ function CreateBrandFlow({
           {error ? <p className="mt-4 text-xs text-red-600">{error}</p> : null}
 
           {found ? (
-            <div className="mt-6 rounded-2xl border border-app-line bg-app-bg/60 p-5">
+            <div className="mt-6 rounded-[8px] border border-app-line bg-app-bg/60 p-5">
               <p className="text-sm text-ink-navy">What Marlowe found</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {found.palette.map((c: PaletteColour) => (

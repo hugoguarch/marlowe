@@ -74,7 +74,7 @@ export function MonthCalendar({
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-7 gap-px overflow-hidden rounded-2xl border border-app-line bg-app-line">
+      <div className="mt-5 grid grid-cols-7 gap-px overflow-hidden rounded-[8px] border border-app-line bg-app-line">
         {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
           <div
             key={d}

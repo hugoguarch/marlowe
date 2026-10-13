@@ -222,7 +222,7 @@ function Editor({ id, canWrite, onClose }: { id: string; canWrite: boolean; onCl
           {msg && <p className="mt-2 text-xs text-p-muted">{msg}</p>}
         </Panel>
       </div>
-      <div className="overflow-hidden rounded-2xl border border-p-line bg-p-bg">
+      <div className="overflow-hidden rounded-[8px] border border-p-line bg-p-bg">
         <iframe ref={frame} title="Report preview" srcDoc={html} onLoad={fit} className="h-[calc(100vh-180px)] min-h-[700px] w-full" />
       </div>
     </div>

@@ -125,7 +125,7 @@ export function Kpi({
 
 export function Empty({ title, body, action }: { title: string; body: string; action?: ReactNode }) {
   return (
-    <div className="rounded-xl border border-dashed border-p-line bg-p-soft/40 px-5 py-8 text-center">
+    <div className="rounded-[8px] border border-dashed border-p-line bg-p-soft/40 px-5 py-8 text-center">
       <div className="text-sm font-medium text-p-text">{title}</div>
       <p className="mx-auto mt-1 max-w-md text-xs text-p-muted">{body}</p>
       {action && <div className="mt-4">{action}</div>}
@@ -153,7 +153,7 @@ export const tooltipStyle = {
 };
 
 export function Loading() {
-  return <div className="h-40 animate-pulse rounded-2xl bg-p-soft/60" />;
+  return <div className="h-40 animate-pulse rounded-[8px] bg-p-soft/60" />;
 }
 
 type ComparePoint = { d: string; cur: number | null; prior: number | null; priorDate: string };
@@ -211,7 +211,7 @@ export function CompareChart({
 /** Shown in place of a chart or table when no live account feeds it. */
 export function SetupConnection({ label = "Set up connection" }: { label?: string }) {
   return (
-    <div className="relative h-56 overflow-hidden rounded-xl">
+    <div className="relative h-56 overflow-hidden rounded-[8px]">
       <div className="absolute inset-0 flex items-end gap-2 px-4 pb-4 opacity-[0.12]" aria-hidden>
         {[40, 55, 35, 70, 50, 80, 60, 75, 45, 90, 65, 85].map((h, i) => (
           <div key={i} className="flex-1 rounded-t bg-p-cerulean" style={{ height: `${h}%` }} />

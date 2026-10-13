@@ -322,7 +322,7 @@ function SearchConsole({ client }: { client: PulseClient }) {
   return (
     <Panel title="Google Search Console" sub="Add every website this client owns. Refreshed automatically each night; 16 months kept for year-on-year." setup={false}>
       {linked.length > 0 && (
-        <ul className="mb-4 divide-y divide-p-line rounded-xl border border-p-line">
+        <ul className="mb-4 divide-y divide-p-line rounded-[8px] border border-p-line">
           {linked.map((l) => (
             <li key={l.account_ref} className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 text-sm">
               <span>{l.account_ref}</span>

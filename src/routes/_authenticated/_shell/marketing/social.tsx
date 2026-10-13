@@ -45,7 +45,7 @@ function Social() {
   return (
     <div className="space-y-6">
       <PageTitle title="Social" sub={client?.name} />
-      <div className="flex flex-wrap rounded-xl border border-p-line bg-p-card p-1">
+      <div className="flex flex-wrap rounded-[8px] border border-p-line bg-p-card p-1">
         {TABS.map((t) => {
           const on = t.id === "all" || connected.includes(t.id);
           return (
@@ -145,7 +145,7 @@ function Organic({ tab }: { tab: string }) {
       <Panel title="Post stats" sub={`Totals across ${posts.length} posts published in this period.`} conns={conns}>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
           {POST_STATS.map((s) => (
-            <button key={s.k} onClick={() => setStat(s.k)} className={`rounded-xl border p-3 text-left ${stat === s.k ? "border-p-cerulean bg-p-cerulean/5" : "border-p-line"}`}>
+            <button key={s.k} onClick={() => setStat(s.k)} className={`rounded-[8px] border p-3 text-left ${stat === s.k ? "border-p-cerulean bg-p-cerulean/5" : "border-p-line"}`}>
               <div className="text-[11px] uppercase tracking-wider text-p-muted">{s.label}</div>
               <div className="mt-1 text-xl font-light tabular-nums text-p-text">{fmt(tot(s.k))}</div>
               <div className="text-[11px] text-p-muted">avg {fmt(posts.length ? tot(s.k) / posts.length : 0)} / post</div>
