@@ -16,28 +16,24 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
-import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
-import { Route as AuthenticatedPulseRouteImport } from './routes/_authenticated/pulse'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as OauthCallbackRouteImport } from './routes/oauth.callback'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
-import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
-import { Route as AuthenticatedAppBrandRouteImport } from './routes/_authenticated/app/brand'
-import { Route as AuthenticatedAppGrowthRouteImport } from './routes/_authenticated/app/growth'
-import { Route as AuthenticatedAppMarloweRouteImport } from './routes/_authenticated/app/marlowe'
-import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app/settings'
-import { Route as AuthenticatedAppStudioRouteImport } from './routes/_authenticated/app/studio'
-import { Route as AuthenticatedPulseIndexRouteImport } from './routes/_authenticated/pulse/index'
-import { Route as AuthenticatedPulseAiSearchRouteImport } from './routes/_authenticated/pulse/ai-search'
-import { Route as AuthenticatedPulseCompetitorsRouteImport } from './routes/_authenticated/pulse/competitors'
-import { Route as AuthenticatedPulseGoogleBusinessRouteImport } from './routes/_authenticated/pulse/google-business'
-import { Route as AuthenticatedPulseNewsRouteImport } from './routes/_authenticated/pulse/news'
-import { Route as AuthenticatedPulseReportsRouteImport } from './routes/_authenticated/pulse/reports'
-import { Route as AuthenticatedPulseSettingsRouteImport } from './routes/_authenticated/pulse/settings'
-import { Route as AuthenticatedPulseSocialRouteImport } from './routes/_authenticated/pulse/social'
-import { Route as AuthenticatedPulseTrendsRouteImport } from './routes/_authenticated/pulse/trends'
-import { Route as AuthenticatedPulseWebsiteRouteImport } from './routes/_authenticated/pulse/website'
+import { Route as AuthenticatedShellAgentRouteImport } from './routes/_authenticated/_shell/agent'
+import { Route as AuthenticatedShellDesignBrandRouteImport } from './routes/_authenticated/_shell/design/brand'
+import { Route as AuthenticatedShellMarketingSchedulerRouteImport } from './routes/_authenticated/_shell/marketing/scheduler'
+import { Route as AuthenticatedShellMarketingSocialRouteImport } from './routes/_authenticated/_shell/marketing/social'
+import { Route as AuthenticatedShellSettingsIndexRouteImport } from './routes/_authenticated/_shell/settings/index'
+import { Route as AuthenticatedShellSettingsDataSourcesRouteImport } from './routes/_authenticated/_shell/settings/data-sources'
+import { Route as AuthenticatedShellWebAiSearchRouteImport } from './routes/_authenticated/_shell/web/ai-search'
 import { Route as ApiPublicHooksPulseSyncRouteImport } from './routes/api/public/hooks/pulse-sync'
+import { Route as AuthenticatedShellMarketingAnalyticsIndexRouteImport } from './routes/_authenticated/_shell/marketing/analytics/index'
+import { Route as AuthenticatedShellMarketingAnalyticsCompetitorsRouteImport } from './routes/_authenticated/_shell/marketing/analytics/competitors'
+import { Route as AuthenticatedShellMarketingAnalyticsGoogleBusinessRouteImport } from './routes/_authenticated/_shell/marketing/analytics/google-business'
+import { Route as AuthenticatedShellMarketingAnalyticsNewsRouteImport } from './routes/_authenticated/_shell/marketing/analytics/news'
+import { Route as AuthenticatedShellMarketingAnalyticsReportsRouteImport } from './routes/_authenticated/_shell/marketing/analytics/reports'
+import { Route as AuthenticatedShellMarketingAnalyticsTrendsRouteImport } from './routes/_authenticated/_shell/marketing/analytics/trends'
+import { Route as AuthenticatedShellMarketingAnalyticsWebsiteRouteImport } from './routes/_authenticated/_shell/marketing/analytics/website'
 import { Route as ApiPublicOauthGoogleCallbackRouteImport } from './routes/api/public/oauth/google/callback'
 import { Route as ApiPublicOauthLinkedinCallbackRouteImport } from './routes/api/public/oauth/linkedin/callback'
 
@@ -76,16 +72,6 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedPulseRoute = AuthenticatedPulseRouteImport.update({
-  id: '/pulse',
-  path: '/pulse',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
@@ -101,100 +87,94 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthenticatedAppRoute,
+const AuthenticatedShellAgentRoute = AuthenticatedShellAgentRouteImport.update({
+  id: '/_shell/agent',
+  path: '/agent',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAppBrandRoute = AuthenticatedAppBrandRouteImport.update({
-  id: '/brand',
-  path: '/brand',
-  getParentRoute: () => AuthenticatedAppRoute,
-} as any)
-const AuthenticatedAppGrowthRoute = AuthenticatedAppGrowthRouteImport.update({
-  id: '/growth',
-  path: '/growth',
-  getParentRoute: () => AuthenticatedAppRoute,
-} as any)
-const AuthenticatedAppMarloweRoute = AuthenticatedAppMarloweRouteImport.update({
-  id: '/marlowe',
-  path: '/marlowe',
-  getParentRoute: () => AuthenticatedAppRoute,
-} as any)
-const AuthenticatedAppSettingsRoute =
-  AuthenticatedAppSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => AuthenticatedAppRoute,
+const AuthenticatedShellDesignBrandRoute =
+  AuthenticatedShellDesignBrandRouteImport.update({
+    id: '/_shell/design/brand',
+    path: '/design/brand',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAppStudioRoute = AuthenticatedAppStudioRouteImport.update({
-  id: '/studio',
-  path: '/studio',
-  getParentRoute: () => AuthenticatedAppRoute,
-} as any)
-const AuthenticatedPulseIndexRoute = AuthenticatedPulseIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthenticatedPulseRoute,
-} as any)
-const AuthenticatedPulseAiSearchRoute =
-  AuthenticatedPulseAiSearchRouteImport.update({
-    id: '/ai-search',
-    path: '/ai-search',
-    getParentRoute: () => AuthenticatedPulseRoute,
+const AuthenticatedShellMarketingSchedulerRoute =
+  AuthenticatedShellMarketingSchedulerRouteImport.update({
+    id: '/_shell/marketing/scheduler',
+    path: '/marketing/scheduler',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPulseCompetitorsRoute =
-  AuthenticatedPulseCompetitorsRouteImport.update({
-    id: '/competitors',
-    path: '/competitors',
-    getParentRoute: () => AuthenticatedPulseRoute,
+const AuthenticatedShellMarketingSocialRoute =
+  AuthenticatedShellMarketingSocialRouteImport.update({
+    id: '/_shell/marketing/social',
+    path: '/marketing/social',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPulseGoogleBusinessRoute =
-  AuthenticatedPulseGoogleBusinessRouteImport.update({
-    id: '/google-business',
-    path: '/google-business',
-    getParentRoute: () => AuthenticatedPulseRoute,
+const AuthenticatedShellSettingsIndexRoute =
+  AuthenticatedShellSettingsIndexRouteImport.update({
+    id: '/_shell/settings/',
+    path: '/settings/',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPulseNewsRoute = AuthenticatedPulseNewsRouteImport.update({
-  id: '/news',
-  path: '/news',
-  getParentRoute: () => AuthenticatedPulseRoute,
-} as any)
-const AuthenticatedPulseReportsRoute =
-  AuthenticatedPulseReportsRouteImport.update({
-    id: '/reports',
-    path: '/reports',
-    getParentRoute: () => AuthenticatedPulseRoute,
+const AuthenticatedShellSettingsDataSourcesRoute =
+  AuthenticatedShellSettingsDataSourcesRouteImport.update({
+    id: '/_shell/settings/data-sources',
+    path: '/settings/data-sources',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedPulseSettingsRoute =
-  AuthenticatedPulseSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => AuthenticatedPulseRoute,
-  } as any)
-const AuthenticatedPulseSocialRoute =
-  AuthenticatedPulseSocialRouteImport.update({
-    id: '/social',
-    path: '/social',
-    getParentRoute: () => AuthenticatedPulseRoute,
-  } as any)
-const AuthenticatedPulseTrendsRoute =
-  AuthenticatedPulseTrendsRouteImport.update({
-    id: '/trends',
-    path: '/trends',
-    getParentRoute: () => AuthenticatedPulseRoute,
-  } as any)
-const AuthenticatedPulseWebsiteRoute =
-  AuthenticatedPulseWebsiteRouteImport.update({
-    id: '/website',
-    path: '/website',
-    getParentRoute: () => AuthenticatedPulseRoute,
+const AuthenticatedShellWebAiSearchRoute =
+  AuthenticatedShellWebAiSearchRouteImport.update({
+    id: '/_shell/web/ai-search',
+    path: '/web/ai-search',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const ApiPublicHooksPulseSyncRoute = ApiPublicHooksPulseSyncRouteImport.update({
   id: '/api/public/hooks/pulse-sync',
   path: '/api/public/hooks/pulse-sync',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedShellMarketingAnalyticsIndexRoute =
+  AuthenticatedShellMarketingAnalyticsIndexRouteImport.update({
+    id: '/_shell/marketing/analytics/',
+    path: '/marketing/analytics/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedShellMarketingAnalyticsCompetitorsRoute =
+  AuthenticatedShellMarketingAnalyticsCompetitorsRouteImport.update({
+    id: '/_shell/marketing/analytics/competitors',
+    path: '/marketing/analytics/competitors',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute =
+  AuthenticatedShellMarketingAnalyticsGoogleBusinessRouteImport.update({
+    id: '/_shell/marketing/analytics/google-business',
+    path: '/marketing/analytics/google-business',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedShellMarketingAnalyticsNewsRoute =
+  AuthenticatedShellMarketingAnalyticsNewsRouteImport.update({
+    id: '/_shell/marketing/analytics/news',
+    path: '/marketing/analytics/news',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedShellMarketingAnalyticsReportsRoute =
+  AuthenticatedShellMarketingAnalyticsReportsRouteImport.update({
+    id: '/_shell/marketing/analytics/reports',
+    path: '/marketing/analytics/reports',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedShellMarketingAnalyticsTrendsRoute =
+  AuthenticatedShellMarketingAnalyticsTrendsRouteImport.update({
+    id: '/_shell/marketing/analytics/trends',
+    path: '/marketing/analytics/trends',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedShellMarketingAnalyticsWebsiteRoute =
+  AuthenticatedShellMarketingAnalyticsWebsiteRouteImport.update({
+    id: '/_shell/marketing/analytics/website',
+    path: '/marketing/analytics/website',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicOauthGoogleCallbackRoute =
   ApiPublicOauthGoogleCallbackRouteImport.update({
     id: '/api/public/oauth/google/callback',
@@ -215,30 +195,26 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
-  '/app': typeof AuthenticatedAppRouteWithChildren
-  '/pulse': typeof AuthenticatedPulseRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/app/brand': typeof AuthenticatedAppBrandRoute
-  '/app/growth': typeof AuthenticatedAppGrowthRoute
-  '/app/marlowe': typeof AuthenticatedAppMarloweRoute
-  '/app/settings': typeof AuthenticatedAppSettingsRoute
-  '/app/studio': typeof AuthenticatedAppStudioRoute
-  '/pulse/ai-search': typeof AuthenticatedPulseAiSearchRoute
-  '/pulse/competitors': typeof AuthenticatedPulseCompetitorsRoute
-  '/pulse/google-business': typeof AuthenticatedPulseGoogleBusinessRoute
-  '/pulse/news': typeof AuthenticatedPulseNewsRoute
-  '/pulse/reports': typeof AuthenticatedPulseReportsRoute
-  '/pulse/settings': typeof AuthenticatedPulseSettingsRoute
-  '/pulse/social': typeof AuthenticatedPulseSocialRoute
-  '/pulse/trends': typeof AuthenticatedPulseTrendsRoute
-  '/pulse/website': typeof AuthenticatedPulseWebsiteRoute
-  '/app/': typeof AuthenticatedAppIndexRoute
-  '/pulse/': typeof AuthenticatedPulseIndexRoute
+  '/agent': typeof AuthenticatedShellAgentRoute
+  '/design/brand': typeof AuthenticatedShellDesignBrandRoute
+  '/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
+  '/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
+  '/settings/data-sources': typeof AuthenticatedShellSettingsDataSourcesRoute
+  '/web/ai-search': typeof AuthenticatedShellWebAiSearchRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
+  '/settings/': typeof AuthenticatedShellSettingsIndexRoute
+  '/marketing/analytics/competitors': typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
+  '/marketing/analytics/google-business': typeof AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute
+  '/marketing/analytics/news': typeof AuthenticatedShellMarketingAnalyticsNewsRoute
+  '/marketing/analytics/reports': typeof AuthenticatedShellMarketingAnalyticsReportsRoute
+  '/marketing/analytics/trends': typeof AuthenticatedShellMarketingAnalyticsTrendsRoute
+  '/marketing/analytics/website': typeof AuthenticatedShellMarketingAnalyticsWebsiteRoute
   '/api/public/oauth/google/callback': typeof ApiPublicOauthGoogleCallbackRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
+  '/marketing/analytics/': typeof AuthenticatedShellMarketingAnalyticsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -250,25 +226,23 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/app/brand': typeof AuthenticatedAppBrandRoute
-  '/app/growth': typeof AuthenticatedAppGrowthRoute
-  '/app/marlowe': typeof AuthenticatedAppMarloweRoute
-  '/app/settings': typeof AuthenticatedAppSettingsRoute
-  '/app/studio': typeof AuthenticatedAppStudioRoute
-  '/pulse/ai-search': typeof AuthenticatedPulseAiSearchRoute
-  '/pulse/competitors': typeof AuthenticatedPulseCompetitorsRoute
-  '/pulse/google-business': typeof AuthenticatedPulseGoogleBusinessRoute
-  '/pulse/news': typeof AuthenticatedPulseNewsRoute
-  '/pulse/reports': typeof AuthenticatedPulseReportsRoute
-  '/pulse/settings': typeof AuthenticatedPulseSettingsRoute
-  '/pulse/social': typeof AuthenticatedPulseSocialRoute
-  '/pulse/trends': typeof AuthenticatedPulseTrendsRoute
-  '/pulse/website': typeof AuthenticatedPulseWebsiteRoute
-  '/app': typeof AuthenticatedAppIndexRoute
-  '/pulse': typeof AuthenticatedPulseIndexRoute
+  '/agent': typeof AuthenticatedShellAgentRoute
+  '/design/brand': typeof AuthenticatedShellDesignBrandRoute
+  '/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
+  '/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
+  '/settings/data-sources': typeof AuthenticatedShellSettingsDataSourcesRoute
+  '/web/ai-search': typeof AuthenticatedShellWebAiSearchRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
+  '/settings': typeof AuthenticatedShellSettingsIndexRoute
+  '/marketing/analytics/competitors': typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
+  '/marketing/analytics/google-business': typeof AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute
+  '/marketing/analytics/news': typeof AuthenticatedShellMarketingAnalyticsNewsRoute
+  '/marketing/analytics/reports': typeof AuthenticatedShellMarketingAnalyticsReportsRoute
+  '/marketing/analytics/trends': typeof AuthenticatedShellMarketingAnalyticsTrendsRoute
+  '/marketing/analytics/website': typeof AuthenticatedShellMarketingAnalyticsWebsiteRoute
   '/api/public/oauth/google/callback': typeof ApiPublicOauthGoogleCallbackRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
+  '/marketing/analytics': typeof AuthenticatedShellMarketingAnalyticsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -279,30 +253,26 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
-  '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
-  '/_authenticated/pulse': typeof AuthenticatedPulseRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/_authenticated/app/brand': typeof AuthenticatedAppBrandRoute
-  '/_authenticated/app/growth': typeof AuthenticatedAppGrowthRoute
-  '/_authenticated/app/marlowe': typeof AuthenticatedAppMarloweRoute
-  '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
-  '/_authenticated/app/studio': typeof AuthenticatedAppStudioRoute
-  '/_authenticated/pulse/ai-search': typeof AuthenticatedPulseAiSearchRoute
-  '/_authenticated/pulse/competitors': typeof AuthenticatedPulseCompetitorsRoute
-  '/_authenticated/pulse/google-business': typeof AuthenticatedPulseGoogleBusinessRoute
-  '/_authenticated/pulse/news': typeof AuthenticatedPulseNewsRoute
-  '/_authenticated/pulse/reports': typeof AuthenticatedPulseReportsRoute
-  '/_authenticated/pulse/settings': typeof AuthenticatedPulseSettingsRoute
-  '/_authenticated/pulse/social': typeof AuthenticatedPulseSocialRoute
-  '/_authenticated/pulse/trends': typeof AuthenticatedPulseTrendsRoute
-  '/_authenticated/pulse/website': typeof AuthenticatedPulseWebsiteRoute
-  '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
-  '/_authenticated/pulse/': typeof AuthenticatedPulseIndexRoute
+  '/_authenticated/_shell/agent': typeof AuthenticatedShellAgentRoute
+  '/_authenticated/_shell/design/brand': typeof AuthenticatedShellDesignBrandRoute
+  '/_authenticated/_shell/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
+  '/_authenticated/_shell/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
+  '/_authenticated/_shell/settings/data-sources': typeof AuthenticatedShellSettingsDataSourcesRoute
+  '/_authenticated/_shell/web/ai-search': typeof AuthenticatedShellWebAiSearchRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
+  '/_authenticated/_shell/settings/': typeof AuthenticatedShellSettingsIndexRoute
+  '/_authenticated/_shell/marketing/analytics/competitors': typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
+  '/_authenticated/_shell/marketing/analytics/google-business': typeof AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute
+  '/_authenticated/_shell/marketing/analytics/news': typeof AuthenticatedShellMarketingAnalyticsNewsRoute
+  '/_authenticated/_shell/marketing/analytics/reports': typeof AuthenticatedShellMarketingAnalyticsReportsRoute
+  '/_authenticated/_shell/marketing/analytics/trends': typeof AuthenticatedShellMarketingAnalyticsTrendsRoute
+  '/_authenticated/_shell/marketing/analytics/website': typeof AuthenticatedShellMarketingAnalyticsWebsiteRoute
   '/api/public/oauth/google/callback': typeof ApiPublicOauthGoogleCallbackRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
+  '/_authenticated/_shell/marketing/analytics/': typeof AuthenticatedShellMarketingAnalyticsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -313,30 +283,26 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/.well-known/oauth-protected-resource'
-    | '/app'
-    | '/pulse'
     | '/auth/callback'
     | '/oauth/callback'
     | '/.lovable/oauth/consent'
-    | '/app/brand'
-    | '/app/growth'
-    | '/app/marlowe'
-    | '/app/settings'
-    | '/app/studio'
-    | '/pulse/ai-search'
-    | '/pulse/competitors'
-    | '/pulse/google-business'
-    | '/pulse/news'
-    | '/pulse/reports'
-    | '/pulse/settings'
-    | '/pulse/social'
-    | '/pulse/trends'
-    | '/pulse/website'
-    | '/app/'
-    | '/pulse/'
+    | '/agent'
+    | '/design/brand'
+    | '/marketing/scheduler'
+    | '/marketing/social'
+    | '/settings/data-sources'
+    | '/web/ai-search'
     | '/api/public/hooks/pulse-sync'
+    | '/settings/'
+    | '/marketing/analytics/competitors'
+    | '/marketing/analytics/google-business'
+    | '/marketing/analytics/news'
+    | '/marketing/analytics/reports'
+    | '/marketing/analytics/trends'
+    | '/marketing/analytics/website'
     | '/api/public/oauth/google/callback'
     | '/api/public/oauth/linkedin/callback'
+    | '/marketing/analytics/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -348,25 +314,23 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/oauth/callback'
     | '/.lovable/oauth/consent'
-    | '/app/brand'
-    | '/app/growth'
-    | '/app/marlowe'
-    | '/app/settings'
-    | '/app/studio'
-    | '/pulse/ai-search'
-    | '/pulse/competitors'
-    | '/pulse/google-business'
-    | '/pulse/news'
-    | '/pulse/reports'
-    | '/pulse/settings'
-    | '/pulse/social'
-    | '/pulse/trends'
-    | '/pulse/website'
-    | '/app'
-    | '/pulse'
+    | '/agent'
+    | '/design/brand'
+    | '/marketing/scheduler'
+    | '/marketing/social'
+    | '/settings/data-sources'
+    | '/web/ai-search'
     | '/api/public/hooks/pulse-sync'
+    | '/settings'
+    | '/marketing/analytics/competitors'
+    | '/marketing/analytics/google-business'
+    | '/marketing/analytics/news'
+    | '/marketing/analytics/reports'
+    | '/marketing/analytics/trends'
+    | '/marketing/analytics/website'
     | '/api/public/oauth/google/callback'
     | '/api/public/oauth/linkedin/callback'
+    | '/marketing/analytics'
   id:
     | '__root__'
     | '/'
@@ -376,30 +340,26 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/.well-known/oauth-protected-resource'
-    | '/_authenticated/app'
-    | '/_authenticated/pulse'
     | '/auth/callback'
     | '/oauth/callback'
     | '/.lovable/oauth/consent'
-    | '/_authenticated/app/brand'
-    | '/_authenticated/app/growth'
-    | '/_authenticated/app/marlowe'
-    | '/_authenticated/app/settings'
-    | '/_authenticated/app/studio'
-    | '/_authenticated/pulse/ai-search'
-    | '/_authenticated/pulse/competitors'
-    | '/_authenticated/pulse/google-business'
-    | '/_authenticated/pulse/news'
-    | '/_authenticated/pulse/reports'
-    | '/_authenticated/pulse/settings'
-    | '/_authenticated/pulse/social'
-    | '/_authenticated/pulse/trends'
-    | '/_authenticated/pulse/website'
-    | '/_authenticated/app/'
-    | '/_authenticated/pulse/'
+    | '/_authenticated/_shell/agent'
+    | '/_authenticated/_shell/design/brand'
+    | '/_authenticated/_shell/marketing/scheduler'
+    | '/_authenticated/_shell/marketing/social'
+    | '/_authenticated/_shell/settings/data-sources'
+    | '/_authenticated/_shell/web/ai-search'
     | '/api/public/hooks/pulse-sync'
+    | '/_authenticated/_shell/settings/'
+    | '/_authenticated/_shell/marketing/analytics/competitors'
+    | '/_authenticated/_shell/marketing/analytics/google-business'
+    | '/_authenticated/_shell/marketing/analytics/news'
+    | '/_authenticated/_shell/marketing/analytics/reports'
+    | '/_authenticated/_shell/marketing/analytics/trends'
+    | '/_authenticated/_shell/marketing/analytics/website'
     | '/api/public/oauth/google/callback'
     | '/api/public/oauth/linkedin/callback'
+    | '/_authenticated/_shell/marketing/analytics/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -469,20 +429,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/app': {
-      id: '/_authenticated/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AuthenticatedAppRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/pulse': {
-      id: '/_authenticated/pulse'
-      path: '/pulse'
-      fullPath: '/pulse'
-      preLoaderRoute: typeof AuthenticatedPulseRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/auth/callback': {
       id: '/auth/callback'
       path: '/auth/callback'
@@ -504,117 +450,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/app/': {
-      id: '/_authenticated/app/'
-      path: '/'
-      fullPath: '/app/'
-      preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
+    '/_authenticated/_shell/agent': {
+      id: '/_authenticated/_shell/agent'
+      path: '/agent'
+      fullPath: '/agent'
+      preLoaderRoute: typeof AuthenticatedShellAgentRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/app/brand': {
-      id: '/_authenticated/app/brand'
-      path: '/brand'
-      fullPath: '/app/brand'
-      preLoaderRoute: typeof AuthenticatedAppBrandRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
+    '/_authenticated/_shell/design/brand': {
+      id: '/_authenticated/_shell/design/brand'
+      path: '/design/brand'
+      fullPath: '/design/brand'
+      preLoaderRoute: typeof AuthenticatedShellDesignBrandRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/app/growth': {
-      id: '/_authenticated/app/growth'
-      path: '/growth'
-      fullPath: '/app/growth'
-      preLoaderRoute: typeof AuthenticatedAppGrowthRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
+    '/_authenticated/_shell/marketing/scheduler': {
+      id: '/_authenticated/_shell/marketing/scheduler'
+      path: '/marketing/scheduler'
+      fullPath: '/marketing/scheduler'
+      preLoaderRoute: typeof AuthenticatedShellMarketingSchedulerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/app/marlowe': {
-      id: '/_authenticated/app/marlowe'
-      path: '/marlowe'
-      fullPath: '/app/marlowe'
-      preLoaderRoute: typeof AuthenticatedAppMarloweRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
+    '/_authenticated/_shell/marketing/social': {
+      id: '/_authenticated/_shell/marketing/social'
+      path: '/marketing/social'
+      fullPath: '/marketing/social'
+      preLoaderRoute: typeof AuthenticatedShellMarketingSocialRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/app/settings': {
-      id: '/_authenticated/app/settings'
+    '/_authenticated/_shell/settings/': {
+      id: '/_authenticated/_shell/settings/'
       path: '/settings'
-      fullPath: '/app/settings'
-      preLoaderRoute: typeof AuthenticatedAppSettingsRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
+      fullPath: '/settings/'
+      preLoaderRoute: typeof AuthenticatedShellSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/app/studio': {
-      id: '/_authenticated/app/studio'
-      path: '/studio'
-      fullPath: '/app/studio'
-      preLoaderRoute: typeof AuthenticatedAppStudioRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
+    '/_authenticated/_shell/settings/data-sources': {
+      id: '/_authenticated/_shell/settings/data-sources'
+      path: '/settings/data-sources'
+      fullPath: '/settings/data-sources'
+      preLoaderRoute: typeof AuthenticatedShellSettingsDataSourcesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/pulse/': {
-      id: '/_authenticated/pulse/'
-      path: '/'
-      fullPath: '/pulse/'
-      preLoaderRoute: typeof AuthenticatedPulseIndexRouteImport
-      parentRoute: typeof AuthenticatedPulseRoute
-    }
-    '/_authenticated/pulse/ai-search': {
-      id: '/_authenticated/pulse/ai-search'
-      path: '/ai-search'
-      fullPath: '/pulse/ai-search'
-      preLoaderRoute: typeof AuthenticatedPulseAiSearchRouteImport
-      parentRoute: typeof AuthenticatedPulseRoute
-    }
-    '/_authenticated/pulse/competitors': {
-      id: '/_authenticated/pulse/competitors'
-      path: '/competitors'
-      fullPath: '/pulse/competitors'
-      preLoaderRoute: typeof AuthenticatedPulseCompetitorsRouteImport
-      parentRoute: typeof AuthenticatedPulseRoute
-    }
-    '/_authenticated/pulse/google-business': {
-      id: '/_authenticated/pulse/google-business'
-      path: '/google-business'
-      fullPath: '/pulse/google-business'
-      preLoaderRoute: typeof AuthenticatedPulseGoogleBusinessRouteImport
-      parentRoute: typeof AuthenticatedPulseRoute
-    }
-    '/_authenticated/pulse/news': {
-      id: '/_authenticated/pulse/news'
-      path: '/news'
-      fullPath: '/pulse/news'
-      preLoaderRoute: typeof AuthenticatedPulseNewsRouteImport
-      parentRoute: typeof AuthenticatedPulseRoute
-    }
-    '/_authenticated/pulse/reports': {
-      id: '/_authenticated/pulse/reports'
-      path: '/reports'
-      fullPath: '/pulse/reports'
-      preLoaderRoute: typeof AuthenticatedPulseReportsRouteImport
-      parentRoute: typeof AuthenticatedPulseRoute
-    }
-    '/_authenticated/pulse/settings': {
-      id: '/_authenticated/pulse/settings'
-      path: '/settings'
-      fullPath: '/pulse/settings'
-      preLoaderRoute: typeof AuthenticatedPulseSettingsRouteImport
-      parentRoute: typeof AuthenticatedPulseRoute
-    }
-    '/_authenticated/pulse/social': {
-      id: '/_authenticated/pulse/social'
-      path: '/social'
-      fullPath: '/pulse/social'
-      preLoaderRoute: typeof AuthenticatedPulseSocialRouteImport
-      parentRoute: typeof AuthenticatedPulseRoute
-    }
-    '/_authenticated/pulse/trends': {
-      id: '/_authenticated/pulse/trends'
-      path: '/trends'
-      fullPath: '/pulse/trends'
-      preLoaderRoute: typeof AuthenticatedPulseTrendsRouteImport
-      parentRoute: typeof AuthenticatedPulseRoute
-    }
-    '/_authenticated/pulse/website': {
-      id: '/_authenticated/pulse/website'
-      path: '/website'
-      fullPath: '/pulse/website'
-      preLoaderRoute: typeof AuthenticatedPulseWebsiteRouteImport
-      parentRoute: typeof AuthenticatedPulseRoute
+    '/_authenticated/_shell/web/ai-search': {
+      id: '/_authenticated/_shell/web/ai-search'
+      path: '/web/ai-search'
+      fullPath: '/web/ai-search'
+      preLoaderRoute: typeof AuthenticatedShellWebAiSearchRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/public/hooks/pulse-sync': {
       id: '/api/public/hooks/pulse-sync'
@@ -622,6 +505,55 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/public/hooks/pulse-sync'
       preLoaderRoute: typeof ApiPublicHooksPulseSyncRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/_shell/marketing/analytics/': {
+      id: '/_authenticated/_shell/marketing/analytics/'
+      path: '/marketing/analytics'
+      fullPath: '/marketing/analytics/'
+      preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/_shell/marketing/analytics/competitors': {
+      id: '/_authenticated/_shell/marketing/analytics/competitors'
+      path: '/marketing/analytics/competitors'
+      fullPath: '/marketing/analytics/competitors'
+      preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsCompetitorsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/_shell/marketing/analytics/google-business': {
+      id: '/_authenticated/_shell/marketing/analytics/google-business'
+      path: '/marketing/analytics/google-business'
+      fullPath: '/marketing/analytics/google-business'
+      preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsGoogleBusinessRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/_shell/marketing/analytics/news': {
+      id: '/_authenticated/_shell/marketing/analytics/news'
+      path: '/marketing/analytics/news'
+      fullPath: '/marketing/analytics/news'
+      preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsNewsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/_shell/marketing/analytics/reports': {
+      id: '/_authenticated/_shell/marketing/analytics/reports'
+      path: '/marketing/analytics/reports'
+      fullPath: '/marketing/analytics/reports'
+      preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/_shell/marketing/analytics/trends': {
+      id: '/_authenticated/_shell/marketing/analytics/trends'
+      path: '/marketing/analytics/trends'
+      fullPath: '/marketing/analytics/trends'
+      preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsTrendsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/_shell/marketing/analytics/website': {
+      id: '/_authenticated/_shell/marketing/analytics/website'
+      path: '/marketing/analytics/website'
+      fullPath: '/marketing/analytics/website'
+      preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsWebsiteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/public/oauth/google/callback': {
       id: '/api/public/oauth/google/callback'
@@ -640,64 +572,48 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthenticatedAppRouteChildren {
-  AuthenticatedAppBrandRoute: typeof AuthenticatedAppBrandRoute
-  AuthenticatedAppGrowthRoute: typeof AuthenticatedAppGrowthRoute
-  AuthenticatedAppMarloweRoute: typeof AuthenticatedAppMarloweRoute
-  AuthenticatedAppSettingsRoute: typeof AuthenticatedAppSettingsRoute
-  AuthenticatedAppStudioRoute: typeof AuthenticatedAppStudioRoute
-  AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
-}
-
-const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
-  AuthenticatedAppBrandRoute: AuthenticatedAppBrandRoute,
-  AuthenticatedAppGrowthRoute: AuthenticatedAppGrowthRoute,
-  AuthenticatedAppMarloweRoute: AuthenticatedAppMarloweRoute,
-  AuthenticatedAppSettingsRoute: AuthenticatedAppSettingsRoute,
-  AuthenticatedAppStudioRoute: AuthenticatedAppStudioRoute,
-  AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
-}
-
-const AuthenticatedAppRouteWithChildren =
-  AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
-
-interface AuthenticatedPulseRouteChildren {
-  AuthenticatedPulseAiSearchRoute: typeof AuthenticatedPulseAiSearchRoute
-  AuthenticatedPulseCompetitorsRoute: typeof AuthenticatedPulseCompetitorsRoute
-  AuthenticatedPulseGoogleBusinessRoute: typeof AuthenticatedPulseGoogleBusinessRoute
-  AuthenticatedPulseNewsRoute: typeof AuthenticatedPulseNewsRoute
-  AuthenticatedPulseReportsRoute: typeof AuthenticatedPulseReportsRoute
-  AuthenticatedPulseSettingsRoute: typeof AuthenticatedPulseSettingsRoute
-  AuthenticatedPulseSocialRoute: typeof AuthenticatedPulseSocialRoute
-  AuthenticatedPulseTrendsRoute: typeof AuthenticatedPulseTrendsRoute
-  AuthenticatedPulseWebsiteRoute: typeof AuthenticatedPulseWebsiteRoute
-  AuthenticatedPulseIndexRoute: typeof AuthenticatedPulseIndexRoute
-}
-
-const AuthenticatedPulseRouteChildren: AuthenticatedPulseRouteChildren = {
-  AuthenticatedPulseAiSearchRoute: AuthenticatedPulseAiSearchRoute,
-  AuthenticatedPulseCompetitorsRoute: AuthenticatedPulseCompetitorsRoute,
-  AuthenticatedPulseGoogleBusinessRoute: AuthenticatedPulseGoogleBusinessRoute,
-  AuthenticatedPulseNewsRoute: AuthenticatedPulseNewsRoute,
-  AuthenticatedPulseReportsRoute: AuthenticatedPulseReportsRoute,
-  AuthenticatedPulseSettingsRoute: AuthenticatedPulseSettingsRoute,
-  AuthenticatedPulseSocialRoute: AuthenticatedPulseSocialRoute,
-  AuthenticatedPulseTrendsRoute: AuthenticatedPulseTrendsRoute,
-  AuthenticatedPulseWebsiteRoute: AuthenticatedPulseWebsiteRoute,
-  AuthenticatedPulseIndexRoute: AuthenticatedPulseIndexRoute,
-}
-
-const AuthenticatedPulseRouteWithChildren =
-  AuthenticatedPulseRoute._addFileChildren(AuthenticatedPulseRouteChildren)
-
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
-  AuthenticatedPulseRoute: typeof AuthenticatedPulseRouteWithChildren
+  AuthenticatedShellAgentRoute: typeof AuthenticatedShellAgentRoute
+  AuthenticatedShellDesignBrandRoute: typeof AuthenticatedShellDesignBrandRoute
+  AuthenticatedShellMarketingSchedulerRoute: typeof AuthenticatedShellMarketingSchedulerRoute
+  AuthenticatedShellMarketingSocialRoute: typeof AuthenticatedShellMarketingSocialRoute
+  AuthenticatedShellSettingsDataSourcesRoute: typeof AuthenticatedShellSettingsDataSourcesRoute
+  AuthenticatedShellWebAiSearchRoute: typeof AuthenticatedShellWebAiSearchRoute
+  AuthenticatedShellSettingsIndexRoute: typeof AuthenticatedShellSettingsIndexRoute
+  AuthenticatedShellMarketingAnalyticsCompetitorsRoute: typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
+  AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute: typeof AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute
+  AuthenticatedShellMarketingAnalyticsNewsRoute: typeof AuthenticatedShellMarketingAnalyticsNewsRoute
+  AuthenticatedShellMarketingAnalyticsReportsRoute: typeof AuthenticatedShellMarketingAnalyticsReportsRoute
+  AuthenticatedShellMarketingAnalyticsTrendsRoute: typeof AuthenticatedShellMarketingAnalyticsTrendsRoute
+  AuthenticatedShellMarketingAnalyticsWebsiteRoute: typeof AuthenticatedShellMarketingAnalyticsWebsiteRoute
+  AuthenticatedShellMarketingAnalyticsIndexRoute: typeof AuthenticatedShellMarketingAnalyticsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
-  AuthenticatedPulseRoute: AuthenticatedPulseRouteWithChildren,
+  AuthenticatedShellAgentRoute: AuthenticatedShellAgentRoute,
+  AuthenticatedShellDesignBrandRoute: AuthenticatedShellDesignBrandRoute,
+  AuthenticatedShellMarketingSchedulerRoute:
+    AuthenticatedShellMarketingSchedulerRoute,
+  AuthenticatedShellMarketingSocialRoute:
+    AuthenticatedShellMarketingSocialRoute,
+  AuthenticatedShellSettingsDataSourcesRoute:
+    AuthenticatedShellSettingsDataSourcesRoute,
+  AuthenticatedShellWebAiSearchRoute: AuthenticatedShellWebAiSearchRoute,
+  AuthenticatedShellSettingsIndexRoute: AuthenticatedShellSettingsIndexRoute,
+  AuthenticatedShellMarketingAnalyticsCompetitorsRoute:
+    AuthenticatedShellMarketingAnalyticsCompetitorsRoute,
+  AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute:
+    AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute,
+  AuthenticatedShellMarketingAnalyticsNewsRoute:
+    AuthenticatedShellMarketingAnalyticsNewsRoute,
+  AuthenticatedShellMarketingAnalyticsReportsRoute:
+    AuthenticatedShellMarketingAnalyticsReportsRoute,
+  AuthenticatedShellMarketingAnalyticsTrendsRoute:
+    AuthenticatedShellMarketingAnalyticsTrendsRoute,
+  AuthenticatedShellMarketingAnalyticsWebsiteRoute:
+    AuthenticatedShellMarketingAnalyticsWebsiteRoute,
+  AuthenticatedShellMarketingAnalyticsIndexRoute:
+    AuthenticatedShellMarketingAnalyticsIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
