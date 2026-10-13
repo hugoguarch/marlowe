@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/_shell/design/brand")({
   head: () => ({
     meta: [
       { title: "Brand Brain — Why Media AI" },
-      { name: "description", content: "Everything Marlowe knows about your brand." },
+      { name: "description", content: "Everything the agent knows about your brand." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -148,7 +148,7 @@ function BrandPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <PageHeader
-        eyebrow="The brand brain"
+        eyebrow="Brand Guidelines"
         title={brain.name}
         subtitle="Everything the agents use to write, design and post. Edit anything and it applies from the next post."
         action={
@@ -278,7 +278,7 @@ function BrandPage() {
         <Card>
           <CardLabel>How much to post</CardLabel>
           <p className="mt-3 text-sm text-ink-navy/55">
-            Marlowe aims for this many posts a day for {brain.name}.
+            the agent aims for this many posts a day for {brain.name}.
           </p>
           <div className="mt-4 flex items-center gap-3">
             <input
@@ -353,7 +353,7 @@ function BrandPage() {
           <CardLabel>Image bank</CardLabel>
           <p className="mt-3 text-sm text-ink-navy/55">
             Your own photography. Anything here can be picked in the Studio instead of letting
-            Marlowe generate a picture.
+            the agent generate a picture.
           </p>
           <div className="mt-5 grid grid-cols-3 gap-3 sm:grid-cols-5">
             {brain.assets
@@ -390,7 +390,7 @@ function BrandPage() {
         <Card className="lg:col-span-2">
           <CardLabel>Brand guidelines</CardLabel>
           <p className="mt-3 text-sm text-ink-navy/55">
-            Upload a guidelines document and Marlowe reads it, then fills the cards above for you to
+            Upload a guidelines document and the agent reads it, then fills the cards above for you to
             check.
           </p>
           <ul className="mt-4 space-y-2">
@@ -820,11 +820,11 @@ function CreateBrandFlow({
     <div className="mx-auto max-w-2xl space-y-6">
       <PageHeader
         eyebrow="New brand brain"
-        title={step === 1 ? "Name the brand" : "Give Marlowe the raw material"}
+        title={step === 1 ? "Name the brand" : "Give the agent the raw material"}
         subtitle={
           step === 1
             ? "One brand brain holds the logo, colours, type, voice and audience."
-            : "Upload the logo, any font files and the brand guidelines. Marlowe reads the guidelines and fills in the rest."
+            : "Upload the logo, any font files and the brand guidelines. the agent reads the guidelines and fills in the rest."
         }
       />
 
@@ -885,7 +885,7 @@ function CreateBrandFlow({
                   const path = await onUpload(file, "document", brandId!);
                   const result = await onAnalyse(brandId!, path, name);
                   setFound(result);
-                  setNote("Marlowe read it — check what it found below.");
+                  setNote("the agent read it — check what it found below.");
                 } catch (e) {
                   setError(e instanceof Error ? e.message : "Couldn't read that document.");
                   setNote(null);
@@ -899,7 +899,7 @@ function CreateBrandFlow({
 
           {found ? (
             <div className="mt-6 rounded-[8px] border border-app-line bg-app-bg/60 p-5">
-              <p className="text-sm text-ink-navy">What Marlowe found</p>
+              <p className="text-sm text-ink-navy">What the agent found</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {found.palette.map((c: PaletteColour) => (
                   <span

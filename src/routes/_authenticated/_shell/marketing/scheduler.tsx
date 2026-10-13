@@ -175,7 +175,7 @@ function StudioPage() {
   if (!brain) {
     return (
       <div className="mx-auto max-w-3xl space-y-6">
-        <PageHeader eyebrow="The studio" title="Make your first brand first" />
+        <PageHeader eyebrow="Post Scheduler" title="Make your first brand first" />
         <Card>
           <p className="text-sm leading-relaxed text-ink-navy/60">
             The Studio designs in your brand's colours, fonts and voice — so it needs a Brand Brain
@@ -192,7 +192,7 @@ function StudioPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <PageHeader
-        eyebrow="The studio"
+        eyebrow="Post Scheduler"
         title="Make something on brand"
         subtitle={`Designed with ${brain.name}'s colours, type and voice.`}
         action={

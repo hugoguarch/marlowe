@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/_shell/settings/")({
       { title: "Settings — Why Media AI" },
       {
         name: "description",
-        content: "Set how much Marlowe can do on its own and connect your accounts.",
+        content: "Set how much the agent can do on its own and connect your accounts.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -103,8 +103,8 @@ function SettingsPage() {
     <div className="mx-auto max-w-3xl space-y-8">
       <PageHeader
         eyebrow="Settings"
-        title="How far Marlowe can go"
-        subtitle="You are always in control. Marlowe asks before anything that touches money, goes public, or matters."
+        title="How far the agent can go"
+        subtitle="You are always in control. the agent asks before anything that touches money, goes public, or matters."
       />
 
       <Card>
@@ -115,12 +115,12 @@ function SettingsPage() {
               {
                 key: "guided" as const,
                 title: "Guided",
-                body: "Marlowe prepares everything and waits for your approval each morning.",
+                body: "the agent prepares everything and waits for your approval each morning.",
               },
               {
                 key: "auto" as const,
                 title: "Auto",
-                body: "Marlowe ships the routine work itself and only asks about the big calls.",
+                body: "the agent ships the routine work itself and only asks about the big calls.",
               },
             ]
           ).map((opt) => (
@@ -150,7 +150,7 @@ function SettingsPage() {
       <Card>
         <CardLabel>Your channels</CardLabel>
         <p className="mt-3 text-sm leading-relaxed text-ink-navy/55">
-          Sign in to each channel and Marlowe can publish and read its numbers. Until a channel is
+          Sign in to each channel and the agent can publish and read its numbers. Until a channel is
           connected, posts stay in the queue.
         </p>
 
