@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Check, ChevronDown, ChevronRight, ChevronsUpDown, LogOut } from "lucide-react";
+import { Check, ChevronDown, ChevronRight, ChevronsUpDown, LogOut, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import wordmark from "@/assets/wm-whymedia-wordmark-white.png.asset.json";
@@ -18,49 +18,89 @@ export function Sidebar({ name, role, onSignOut }: { name: string; role: string;
   const path = useRouterState({ select: (s) => s.location.pathname });
   const active = DEPTS.find((d) => path.startsWith(d.base))?.key ?? null;
   const [open, setOpen] = useState<string | null>(active);
+  const [wide, setWide] = useState(true);
+  const [fly, setFly] = useState<{ key: string; top: number } | null>(null);
+  const flyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => { setOpen(active); }, [active]);
+  useEffect(() => {
+    const saved = localStorage.getItem("wm-sidebar");
+    if (saved) setWide(saved === "wide");
+    else setWide(window.innerWidth >= 1280);
+  }, []);
+  function toggle() {
+    const next = !wide;
+    setWide(next);
+    setFly(null);
+    localStorage.setItem("wm-sidebar", next ? "wide" : "narrow");
+  }
+  const showFly = (key: string, el: HTMLElement) => {
+    if (flyTimer.current) clearTimeout(flyTimer.current);
+    setFly({ key, top: el.getBoundingClientRect().top });
+  };
+  const hideFly = () => {
+    flyTimer.current = setTimeout(() => setFly(null), 160);
+  };
+  const keepFly = () => {
+    if (flyTimer.current) clearTimeout(flyTimer.current);
+  };
+  const flyDept = fly ? DEPTS.find((d) => d.key === fly.key) : null;
 
   return (
-    <aside className="relative sticky top-0 flex h-screen w-[68px] shrink-0 flex-col overflow-hidden bg-ink-navy px-2.5 pt-[22px] pb-4 text-white xl:w-[248px] xl:px-3.5">
-      <FadedMark size={520} className="!-right-[60%] !-bottom-[20%]" />
-      <Link to="/dashboard" className="relative flex items-center gap-2.5 px-2 pb-5">
-        <img src={yIcon.url} alt="Why Media" className="h-[26px] w-auto" />
-        <img src={wordmark.url} alt="" className="hidden h-[15px] w-auto xl:block" />
-        <span className="ml-auto hidden text-[10px] font-bold tracking-[0.18em] text-cerulean-300 xl:block">AI</span>
-      </Link>
+    <aside className={`relative sticky top-0 z-40 flex h-screen shrink-0 flex-col bg-ink-navy pt-[22px] pb-4 text-white transition-[width] duration-200 ease-out ${wide ? "w-[248px] px-3.5" : "w-[68px] px-2.5"}`}>
+      <div className="pointer-events-none absolute inset-0 overflow-hidden"><FadedMark size={520} className="!-right-[60%] !-bottom-[20%]" /></div>
+      <div className="relative flex items-center gap-2.5 px-2 pb-5">
+        <Link to="/dashboard" className="flex items-center gap-2.5">
+          <img src={yIcon.url} alt="Why Media" className="h-[26px] w-auto" />
+          {wide ? <img src={wordmark.url} alt="" className="h-[15px] w-auto" /> : null}
+        </Link>
+        {wide ? <span className="ml-auto text-[10px] font-bold tracking-[0.18em] text-cerulean-300">AI</span> : null}
+      </div>
+      <button
+        onClick={toggle}
+        aria-label={wide ? "Collapse sidebar" : "Expand sidebar"}
+        title={wide ? "Collapse sidebar" : "Expand sidebar"}
+        className="absolute top-[26px] -right-3 z-10 flex h-6 w-6 items-center justify-center rounded-full border border-app-line bg-app-card text-ink-navy shadow-[0_2px_6px_rgba(0,28,38,0.18)] transition-colors hover:text-cerulean"
+      >
+        {wide ? <PanelLeftClose size={13} /> : <PanelLeftOpen size={13} />}
+      </button>
 
-      <AccountSwitcher />
+      <AccountSwitcher wide={wide} />
 
-      <nav className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <nav className="relative flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden">
         <div className="flex flex-col gap-0.5">
           {TOP.map((t) => (
-            <Link key={t.to} to={t.to} title={t.label} className={`flex items-center gap-[11px] rounded-[6px] px-2.5 py-[9px] text-sm transition-colors duration-150 ${path.startsWith(t.to) ? ON : DIM}`}>
+            <Link key={t.to} to={t.to} title={wide ? undefined : t.label} className={`flex items-center gap-[11px] rounded-[6px] px-2.5 py-[9px] text-sm transition-colors duration-150 ${path.startsWith(t.to) ? ON : DIM}`}>
               <t.icon size={17} strokeWidth={1.75} className="shrink-0" />
-              <span className="hidden xl:inline">{t.label}</span>
+              {wide ? <span>{t.label}</span> : null}
             </Link>
           ))}
         </div>
-        <p className="hidden px-2.5 pt-[22px] pb-2 text-[10.5px] font-bold tracking-[0.2em] text-white/45 xl:block">DEPARTMENTS</p>
-        <div className="mt-4 flex flex-col gap-0.5 xl:mt-0">
+        {wide ? <p className="px-2.5 pt-[22px] pb-2 text-[10.5px] font-bold tracking-[0.2em] text-white/45">DEPARTMENTS</p> : null}
+        <div className={`flex flex-col gap-0.5 ${wide ? "" : "mt-4"}`}>
           {DEPTS.map((d) => {
             const isOpen = open === d.key;
+            if (!wide) {
+              return (
+                <div key={d.key} onMouseEnter={(e) => showFly(d.key, e.currentTarget)} onMouseLeave={hideFly}>
+                  <Link to={d.items[0]!.to} aria-label={d.label} className={`flex items-center rounded-[6px] px-2.5 py-[9px] ${active === d.key || fly?.key === d.key ? ON : DIM}`}>
+                    <d.icon size={17} strokeWidth={1.75} />
+                  </Link>
+                </div>
+              );
+            }
             return (
               <div key={d.key} className="flex flex-col">
-                {/* Collapsed rail: icon goes to the department's first page */}
-                <Link to={d.items[0]!.to} title={d.label} className={`flex items-center rounded-[6px] px-2.5 py-[9px] xl:hidden ${active === d.key ? ON : DIM}`}>
-                  <d.icon size={17} strokeWidth={1.75} />
-                </Link>
                 <button
                   onClick={() => setOpen(isOpen ? null : d.key)}
                   aria-expanded={isOpen}
-                  className={`hidden items-center gap-[11px] rounded-[6px] px-2.5 py-[9px] text-left text-sm transition-colors duration-150 xl:flex ${isOpen || active === d.key ? "text-white" : DIM}`}
+                  className={`flex items-center gap-[11px] rounded-[6px] px-2.5 py-[9px] text-left text-sm transition-colors duration-150 ${isOpen || active === d.key ? "text-white" : DIM}`}
                 >
                   <d.icon size={17} strokeWidth={1.75} />
                   <span className="flex-1">{d.label}</span>
                   {isOpen ? <ChevronDown size={14} className="text-white/45" /> : <ChevronRight size={14} className="text-white/45" />}
                 </button>
                 {isOpen ? (
-                  <div className="wm-fade mt-1 mb-1.5 ml-[18px] hidden flex-col border-l border-hair-dark pl-3 xl:flex">
+                  <div className="wm-fade mt-1 mb-1.5 ml-[18px] flex flex-col border-l border-hair-dark pl-3">
                     {d.items.map((i) => {
                       const on = path === i.to || path.startsWith(i.to + "/");
                       return (
@@ -79,27 +119,52 @@ export function Sidebar({ name, role, onSignOut }: { name: string; role: string;
 
       <div className="relative mt-3 flex flex-col gap-0.5">
         {BOTTOM.map((b) => (
-          <Link key={b.to} to={b.to} title={b.label} className={`flex items-center gap-[11px] rounded-[6px] px-2.5 py-[9px] text-sm transition-colors duration-150 ${path.startsWith(b.to) ? ON : DIM}`}>
+          <Link key={b.to} to={b.to} title={wide ? undefined : b.label} className={`flex items-center gap-[11px] rounded-[6px] px-2.5 py-[9px] text-sm transition-colors duration-150 ${path.startsWith(b.to) ? ON : DIM}`}>
             <b.icon size={17} strokeWidth={1.75} />
-            <span className="hidden xl:inline">{b.label}</span>
+            {wide ? <span>{b.label}</span> : null}
           </Link>
         ))}
-        <div className="mt-2 flex items-center gap-2.5 border-t border-hair-dark px-1.5 pt-3 xl:px-2.5">
-          <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-cerulean text-[11px] font-bold">{initials(name || "?")}</span>
-          <div className="hidden min-w-0 flex-1 xl:block">
-            <p className="truncate text-[13px] font-medium">{name}</p>
-            <p className="truncate text-[11.5px] text-wm-grey-3">{role}</p>
-          </div>
-          <button onClick={onSignOut} title="Sign out" aria-label="Sign out" className="hidden text-white/50 transition-colors hover:text-white xl:block">
-            <LogOut size={15} strokeWidth={1.75} />
-          </button>
+        <div className={`mt-2 flex items-center gap-2.5 border-t border-hair-dark pt-3 ${wide ? "px-2.5" : "px-1.5"}`}>
+          <span title={wide ? undefined : name} className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-cerulean text-[11px] font-bold">{initials(name || "?")}</span>
+          {wide ? (
+            <>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[13px] font-medium">{name}</p>
+                <p className="truncate text-[11.5px] text-wm-grey-3">{role}</p>
+              </div>
+              <button onClick={onSignOut} title="Sign out" aria-label="Sign out" className="text-white/50 transition-colors hover:text-white">
+                <LogOut size={15} strokeWidth={1.75} />
+              </button>
+            </>
+          ) : null}
         </div>
       </div>
+
+      {flyDept && fly ? (
+        <div
+          onMouseEnter={keepFly}
+          onMouseLeave={hideFly}
+          style={{ top: fly.top - 6 }}
+          className="wm-fade fixed left-[60px] z-50 w-[220px] pl-3"
+        >
+          <div className="rounded-[8px] border border-hair-dark bg-ink-navy p-1.5 shadow-[0_24px_60px_rgba(0,28,38,0.35)]">
+            <p className="px-2.5 pt-1.5 pb-1.5 text-[10.5px] font-bold tracking-[0.2em] text-white/45">{flyDept.label.toUpperCase()}</p>
+            {flyDept.items.map((i) => {
+              const on = path === i.to || path.startsWith(i.to + "/");
+              return (
+                <Link key={i.to} to={i.to} onClick={() => setFly(null)} className={`block rounded-[5px] px-2.5 py-2 text-[13px] transition-colors duration-150 ${on ? ON : "text-white/75 hover:bg-white/[0.06] hover:text-white"}`}>
+                  {i.label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
     </aside>
   );
 }
 
-function AccountSwitcher() {
+function AccountSwitcher({ wide }: { wide: boolean }) {
   const { session, clientId, setClientId, client } = usePulse();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -118,19 +183,19 @@ function AccountSwitcher() {
     <div ref={ref} className="relative mb-[22px]">
       <button
         onClick={() => multi && setOpen(!open)}
-        className="flex w-full items-center gap-2.5 rounded-[8px] border border-hair-dark bg-wm-teal p-1.5 text-left xl:p-2.5"
+        className={`flex w-full items-center gap-2.5 rounded-[8px] border border-hair-dark bg-wm-teal text-left ${wide ? "p-2.5" : "p-1.5"}`}
         aria-haspopup={multi ? "listbox" : undefined}
       >
         <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[6px] bg-white text-[11px] font-bold text-ink-navy">
           {clientId === "all" ? "WM" : initials(label)}
         </span>
-        <span className="hidden min-w-0 flex-1 xl:block">
+        <span className={wide ? "block min-w-0 flex-1" : "hidden"}>
           <span className="block truncate text-[13.5px] font-medium">{label}</span>
           <span className="block truncate text-[11.5px] text-wm-grey-3">
             {multi ? `Why Media · ${clients.length} accounts` : (client?.sector ?? "Your account")}
           </span>
         </span>
-        {multi ? <ChevronsUpDown size={15} className="hidden text-wm-grey-3 xl:block" /> : null}
+        {multi ? <ChevronsUpDown size={15} className={wide ? "text-wm-grey-3" : "hidden"} /> : null}
       </button>
       {open ? (
         <div className="wm-fade absolute top-full left-0 z-50 mt-1.5 w-[260px] rounded-[8px] border border-app-line bg-app-card p-1.5 text-ink-navy shadow-[0_24px_60px_rgba(0,28,38,0.18)]">
