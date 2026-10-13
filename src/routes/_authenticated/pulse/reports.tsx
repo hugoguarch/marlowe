@@ -182,7 +182,13 @@ function Editor({ id, canWrite, onClose }: { id: string; canWrite: boolean; onCl
       <div className="space-y-4">
         <div className="flex flex-wrap gap-2">
           <button className={btn} onClick={onClose}>← All reports</button>
-          <button className={btn} onClick={() => frame.current?.contentDocument && (frame.current.contentDocument.body.style.zoom = "1"), frame.current?.contentWindow?.print(), fit()}>Download PDF</button>
+          <button className={btn} onClick={() => {
+            const f = frame.current;
+            if (!f?.contentDocument) return;
+            f.contentDocument.body.style.zoom = "1";
+            f.contentWindow?.print();
+            fit();
+          }}>Download PDF</button>
         </div>
         <Panel title="Edit text" sub={q.data.status === "approved" ? "Approved" : "Draft"}>
           <fieldset disabled={!canWrite} className="space-y-3">
