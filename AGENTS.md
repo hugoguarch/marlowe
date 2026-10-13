@@ -13,3 +13,4 @@
 - Pulse metrics carry a `site` column (part of the primary key) and connections are unique per client+provider+account, so a client can have several websites/accounts per channel; `pulse_series` takes an optional `_site` filter. Why: clients like CLS run multiple sites.
 - Pulse nightly sync runs via pg_cron calling `/api/public/hooks/pulse-sync`, which only re-pulls provider data (idempotent). Why: no manual syncing.
 - Meta Graph calls live in src/lib/pulse/meta.server.ts behind server functions in meta.functions.ts (not Edge Functions), API version in one constant, responses cached 1h in meta_cache (service-role only). Why: the token stays server-side and the stack forbids new Edge Functions.
+- Provider sign-ins (Google, LinkedIn) always open in a separate popup window via openSignIn in pulse/settings.tsx, never inside the app frame. Why: Google/LinkedIn refuse to load in frames (ERR_BLOCKED_BY_RESPONSE).

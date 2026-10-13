@@ -71,7 +71,7 @@ function SortTable({ rows, cols, initial }: { rows: any[]; cols: { k: string; la
           {sorted.map((r, i) => (
             <tr key={r.id ?? i} className="border-t border-p-line">
               <td className="max-w-72 py-2">
-                {r.url ? <a href={r.url} target="_blank" rel="noreferrer" className="block truncate hover:text-p-cerulean">{r.text || r.name || "(no text)"}</a> : <div className="truncate">{r.name}</div>}
+                {r.url ? <a href={r.url} target="_blank" rel="noopener noreferrer" className="block truncate hover:text-p-cerulean">{r.text ? r.text.split(/\s+/).slice(0, 6).join(" ").slice(0, 60) + "..." : r.name || "(no text)"}</a> : <div className="truncate">{r.name}</div>}
                 <div className="text-[11px] text-p-muted">{r.date ? String(r.date).slice(0, 10) : r.account}{r.format ? ` · ${r.format}` : ""}</div>
               </td>
               {cols.map((c) => <td key={c.k}>{c.money ? Number(r[c.k]).toFixed(2) : fmt(Number(r[c.k] ?? 0))}</td>)}

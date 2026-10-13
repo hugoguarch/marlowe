@@ -11,12 +11,12 @@ async function mustAdmin(ctx: { supabase: any; userId: string }) {
 
 export const googleConnectUrl = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({ clientId: z.string().uuid(), origin: z.string().url() }).parse(d))
+  .inputValidator((d: unknown) => z.object({ clientId: z.string().uuid(), origin: z.string().url(), purpose: z.enum(["youtube", "gbp"]) }).parse(d))
   .handler(async ({ data, context }) => {
     await mustAdmin(context);
     const g = await import("./google.server");
     if (!g.allowedOrigin(data.origin)) throw new Error("This address can't be used for Google sign-in");
-    return { url: g.authUrl(data.origin, await g.signState({ c: data.clientId, o: data.origin })) };
+    return { url: g.authUrl(data.origin, await g.signState({ c: data.clientId, o: data.origin, p: data.purpose }), data.purpose) };
   });
 
 export const googleAssets = createServerFn({ method: "POST" })

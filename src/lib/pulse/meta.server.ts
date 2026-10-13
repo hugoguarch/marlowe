@@ -23,6 +23,8 @@ function classify(err: { code?: number; message?: string; error_subcode?: number
   const msg = err.message ?? "Meta request failed";
   if ([4, 17, 32, 613].includes(c)) return new MetaError("rate_limit", "Meta is rate-limiting, try again shortly");
   if (c === 190) return new MetaError("token", "The Meta access token is invalid or expired");
+  if (/api access blocked/i.test(msg)) return new MetaError("permission", "Meta has blocked API access for the Why Media app. Check Meta for Developers → your app → Alerts / App Review, and Business Verification.");
+  if (c === 368) return new MetaError("permission", "Meta has temporarily restricted this app for policy reasons. Check the app's alerts in Meta for Developers.");
   if (c === 100 && /metric/i.test(msg)) return new MetaError("invalid_metric", msg);
   if (c === 10 || c === 200 || (c >= 200 && c < 300)) return new MetaError("permission", "This account isn't shared with Why Media or needs app approval");
   return new MetaError("other", msg.slice(0, 200));

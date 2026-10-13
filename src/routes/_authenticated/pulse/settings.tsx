@@ -8,6 +8,7 @@ import { usePulse, type PulseClient } from "@/components/pulse/context";
 import { Empty, PageTitle, Panel, SearchSelect } from "@/components/pulse/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { addGscSite, listGscSites, removeGscSite, resyncGsc, resyncGscSite } from "@/lib/pulse/gsc.functions";
+import { addLinkedInConnection, linkedinAssets, linkedinConnectUrl, removeLinkedInConnection, resyncLinkedIn } from "@/lib/pulse/linkedin.functions";
 import { addGoogleConnection, googleAssets, googleConnectUrl, removeGoogleConnection, resyncGoogle } from "@/lib/pulse/google.functions";
 import { metaDiscover, saveMetaConnection, syncMetaNow } from "@/lib/pulse/meta.functions";
 import { channelLabel, fmt } from "@/lib/pulse/metrics";
@@ -25,7 +26,9 @@ function Settings() {
       <PageTitle title="Settings / Data sources" sub={`Your role: ${session?.role?.replace("_", " ") ?? "…"}`} />
       {client && clientId !== "all" && admin && <SearchConsole key={`gsc-${client.id}`} client={client} />}
       {client && clientId !== "all" ? <Connections client={client} /> : <Empty title="Choose a client" body="Connections are managed per client." />}
-      {client && clientId !== "all" && admin && <GoogleConnections key={`g-${client.id}`} client={client} />}
+      {client && clientId !== "all" && admin && <GoogleConnections key={`g-${client.id}`} client={client} purpose="gbp" />}
+      {client && clientId !== "all" && admin && <GoogleConnections key={`y-${client.id}`} client={client} purpose="youtube" />}
+      {client && clientId !== "all" && admin && <LinkedInConnections key={`li-${client.id}`} client={client} />}
       {client && clientId !== "all" && admin && <MetaConnections key={`meta-${client.id}`} client={client} />}
       {client && clientId !== "all" && admin && <ClientEditor key={client.id} client={client} />}
       {admin && <Clients />}
@@ -40,7 +43,7 @@ const PROVIDERS: { id: string; needs: string }[] = [
   { id: "instagram", needs: "" },
   { id: "facebook", needs: "" },
   { id: "meta_ads", needs: "" },
-  { id: "linkedin", needs: "Needs LinkedIn Community Management approval" },
+  { id: "linkedin", needs: "" },
   { id: "tiktok", needs: "Needs a TikTok for Business app" },
   { id: "youtube", needs: "" },
 ];
@@ -62,6 +65,8 @@ function Connections({ client }: { client: PulseClient }) {
   const remove = useServerFn(removeGscSite);
   const gResync = useServerFn(resyncGoogle);
   const gRemove = useServerFn(removeGoogleConnection);
+  const lResync = useServerFn(resyncLinkedIn);
+  const lRemove = useServerFn(removeLinkedInConnection);
   const [busy, setBusy] = useState<string | null>(null);
   async function run(id: string, fn: () => Promise<unknown>, ok: string) {
     setBusy(id);
@@ -103,7 +108,7 @@ function Connections({ client }: { client: PulseClient }) {
                     <td className="text-p-muted">not connected</td>
                     <td className="text-xs">—</td>
                     <td className="text-right">
-                      {p.needs ? <button disabled className="rounded-lg border border-p-line px-3 py-1 text-xs text-p-muted" title={p.needs}>Connect account</button> : <span className="text-[11px] text-p-muted">{p.id === "search_console" ? "Add a website above" : "Connect in Google below"}</span>}
+                      {p.needs ? <button disabled className="rounded-lg border border-p-line px-3 py-1 text-xs text-p-muted" title={p.needs}>Connect account</button> : <span className="text-[11px] text-p-muted">{p.id === "search_console" ? "Add a website above" : p.id === "linkedin" ? "Connect LinkedIn below" : "Connect in Google below"}</span>}
                     </td>
                   </tr>
                 );
@@ -118,6 +123,7 @@ function Connections({ client }: { client: PulseClient }) {
                     <td>
                       <div className={h.cls}>{h.label}</div>
                       {c.last_error && <div className="max-w-xs text-[11px] text-p-down">{c.last_error}</div>}
+                      {c.token_expires_at && new Date(c.token_expires_at).getTime() < Date.now() + 7 * 864e5 && <div className="text-[11px] text-p-sun">{new Date(c.token_expires_at).getTime() < Date.now() ? "Sign-in expired — reconnect below" : `Sign-in expires ${new Date(c.token_expires_at).toLocaleDateString("en-GB")} — reconnect below`}</div>}
                     </td>
                     <td className="text-xs">
                       <div>{c.last_sync_at ? new Date(c.last_sync_at).toLocaleString("en-GB") : "never"}</div>
@@ -128,6 +134,12 @@ function Connections({ client }: { client: PulseClient }) {
                         <span className="flex justify-end gap-3 text-xs">
                           <button disabled={!!busy} onClick={() => run(id, () => gResync({ data: { clientId: client.id, provider: p.id as "youtube", ref: c.account_ref! } }), "Synced")} className="text-p-cerulean disabled:opacity-50">{busy === id ? "Working…" : "Sync now"}</button>
                           <button disabled={!!busy} onClick={() => { if (confirm(`Disconnect ${c.account_name ?? c.account_ref}?`)) void run(id, () => gRemove({ data: { clientId: client.id, provider: p.id as "youtube", ref: c.account_ref! } }), "Disconnected"); }} className="text-p-down disabled:opacity-50">Disconnect</button>
+                        </span>
+                      )}
+                      {admin && p.id === "linkedin" && (
+                        <span className="flex justify-end gap-3 text-xs">
+                          <button disabled={!!busy} onClick={() => run(id, () => lResync({ data: { clientId: client.id, ref: c.account_ref! } }), "Synced")} className="text-p-cerulean disabled:opacity-50">{busy === id ? "Working…" : "Sync now"}</button>
+                          <button disabled={!!busy} onClick={() => { if (confirm(`Disconnect ${c.account_name ?? c.account_ref}?`)) void run(id, () => lRemove({ data: { clientId: client.id, ref: c.account_ref! } }), "Disconnected"); }} className="text-p-down disabled:opacity-50">Disconnect</button>
                         </span>
                       )}
                       {admin && p.id === "search_console" && (
@@ -339,7 +351,17 @@ function SearchConsole({ client }: { client: PulseClient }) {
   );
 }
 
-function GoogleConnections({ client }: { client: PulseClient }) {
+/** Open a provider sign-in in its own window. Never loads it inside the app (providers refuse to be framed). */
+async function openSignIn(getUrl: () => Promise<{ url: string }>) {
+  const w = window.open("about:blank", "pulse-oauth", "popup,width=520,height=680");
+  try {
+    const { url } = await getUrl();
+    if (w && !w.closed) { w.location.href = url; return; }
+    toast("Your browser blocked the sign-in window", { action: { label: "Open sign-in", onClick: () => window.open(url, "_blank", "noopener") } });
+  } catch (e) { w?.close(); toast.error(e instanceof Error ? e.message : "Failed"); }
+}
+
+function GoogleConnections({ client, purpose }: { client: PulseClient; purpose: "youtube" | "gbp" }) {
   const { refetchSession } = usePulse();
   const connectUrl = useServerFn(googleConnectUrl);
   const list = useServerFn(googleAssets);
@@ -347,43 +369,81 @@ function GoogleConnections({ client }: { client: PulseClient }) {
   const assets = useQuery({ queryKey: ["pulse", "googleAssets"], queryFn: () => list(), staleTime: 10 * 60_000 });
   const [busy, setBusy] = useState(false);
   useEffect(() => {
-    const on = (e: MessageEvent) => { if (e.data === "pulse-google-connected") { void assets.refetch(); refetchSession(); } };
+    const on = (e: MessageEvent) => { if (e.origin === window.location.origin && e.data === "pulse-google-connected") { void assets.refetch(); refetchSession(); } };
     window.addEventListener("message", on);
     return () => window.removeEventListener("message", on);
   }, [assets, refetchSession]);
-  const linked = new Set(client.connections.filter((c) => c.provider === "youtube" || c.provider === "gbp").map((c) => `${c.provider}:${c.account_ref}`));
+  const yt = purpose === "youtube";
+  const mine = client.connections.filter((c) => c.provider === purpose);
+  const linked = new Set(mine.map((c) => c.account_ref));
   const accts = assets.data ?? [];
-  const opts = (kind: "channels" | "locations") => accts.flatMap((a) => a[kind].filter((x) => !linked.has(`${kind === "channels" ? "youtube" : "gbp"}:${x.id}`)).map((x) => ({ value: `${a.id}|${x.id}|${x.name}`, label: x.name, hint: a.email })));
-  async function link(provider: "youtube" | "gbp", v: string) {
+  const opts = accts.flatMap((a) => (yt ? a.channels : a.locations).filter((x) => !linked.has(x.id)).map((x) => ({ value: `${a.id}|${x.id}|${x.name}`, label: x.name, hint: a.email })));
+  async function link(v: string) {
     if (!v) return;
     const [accountId, ref, ...n] = v.split("|");
     setBusy(true);
-    try { await add({ data: { clientId: client.id, provider, accountId: accountId!, ref: ref!, name: n.join("|") } }); toast.success("Linked and synced"); }
+    try { await add({ data: { clientId: client.id, provider: purpose, accountId: accountId!, ref: ref!, name: n.join("|") } }); toast.success("Linked and synced"); }
     catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
     finally { setBusy(false); refetchSession(); }
   }
-  async function connect() {
-    const w = window.open("", "_blank");
-    try { const { url } = await connectUrl({ data: { clientId: client.id, origin: window.location.origin } }); if (w) w.location.href = url; else window.location.href = url; }
-    catch (e) { w?.close(); toast.error(e instanceof Error ? e.message : "Failed"); }
-  }
+  const attention = mine.some((c) => c.status === "error");
   return (
-    <Panel title="Google — YouTube & Business Profile" sub="Sign in with the Google account that owns this client's channel or Business Profile. Refreshed automatically each night." setup={false}>
-      <div className="flex flex-wrap items-end gap-3">
-        <button onClick={connect} className="h-9 rounded-lg bg-p-cerulean px-4 text-sm text-white">Connect a Google account</button>
+    <Panel title={yt ? "YouTube" : "Google Business Profile"} sub={yt ? "Sign in with the Google account that owns this client's YouTube channel." : "Sign in with the Google account that manages this client's Business Profile. It can be a different account from YouTube."} setup={false}>
+      <div className="flex flex-wrap items-center gap-3">
+        <button onClick={() => void openSignIn(() => connectUrl({ data: { clientId: client.id, origin: window.location.origin, purpose } }))} className="h-9 rounded-lg bg-p-cerulean px-4 text-sm text-white">{mine.length ? "Reconnect / add another Google account" : yt ? "Connect YouTube" : "Connect Google Business Profile"}</button>
+        <span className={`text-xs ${attention ? "text-p-down" : mine.length ? "text-p-up" : "text-p-muted"}`}>{attention ? "Needs attention — see Connected accounts" : mine.length ? `Linked: ${mine.map((c) => c.account_name ?? c.account_ref).join(", ")}` : "Not connected"}</span>
         {assets.isLoading && <span className="text-xs text-p-muted">Loading accounts…</span>}
-        {accts.map((a) => <span key={a.id} className="text-xs text-p-muted">{a.email}{a.error && <span className="ml-1 text-p-down">({a.error})</span>}</span>)}
       </div>
       {accts.length > 0 && (
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <label className="block text-xs text-p-muted">YouTube channel
-            <SearchSelect className="mt-1" options={opts("channels")} value="" placeholder="Type a channel name…" onChange={(v) => void link("youtube", v)} />
-          </label>
-          <label className="block text-xs text-p-muted">Business Profile location
-            <SearchSelect className="mt-1" options={opts("locations")} value="" placeholder="Type a business name…" onChange={(v) => void link("gbp", v)} />
-          </label>
-        </div>
+        <label className="mt-4 block max-w-md text-xs text-p-muted">{yt ? "YouTube channel" : "Business Profile location"}
+          <SearchSelect className="mt-1" options={opts} value="" placeholder={yt ? "Type a channel name…" : "Type a business name…"} onChange={(v) => void link(v)} />
+        </label>
       )}
+      {accts.some((a) => a.error) && <p className="mt-2 text-[11px] text-p-down">{accts.filter((a) => a.error).map((a) => `${a.email}: ${a.error}`).join(" · ")}</p>}
+      {busy && <p className="mt-2 text-xs text-p-muted">Linking and pulling data…</p>}
+    </Panel>
+  );
+}
+
+function LinkedInConnections({ client }: { client: PulseClient }) {
+  const { refetchSession } = usePulse();
+  const connectUrl = useServerFn(linkedinConnectUrl);
+  const list = useServerFn(linkedinAssets);
+  const add = useServerFn(addLinkedInConnection);
+  const assets = useQuery({ queryKey: ["pulse", "linkedinAssets"], queryFn: () => list(), staleTime: 10 * 60_000 });
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    const on = (e: MessageEvent) => { if (e.origin === window.location.origin && e.data === "pulse-linkedin-connected") { void assets.refetch(); refetchSession(); } };
+    window.addEventListener("message", on);
+    return () => window.removeEventListener("message", on);
+  }, [assets, refetchSession]);
+  const mine = client.connections.filter((c) => c.provider === "linkedin");
+  const linked = new Set(mine.map((c) => c.account_ref));
+  const accts = assets.data ?? [];
+  const opts = accts.flatMap((a) => a.orgs.filter((o) => !linked.has(o.id)).map((o) => ({ value: `${a.id}|${o.id}|${o.name}`, label: o.name, hint: a.name })));
+  const expired = mine.some((c) => c.token_expires_at && new Date(c.token_expires_at).getTime() < Date.now());
+  const attention = expired || mine.some((c) => c.status === "error");
+  async function link(v: string) {
+    if (!v) return;
+    const [accountId, ref, ...n] = v.split("|");
+    setBusy(true);
+    try { await add({ data: { clientId: client.id, accountId: accountId!, ref: ref!, name: n.join("|") } }); toast.success("Linked and synced"); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Failed"); }
+    finally { setBusy(false); refetchSession(); }
+  }
+  return (
+    <Panel title="LinkedIn Company Page" sub="Sign in with a LinkedIn account that is an admin of this client's Company Page. LinkedIn sign-ins last about 60 days." setup={false}>
+      <div className="flex flex-wrap items-center gap-3">
+        <button onClick={() => void openSignIn(() => connectUrl({ data: { clientId: client.id, origin: window.location.origin } }))} className={`h-9 rounded-lg px-4 text-sm text-white ${attention ? "bg-p-down" : "bg-p-cerulean"}`}>{mine.length ? "Reconnect LinkedIn" : "Connect LinkedIn"}</button>
+        <span className={`text-xs ${attention ? "text-p-down" : mine.length ? "text-p-up" : "text-p-muted"}`}>{expired ? "Sign-in expired — reconnect" : attention ? `Needs attention: ${mine.find((c) => c.last_error)?.last_error ?? ""}` : mine.length ? `Linked: ${mine.map((c) => c.account_name ?? c.account_ref).join(", ")}` : "Not connected"}</span>
+        {assets.isLoading && <span className="text-xs text-p-muted">Loading pages…</span>}
+      </div>
+      {accts.length > 0 && (
+        <label className="mt-4 block max-w-md text-xs text-p-muted">Company Page
+          <SearchSelect className="mt-1" options={opts} value="" placeholder="Type a company name…" onChange={(v) => void link(v)} />
+        </label>
+      )}
+      {accts.some((a) => a.error) && <p className="mt-2 text-[11px] text-p-down">{accts.filter((a) => a.error).map((a) => `${a.name}: ${a.error}`).join(" · ")}</p>}
       {busy && <p className="mt-2 text-xs text-p-muted">Linking and pulling data…</p>}
     </Panel>
   );

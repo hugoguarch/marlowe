@@ -34,17 +34,17 @@ export async function encrypt(t: string) {
   const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await aesKey(), enc.encode(t));
   return `${b64(iv)}.${b64(ct)}`;
 }
-async function decrypt(s: string) {
+export async function decrypt(s: string) {
   const [iv, ct] = s.split(".");
   return new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(iv!) }, await aesKey(), unb64(ct!)));
 }
 
-export async function signState(p: { c: string; o: string }) {
+export async function signState(p: { c: string; o: string; p?: string }) {
   const body = b64(enc.encode(JSON.stringify({ ...p, exp: Date.now() + 15 * 60_000 })));
   const sig = b64(await crypto.subtle.sign("HMAC", await hmacKey(), enc.encode(body)));
   return `${body}.${sig}`;
 }
-export async function verifyState(s: string): Promise<{ c: string; o: string } | null> {
+export async function verifyState(s: string): Promise<{ c: string; o: string; p?: string } | null> {
   const [body, sig] = s.split(".");
   if (!body || !sig) return null;
   const ok = await crypto.subtle.verify("HMAC", await hmacKey(), unb64(sig), enc.encode(body));
@@ -58,9 +58,13 @@ function creds() {
   if (!id || !sec) throw new Error("Google sign-in app is not configured");
   return { id, sec };
 }
-export function authUrl(origin: string, state: string) {
+export const PURPOSE_SCOPES: Record<string, string[]> = {
+  youtube: ["openid", "email", "https://www.googleapis.com/auth/youtube.readonly", "https://www.googleapis.com/auth/yt-analytics.readonly"],
+  gbp: ["openid", "email", "https://www.googleapis.com/auth/business.manage"],
+};
+export function authUrl(origin: string, state: string, purpose?: string) {
   const u = new URL("https://accounts.google.com/o/oauth2/v2/auth");
-  u.search = new URLSearchParams({ client_id: creds().id, redirect_uri: origin + CALLBACK_PATH, response_type: "code", scope: GOOGLE_SCOPES.join(" "), access_type: "offline", prompt: "consent select_account", include_granted_scopes: "true", state }).toString();
+  u.search = new URLSearchParams({ client_id: creds().id, redirect_uri: origin + CALLBACK_PATH, response_type: "code", scope: (PURPOSE_SCOPES[purpose ?? ""] ?? GOOGLE_SCOPES).join(" "), access_type: "offline", prompt: "consent select_account", include_granted_scopes: "true", state }).toString();
   return u.toString();
 }
 
