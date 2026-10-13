@@ -485,7 +485,7 @@ function PaletteEditor({
 }) {
   const [colours, setColours] = useState(value);
   const [editing, setEditing] = useState(false);
-  useEffect(() => setColours(value), [value]);
+  useEffect(() => { setColours(value); }, [value]);
 
   return (
     <div>
@@ -561,7 +561,7 @@ function TypographyEditor({
 }) {
   const [draft, setDraft] = useState(value);
   const [editing, setEditing] = useState(false);
-  useEffect(() => setDraft(value), [value]);
+  useEffect(() => { setDraft(value); }, [value]);
 
   return (
     <div>
@@ -636,7 +636,7 @@ function LineEditor({
 }) {
   const [lines, setLines] = useState(value);
   const [editing, setEditing] = useState(false);
-  useEffect(() => setLines(value), [value]);
+  useEffect(() => { setLines(value); }, [value]);
 
   return (
     <div>

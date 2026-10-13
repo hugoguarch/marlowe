@@ -56,7 +56,7 @@ function ReportsPage() {
   const reports = useQuery({ queryKey: ["pulse", "reports", clientId], queryFn: () => list({ data: { clientId } }), enabled: !!clientId && clientId !== "all" });
   const canWrite = session?.role === "admin" || session?.role === "account_manager";
 
-  useEffect(() => setOpenId(null), [clientId]);
+  useEffect(() => { setOpenId(null); }, [clientId]);
 
   if (clientId === "all" || !client) return (
     <div className="space-y-6"><PageTitle title="Reports" sub="All clients" /><Empty title="Pick a client" body="Choose a client in the top-left switcher to create or view their reports." /></div>

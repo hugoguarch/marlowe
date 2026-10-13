@@ -55,7 +55,7 @@ function AgentPage() {
   useEffect(() => {
     loadHistory().then((rows) => rows.length && setMessages(rows.map((r) => ({ role: r.role, body: r.body })))).catch(() => {});
   }, [loadHistory]);
-  useEffect(() => end.current?.scrollIntoView({ behavior: "smooth" }), [messages, busy]);
+  useEffect(() => { end.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, busy]);
   useEffect(() => {
     if (q && !sentQ.current) { sentQ.current = true; void send(q); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
