@@ -18,7 +18,7 @@ export function Sidebar({ name, role, onSignOut }: { name: string; role: string;
   const path = useRouterState({ select: (s) => s.location.pathname });
   const active = DEPTS.find((d) => path.startsWith(d.base))?.key ?? null;
   const [open, setOpen] = useState<string | null>(active);
-  useEffect(() => setOpen(active), [active]);
+  useEffect(() => { setOpen(active); }, [active]);
 
   return (
     <aside className="relative sticky top-0 flex h-screen w-[68px] shrink-0 flex-col overflow-hidden bg-ink-navy px-2.5 pt-[22px] pb-4 text-white xl:w-[248px] xl:px-3.5">
