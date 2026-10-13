@@ -28,6 +28,7 @@ import { Route as AuthenticatedShellDashboardRouteImport } from './routes/_authe
 import { Route as AuthenticatedShellSettingsRouteImport } from './routes/_authenticated/_shell/settings'
 import { Route as AuthenticatedAppSplatRouteImport } from './routes/_authenticated/app.$'
 import { Route as AuthenticatedPulseSplatRouteImport } from './routes/_authenticated/pulse.$'
+import { Route as SiteBrandIdSlugRouteImport } from './routes/site.$brandId.$slug'
 import { Route as AuthenticatedShellDesignBrandRouteImport } from './routes/_authenticated/_shell/design/brand'
 import { Route as AuthenticatedShellDesignEmailDesignerRouteImport } from './routes/_authenticated/_shell/design/email-designer'
 import { Route as AuthenticatedShellDesignGraphicsRouteImport } from './routes/_authenticated/_shell/design/graphics'
@@ -154,6 +155,11 @@ const AuthenticatedPulseSplatRoute = AuthenticatedPulseSplatRouteImport.update({
   id: '/$',
   path: '/$',
   getParentRoute: () => AuthenticatedPulseRoute,
+} as any)
+const SiteBrandIdSlugRoute = SiteBrandIdSlugRouteImport.update({
+  id: '/site/$brandId/$slug',
+  path: '/site/$brandId/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedShellDesignBrandRoute =
   AuthenticatedShellDesignBrandRouteImport.update({
@@ -347,6 +353,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedShellSettingsRouteWithChildren
   '/app/$': typeof AuthenticatedAppSplatRoute
   '/pulse/$': typeof AuthenticatedPulseSplatRoute
+  '/site/$brandId/$slug': typeof SiteBrandIdSlugRoute
   '/design/brand': typeof AuthenticatedShellDesignBrandRoute
   '/design/email-designer': typeof AuthenticatedShellDesignEmailDesignerRoute
   '/design/graphics': typeof AuthenticatedShellDesignGraphicsRoute
@@ -394,6 +401,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedShellDashboardRoute
   '/app/$': typeof AuthenticatedAppSplatRoute
   '/pulse/$': typeof AuthenticatedPulseSplatRoute
+  '/site/$brandId/$slug': typeof SiteBrandIdSlugRoute
   '/design/brand': typeof AuthenticatedShellDesignBrandRoute
   '/design/email-designer': typeof AuthenticatedShellDesignEmailDesignerRoute
   '/design/graphics': typeof AuthenticatedShellDesignGraphicsRoute
@@ -444,6 +452,7 @@ export interface FileRoutesById {
   '/_authenticated/_shell/settings': typeof AuthenticatedShellSettingsRouteWithChildren
   '/_authenticated/app/$': typeof AuthenticatedAppSplatRoute
   '/_authenticated/pulse/$': typeof AuthenticatedPulseSplatRoute
+  '/site/$brandId/$slug': typeof SiteBrandIdSlugRoute
   '/_authenticated/_shell/design/brand': typeof AuthenticatedShellDesignBrandRoute
   '/_authenticated/_shell/design/email-designer': typeof AuthenticatedShellDesignEmailDesignerRoute
   '/_authenticated/_shell/design/graphics': typeof AuthenticatedShellDesignGraphicsRoute
@@ -494,6 +503,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/app/$'
     | '/pulse/$'
+    | '/site/$brandId/$slug'
     | '/design/brand'
     | '/design/email-designer'
     | '/design/graphics'
@@ -541,6 +551,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/app/$'
     | '/pulse/$'
+    | '/site/$brandId/$slug'
     | '/design/brand'
     | '/design/email-designer'
     | '/design/graphics'
@@ -590,6 +601,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_shell/settings'
     | '/_authenticated/app/$'
     | '/_authenticated/pulse/$'
+    | '/site/$brandId/$slug'
     | '/_authenticated/_shell/design/brand'
     | '/_authenticated/_shell/design/email-designer'
     | '/_authenticated/_shell/design/graphics'
@@ -632,6 +644,7 @@ export interface RootRouteChildren {
   AuthCallbackRoute: typeof AuthCallbackRoute
   OauthCallbackRoute: typeof OauthCallbackRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  SiteBrandIdSlugRoute: typeof SiteBrandIdSlugRoute
   ApiPublicHooksPulseSyncRoute: typeof ApiPublicHooksPulseSyncRoute
   ApiPublicOauthGoogleCallbackRoute: typeof ApiPublicOauthGoogleCallbackRoute
   ApiPublicOauthLinkedinCallbackRoute: typeof ApiPublicOauthLinkedinCallbackRoute
@@ -771,6 +784,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/pulse/$'
       preLoaderRoute: typeof AuthenticatedPulseSplatRouteImport
       parentRoute: typeof AuthenticatedPulseRoute
+    }
+    '/site/$brandId/$slug': {
+      id: '/site/$brandId/$slug'
+      path: '/site/$brandId/$slug'
+      fullPath: '/site/$brandId/$slug'
+      preLoaderRoute: typeof SiteBrandIdSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/_shell/design/brand': {
       id: '/_authenticated/_shell/design/brand'
@@ -1133,6 +1153,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCallbackRoute: AuthCallbackRoute,
   OauthCallbackRoute: OauthCallbackRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  SiteBrandIdSlugRoute: SiteBrandIdSlugRoute,
   ApiPublicHooksPulseSyncRoute: ApiPublicHooksPulseSyncRoute,
   ApiPublicOauthGoogleCallbackRoute: ApiPublicOauthGoogleCallbackRoute,
   ApiPublicOauthLinkedinCallbackRoute: ApiPublicOauthLinkedinCallbackRoute,
