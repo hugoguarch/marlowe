@@ -160,7 +160,7 @@ export function TopPosts({ posts }: { posts: Post[] }) {
               {p.thumbnail_url ? <img src={p.thumbnail_url} alt="" className="h-full w-full rounded-lg object-cover" /> : p.format}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="truncate text-sm text-p-text">{p.caption}</div>
+              <div className="truncate text-sm text-p-text" title={p.caption ?? ""}>{p.caption ? p.caption.split(/\s+/).slice(0, 6).join(" ").slice(0, 60) + (p.caption.split(/\s+/).length > 6 ? "..." : "") : "(no caption)"}</div>
               <div className="text-[11px] text-p-muted">{channelLabel(p.channel)} · {p.format}</div>
             </div>
             <div className="text-right text-sm">
