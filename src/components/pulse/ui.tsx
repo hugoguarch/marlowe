@@ -46,7 +46,7 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={`rounded-2xl border border-p-line bg-p-card shadow-[0_1px_2px_rgba(0,28,38,0.04)] ${className}`}>
+    <section className={`rounded-[8px] border border-p-line bg-p-card shadow-[0_1px_2px_rgba(0,28,38,0.08)] ${className}`}>
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-p-line px-5 py-4">
         <div className="space-y-1">
           <h2 className="text-base font-medium tracking-tight text-p-text">{title}</h2>
@@ -91,7 +91,7 @@ export function Kpi({
   invert?: boolean | undefined;
 }) {
   const body = (
-    <div className="flex h-full flex-col rounded-2xl border border-p-line bg-p-card shadow-[0_1px_2px_rgba(0,28,38,0.04)] transition-all hover:-translate-y-0.5 hover:border-p-cerulean/40 hover:shadow-md">
+    <div className="flex h-full flex-col rounded-[8px] border border-p-line bg-p-card shadow-[0_1px_2px_rgba(0,28,38,0.08)] transition-all hover:-translate-y-0.5 hover:border-p-cerulean/40 hover:shadow-md">
       <div className="flex items-center justify-between border-b border-p-line px-4 py-3">
         <span className="text-xs text-p-muted">{label}</span>
         {!na && points.length > 1 && (
