@@ -39,6 +39,7 @@ import { Route as AuthenticatedPulseTrendsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedPulseWebsiteRouteImport } from './routes/_authenticated/pulse/website'
 import { Route as ApiPublicHooksPulseSyncRouteImport } from './routes/api/public/hooks/pulse-sync'
 import { Route as ApiPublicOauthGoogleCallbackRouteImport } from './routes/api/public/oauth/google/callback'
+import { Route as ApiPublicOauthLinkedinCallbackRouteImport } from './routes/api/public/oauth/linkedin/callback'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -200,6 +201,12 @@ const ApiPublicOauthGoogleCallbackRoute =
     path: '/api/public/oauth/google/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicOauthLinkedinCallbackRoute =
+  ApiPublicOauthLinkedinCallbackRouteImport.update({
+    id: '/api/public/oauth/linkedin/callback',
+    path: '/api/public/oauth/linkedin/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -231,6 +238,7 @@ export interface FileRoutesByFullPath {
   '/pulse/': typeof AuthenticatedPulseIndexRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
   '/api/public/oauth/google/callback': typeof ApiPublicOauthGoogleCallbackRoute
+  '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -260,6 +268,7 @@ export interface FileRoutesByTo {
   '/pulse': typeof AuthenticatedPulseIndexRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
   '/api/public/oauth/google/callback': typeof ApiPublicOauthGoogleCallbackRoute
+  '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -293,6 +302,7 @@ export interface FileRoutesById {
   '/_authenticated/pulse/': typeof AuthenticatedPulseIndexRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
   '/api/public/oauth/google/callback': typeof ApiPublicOauthGoogleCallbackRoute
+  '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -326,6 +336,7 @@ export interface FileRouteTypes {
     | '/pulse/'
     | '/api/public/hooks/pulse-sync'
     | '/api/public/oauth/google/callback'
+    | '/api/public/oauth/linkedin/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -355,6 +366,7 @@ export interface FileRouteTypes {
     | '/pulse'
     | '/api/public/hooks/pulse-sync'
     | '/api/public/oauth/google/callback'
+    | '/api/public/oauth/linkedin/callback'
   id:
     | '__root__'
     | '/'
@@ -387,6 +399,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pulse/'
     | '/api/public/hooks/pulse-sync'
     | '/api/public/oauth/google/callback'
+    | '/api/public/oauth/linkedin/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -402,6 +415,7 @@ export interface RootRouteChildren {
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ApiPublicHooksPulseSyncRoute: typeof ApiPublicHooksPulseSyncRoute
   ApiPublicOauthGoogleCallbackRoute: typeof ApiPublicOauthGoogleCallbackRoute
+  ApiPublicOauthLinkedinCallbackRoute: typeof ApiPublicOauthLinkedinCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -616,6 +630,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicOauthGoogleCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/oauth/linkedin/callback': {
+      id: '/api/public/oauth/linkedin/callback'
+      path: '/api/public/oauth/linkedin/callback'
+      fullPath: '/api/public/oauth/linkedin/callback'
+      preLoaderRoute: typeof ApiPublicOauthLinkedinCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -696,6 +717,7 @@ const rootRouteChildren: RootRouteChildren = {
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ApiPublicHooksPulseSyncRoute: ApiPublicHooksPulseSyncRoute,
   ApiPublicOauthGoogleCallbackRoute: ApiPublicOauthGoogleCallbackRoute,
+  ApiPublicOauthLinkedinCallbackRoute: ApiPublicOauthLinkedinCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
