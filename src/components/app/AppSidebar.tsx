@@ -5,12 +5,12 @@ import { Sphere } from "./Sphere";
 import { supabase } from "@/integrations/supabase/client";
 
 const nav = [
-  { label: "Dashboard", to: "/app" as const },
+  { label: "Dashboard", to: "/dashboard" as const },
   { label: "Marlowe", to: "/app/marlowe" as const },
-  { label: "Brand", to: "/app/brand" as const },
+  { label: "Brand", to: "/design/brand" as const },
   { label: "Studio", to: "/app/studio" as const },
   { label: "Growth", to: "/app/growth" as const },
-  { label: "Pulse analytics", to: "/pulse" as const },
+  { label: "Pulse analytics", to: "/marketing/analytics" as const },
 ];
 
 export function AppSidebar({
@@ -34,7 +34,7 @@ export function AppSidebar({
   const body = (
     <div className="flex h-full flex-col justify-between px-5 py-6">
       <div>
-        <Link to="/app" className="flex items-center gap-3" onClick={() => setOpen(false)}>
+        <Link to="/dashboard" className="flex items-center gap-3" onClick={() => setOpen(false)}>
           <Sphere size={32} />
           <span className="text-sm font-medium tracking-tight text-ink-navy">Why Media AI</span>
         </Link>
@@ -42,7 +42,7 @@ export function AppSidebar({
         <nav className="mt-10 flex flex-col gap-1">
           {nav.map((item) => {
             const active =
-              item.to === "/app" ? pathname === "/app" : pathname.startsWith(item.to);
+              item.to === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(item.to);
             return (
               <Link
                 key={item.to}
@@ -62,10 +62,10 @@ export function AppSidebar({
 
         <div className="mt-8 border-t border-app-line pt-4">
           <Link
-            to="/app/settings"
+            to="/settings"
             onClick={() => setOpen(false)}
             className={`block rounded-xl px-4 py-2.5 text-sm transition-colors duration-200 ${
-              pathname.startsWith("/app/settings")
+              pathname.startsWith("/settings")
                 ? "bg-ink-navy text-white"
                 : "text-ink-navy/55 hover:bg-app-bg hover:text-ink-navy"
             }`}
@@ -96,7 +96,7 @@ export function AppSidebar({
     <>
       {/* Mobile bar */}
       <div className="flex items-center justify-between border-b border-app-line bg-app-card px-5 py-4 lg:hidden">
-        <Link to="/app" className="flex items-center gap-2.5">
+        <Link to="/dashboard" className="flex items-center gap-2.5">
           <Sphere size={26} />
           <span className="text-sm tracking-tight text-ink-navy">Why Media AI</span>
         </Link>

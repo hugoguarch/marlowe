@@ -7,7 +7,7 @@ import {
   avg, buckets, compareSeries, CHANNEL_COLORS, channelLabel, fmt, latest, scopeChannels, SOCIAL, spark, split, sum,
 } from "@/lib/pulse/metrics";
 
-export const Route = createFileRoute("/_authenticated/pulse/")({
+export const Route = createFileRoute("/_authenticated/_shell/marketing/analytics/")({
   head: () => ({
     meta: [
       { title: "Overview — Pulse" },
@@ -58,18 +58,18 @@ function ClientOverview({ client }: { client: PulseClient }) {
     <div className="space-y-6">
       <PageTitle title={client.name} sub={`${client.sector ?? ""} · ${range.from} to ${range.to}`} />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <Kpi label="Reach" value={reach} prev={reachP} points={spark(cur, "reach", soc)} na={na.soc} to="/pulse/social" />
-        <Kpi label="Views" value={sum(cur, "views", soc)} prev={sum(prev, "views", soc)} points={spark(cur, "views", soc)} na={na.soc} to="/pulse/social" />
-        <Kpi label="Engagements" value={eng} prev={engP} points={spark(cur, "engagements", soc)} na={na.soc} to="/pulse/social" />
-        <Kpi label="Engagement rate" value={reach ? eng / reach : 0} prev={reachP ? engP / reachP : 0} kind="pct" na={na.soc} to="/pulse/social" />
-        <Kpi label="Followers" value={fol} prev={folP} points={spark(cur, "followers", soc)} na={na.soc} to="/pulse/social" />
-        <Kpi label="Net new followers" value={netNew} prev={netNewP} na={na.soc} to="/pulse/social" />
-        <Kpi label="Posts published" value={sum(cur, "posts", soc)} prev={sum(prev, "posts", soc)} na={na.soc} to="/pulse/social" />
-        <Kpi label="Website sessions" value={sum(cur, "sessions", ["website"])} prev={sum(prev, "sessions", ["website"])} points={spark(cur, "sessions", ["website"])} na={na.web} to="/pulse/website" />
-        <Kpi label="Conversions" value={sum(cur, "conversions", ["website"])} prev={sum(prev, "conversions", ["website"])} na={na.web} to="/pulse/website" />
-        <Kpi label="Organic clicks" value={sum(cur, "clicks", ["search_console"])} prev={sum(prev, "clicks", ["search_console"])} points={spark(cur, "clicks", ["search_console"])} na={na.gsc} to="/pulse/website" />
-        <Kpi label="Google rating" value={rating} prev={ratingPrev} kind="dec" na={na.gbp} to="/pulse/google-business" />
-        <Kpi label="New reviews" value={curReviews.length} prev={prevReviews.length} na={na.gbp} to="/pulse/google-business" />
+        <Kpi label="Reach" value={reach} prev={reachP} points={spark(cur, "reach", soc)} na={na.soc} to="/marketing/social" />
+        <Kpi label="Views" value={sum(cur, "views", soc)} prev={sum(prev, "views", soc)} points={spark(cur, "views", soc)} na={na.soc} to="/marketing/social" />
+        <Kpi label="Engagements" value={eng} prev={engP} points={spark(cur, "engagements", soc)} na={na.soc} to="/marketing/social" />
+        <Kpi label="Engagement rate" value={reach ? eng / reach : 0} prev={reachP ? engP / reachP : 0} kind="pct" na={na.soc} to="/marketing/social" />
+        <Kpi label="Followers" value={fol} prev={folP} points={spark(cur, "followers", soc)} na={na.soc} to="/marketing/social" />
+        <Kpi label="Net new followers" value={netNew} prev={netNewP} na={na.soc} to="/marketing/social" />
+        <Kpi label="Posts published" value={sum(cur, "posts", soc)} prev={sum(prev, "posts", soc)} na={na.soc} to="/marketing/social" />
+        <Kpi label="Website sessions" value={sum(cur, "sessions", ["website"])} prev={sum(prev, "sessions", ["website"])} points={spark(cur, "sessions", ["website"])} na={na.web} to="/marketing/analytics/website" />
+        <Kpi label="Conversions" value={sum(cur, "conversions", ["website"])} prev={sum(prev, "conversions", ["website"])} na={na.web} to="/marketing/analytics/website" />
+        <Kpi label="Organic clicks" value={sum(cur, "clicks", ["search_console"])} prev={sum(prev, "clicks", ["search_console"])} points={spark(cur, "clicks", ["search_console"])} na={na.gsc} to="/marketing/analytics/website" />
+        <Kpi label="Google rating" value={rating} prev={ratingPrev} kind="dec" na={na.gbp} to="/marketing/analytics/google-business" />
+        <Kpi label="New reviews" value={curReviews.length} prev={prevReviews.length} na={na.gbp} to="/marketing/analytics/google-business" />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
@@ -210,7 +210,7 @@ function Goals({ client, cur }: { client: PulseClient; cur: ReturnType<typeof sp
           })}
         </div>
       ) : (
-        <Empty title="No goals set" body="Add monthly targets in Settings." action={<Link to="/pulse/settings" className="text-xs text-p-cerulean">Open settings</Link>} />
+        <Empty title="No goals set" body="Add monthly targets in Settings." action={<Link to="/settings/data-sources" className="text-xs text-p-cerulean">Open settings</Link>} />
       )}
     </Panel>
   );

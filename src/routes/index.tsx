@@ -114,7 +114,7 @@ function Landing() {
             <div className="flex items-center gap-5">
               {session ? (
                 <Link
-                  to="/app"
+                  to="/dashboard"
                   className="nav-link text-xs tracking-[0.16em] text-paper/75 uppercase transition-colors hover:text-paper"
                 >
                   Open workspace

@@ -9,7 +9,7 @@ import { useSelectedBrandId } from "@/lib/brandSelection";
 import { chatWithMarlowe, getChatHistory } from "@/lib/marlowe.functions";
 import { chatSeed } from "@/lib/mock/workspace";
 
-export const Route = createFileRoute("/_authenticated/app/marlowe")({
+export const Route = createFileRoute("/_authenticated/_shell/agent")({
   head: () => ({
     meta: [
       { title: "Marlowe — Why Media AI" },

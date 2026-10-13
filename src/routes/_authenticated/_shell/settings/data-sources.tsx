@@ -13,7 +13,7 @@ import { addGoogleConnection, googleAssets, googleConnectUrl, removeGoogleConnec
 import { metaDiscover, saveMetaConnection, syncMetaNow } from "@/lib/pulse/meta.functions";
 import { channelLabel, fmt } from "@/lib/pulse/metrics";
 
-export const Route = createFileRoute("/_authenticated/pulse/settings")({
+export const Route = createFileRoute("/_authenticated/_shell/settings/data-sources")({
   head: () => ({ meta: [{ title: "Settings / Data sources — Pulse" }, { name: "description", content: "Connections, clients and goals." }] }),
   component: Settings,
 });

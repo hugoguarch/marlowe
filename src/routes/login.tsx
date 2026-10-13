@@ -49,7 +49,7 @@ function LoginPage() {
       window.location.href = next;
       return;
     }
-    navigate({ to: "/app" });
+    navigate({ to: "/dashboard" });
   }
 
   async function onSubmit(e: React.FormEvent) {

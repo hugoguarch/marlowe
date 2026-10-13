@@ -19,7 +19,7 @@ import {
   type PostCopy,
 } from "@/lib/studio.functions";
 
-export const Route = createFileRoute("/_authenticated/app/studio")({
+export const Route = createFileRoute("/_authenticated/_shell/marketing/scheduler")({
   head: () => ({
     meta: [
       { title: "Studio — Why Media AI" },
@@ -181,7 +181,7 @@ function StudioPage() {
             The Studio designs in your brand's colours, fonts and voice — so it needs a Brand Brain
             before it can make anything.
           </p>
-          <Link to="/app/brand" className={`${pillPrimaryClass} mt-5 inline-block`}>
+          <Link to="/design/brand" className={`${pillPrimaryClass} mt-5 inline-block`}>
             Create a Brand Brain
           </Link>
         </Card>
@@ -305,7 +305,7 @@ function StudioPage() {
             ) : (
               <p className="mt-2 text-xs text-ink-navy/45">
                 Marlowe will generate the artwork. Upload your own to the image bank on the{" "}
-                <Link to="/app/brand" className="text-cerulean">
+                <Link to="/design/brand" className="text-cerulean">
                   Brand page
                 </Link>{" "}
                 to use your photography instead.

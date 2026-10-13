@@ -26,7 +26,7 @@ import {
 
 const MAX_UPLOAD_MB = 50;
 
-export const Route = createFileRoute("/_authenticated/app/brand")({
+export const Route = createFileRoute("/_authenticated/_shell/design/brand")({
   head: () => ({
     meta: [
       { title: "Brand Brain — Why Media AI" },

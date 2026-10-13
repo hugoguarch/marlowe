@@ -7,7 +7,7 @@ import { CompareChart, Delta, Empty, Kpi, Loading, PageTitle, Panel, SetupConnec
 import { getGscTop } from "@/lib/pulse/gsc.functions";
 import { avg, compareSeries, fmt, spark, split, sum } from "@/lib/pulse/metrics";
 
-export const Route = createFileRoute("/_authenticated/pulse/website")({
+export const Route = createFileRoute("/_authenticated/_shell/marketing/analytics/website")({
   head: () => ({ meta: [{ title: "Website & SEO — Pulse" }, { name: "description", content: "GA4, AI referrals and Search Console." }] }),
   component: Website,
 });

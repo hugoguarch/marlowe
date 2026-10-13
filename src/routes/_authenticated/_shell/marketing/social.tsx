@@ -7,7 +7,7 @@ import { usePulse, usePulseData } from "@/components/pulse/context";
 import { Empty, Kpi, Loading, PageTitle, Panel, tooltipStyle } from "@/components/pulse/ui";
 import { buckets, channelLabel, fmt, latest, SOCIAL, spark, split, sum } from "@/lib/pulse/metrics";
 
-export const Route = createFileRoute("/_authenticated/pulse/social")({
+export const Route = createFileRoute("/_authenticated/_shell/marketing/social")({
   head: () => ({
     meta: [
       { title: "Social — Pulse" },

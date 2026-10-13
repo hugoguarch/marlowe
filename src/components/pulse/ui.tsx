@@ -87,7 +87,7 @@ export function Kpi({
   prev: number;
   kind?: "int" | "pct" | "dec";
   points?: number[];
-  to?: "/pulse/social" | "/pulse/google-business" | "/pulse/website" | "/pulse/ai-search";
+  to?: "/marketing/social" | "/marketing/analytics/google-business" | "/marketing/analytics/website" | "/web/ai-search";
   invert?: boolean | undefined;
 }) {
   const body = (
@@ -119,7 +119,7 @@ export function Kpi({
       </div>
     </div>
   );
-  if (na) return <Link to={to ?? "/pulse/settings"}>{body}</Link>;
+  if (na) return <Link to={to ?? "/settings/data-sources"}>{body}</Link>;
   return to ? <Link to={to}>{body}</Link> : body;
 }
 
@@ -219,7 +219,7 @@ export function SetupConnection({ label = "Set up connection" }: { label?: strin
       </div>
       <div className="relative flex h-full flex-col items-center justify-center gap-3 text-center">
         <p className="text-xs text-p-muted">No live data is being pulled for this yet.</p>
-        <Link to="/pulse/settings" className="rounded-lg bg-p-cerulean px-4 py-2 text-sm font-medium text-white hover:opacity-90">
+        <Link to="/settings/data-sources" className="rounded-lg bg-p-cerulean px-4 py-2 text-sm font-medium text-white hover:opacity-90">
           {label}
         </Link>
       </div>

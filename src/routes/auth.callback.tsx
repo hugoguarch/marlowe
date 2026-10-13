@@ -43,7 +43,7 @@ function CallbackPage() {
         window.location.replace(next);
         return;
       }
-      navigate({ to: "/app", replace: true });
+      navigate({ to: "/dashboard", replace: true });
     }
 
     async function go() {

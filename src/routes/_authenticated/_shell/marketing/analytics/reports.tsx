@@ -8,7 +8,7 @@ import { Empty, Loading, PageTitle, Panel } from "@/components/pulse/ui";
 import { deleteReport, generateReport, getReport, listReports, saveReport } from "@/lib/pulse/report.functions";
 import { renderReportHtml } from "@/lib/pulse/report/render";
 
-export const Route = createFileRoute("/_authenticated/pulse/reports")({
+export const Route = createFileRoute("/_authenticated/_shell/marketing/analytics/reports")({
   head: () => ({
     meta: [
       { title: "Reports — Pulse" },

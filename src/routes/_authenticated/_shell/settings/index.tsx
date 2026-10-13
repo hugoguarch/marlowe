@@ -13,7 +13,7 @@ import {
   type ChannelState,
 } from "@/lib/channels.functions";
 
-export const Route = createFileRoute("/_authenticated/app/settings")({
+export const Route = createFileRoute("/_authenticated/_shell/settings/")({
   head: () => ({
     meta: [
       { title: "Settings — Why Media AI" },

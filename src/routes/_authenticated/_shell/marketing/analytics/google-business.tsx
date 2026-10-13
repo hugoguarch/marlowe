@@ -4,7 +4,7 @@ import { usePulse, usePulseData } from "@/components/pulse/context";
 import { Empty, Kpi, Loading, PageTitle, Panel } from "@/components/pulse/ui";
 import { spark, split, sum } from "@/lib/pulse/metrics";
 
-export const Route = createFileRoute("/_authenticated/pulse/google-business")({
+export const Route = createFileRoute("/_authenticated/_shell/marketing/analytics/google-business")({
   head: () => ({ meta: [{ title: "Google Business — Pulse" }, { name: "description", content: "Rating, reviews and profile actions." }] }),
   component: Gbp,
 });
