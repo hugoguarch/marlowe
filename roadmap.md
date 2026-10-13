@@ -1,9 +1,9 @@
 # Roadmap
-- [ ] Ask Why AI bar in header
-- [ ] Sidebar collapse/expand + hover flyouts
-- [ ] Post Designer rebuilt to design + schedule action
-- [ ] Post Scheduler calendar (shows designer posts, upload own posts, reschedule/delete)
-- [ ] Email Marketing screen + Email Designer block editor
+- [x] Ask Why AI bar in header
+- [x] Sidebar collapse/expand + hover flyouts
+- [x] Post Designer rebuilt to design + schedule action
+- [x] Post Scheduler calendar (shows designer posts, upload own posts, reschedule/delete)
+- [x] Email Marketing screen + Email Designer block editor
 - [ ] Brand Guidelines rebuilt to design
 - [ ] Site Builder rebuilt
-- [ ] CMS saved per account
+- [x] CMS saved per account
