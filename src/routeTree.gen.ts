@@ -28,7 +28,9 @@ import { Route as AuthenticatedShellSettingsRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppSplatRouteImport } from './routes/_authenticated/app.$'
 import { Route as AuthenticatedPulseSplatRouteImport } from './routes/_authenticated/pulse.$'
 import { Route as AuthenticatedShellDesignBrandRouteImport } from './routes/_authenticated/_shell/design/brand'
+import { Route as AuthenticatedShellMarketingAdsRouteImport } from './routes/_authenticated/_shell/marketing/ads'
 import { Route as AuthenticatedShellMarketingAnalyticsRouteImport } from './routes/_authenticated/_shell/marketing/analytics'
+import { Route as AuthenticatedShellMarketingEmailRouteImport } from './routes/_authenticated/_shell/marketing/email'
 import { Route as AuthenticatedShellMarketingSchedulerRouteImport } from './routes/_authenticated/_shell/marketing/scheduler'
 import { Route as AuthenticatedShellMarketingSocialRouteImport } from './routes/_authenticated/_shell/marketing/social'
 import { Route as AuthenticatedShellSettingsIndexRouteImport } from './routes/_authenticated/_shell/settings/index'
@@ -142,10 +144,22 @@ const AuthenticatedShellDesignBrandRoute =
     path: '/design/brand',
     getParentRoute: () => AuthenticatedShellRoute,
   } as any)
+const AuthenticatedShellMarketingAdsRoute =
+  AuthenticatedShellMarketingAdsRouteImport.update({
+    id: '/marketing/ads',
+    path: '/marketing/ads',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
 const AuthenticatedShellMarketingAnalyticsRoute =
   AuthenticatedShellMarketingAnalyticsRouteImport.update({
     id: '/marketing/analytics',
     path: '/marketing/analytics',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
+const AuthenticatedShellMarketingEmailRoute =
+  AuthenticatedShellMarketingEmailRouteImport.update({
+    id: '/marketing/email',
+    path: '/marketing/email',
     getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const AuthenticatedShellMarketingSchedulerRoute =
@@ -256,7 +270,9 @@ export interface FileRoutesByFullPath {
   '/app/$': typeof AuthenticatedAppSplatRoute
   '/pulse/$': typeof AuthenticatedPulseSplatRoute
   '/design/brand': typeof AuthenticatedShellDesignBrandRoute
+  '/marketing/ads': typeof AuthenticatedShellMarketingAdsRoute
   '/marketing/analytics': typeof AuthenticatedShellMarketingAnalyticsRouteWithChildren
+  '/marketing/email': typeof AuthenticatedShellMarketingEmailRoute
   '/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
   '/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
   '/settings/data-sources': typeof AuthenticatedShellSettingsDataSourcesRoute
@@ -290,6 +306,8 @@ export interface FileRoutesByTo {
   '/app/$': typeof AuthenticatedAppSplatRoute
   '/pulse/$': typeof AuthenticatedPulseSplatRoute
   '/design/brand': typeof AuthenticatedShellDesignBrandRoute
+  '/marketing/ads': typeof AuthenticatedShellMarketingAdsRoute
+  '/marketing/email': typeof AuthenticatedShellMarketingEmailRoute
   '/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
   '/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
   '/settings/data-sources': typeof AuthenticatedShellSettingsDataSourcesRoute
@@ -327,7 +345,9 @@ export interface FileRoutesById {
   '/_authenticated/app/$': typeof AuthenticatedAppSplatRoute
   '/_authenticated/pulse/$': typeof AuthenticatedPulseSplatRoute
   '/_authenticated/_shell/design/brand': typeof AuthenticatedShellDesignBrandRoute
+  '/_authenticated/_shell/marketing/ads': typeof AuthenticatedShellMarketingAdsRoute
   '/_authenticated/_shell/marketing/analytics': typeof AuthenticatedShellMarketingAnalyticsRouteWithChildren
+  '/_authenticated/_shell/marketing/email': typeof AuthenticatedShellMarketingEmailRoute
   '/_authenticated/_shell/marketing/scheduler': typeof AuthenticatedShellMarketingSchedulerRoute
   '/_authenticated/_shell/marketing/social': typeof AuthenticatedShellMarketingSocialRoute
   '/_authenticated/_shell/settings/data-sources': typeof AuthenticatedShellSettingsDataSourcesRoute
@@ -364,7 +384,9 @@ export interface FileRouteTypes {
     | '/app/$'
     | '/pulse/$'
     | '/design/brand'
+    | '/marketing/ads'
     | '/marketing/analytics'
+    | '/marketing/email'
     | '/marketing/scheduler'
     | '/marketing/social'
     | '/settings/data-sources'
@@ -398,6 +420,8 @@ export interface FileRouteTypes {
     | '/app/$'
     | '/pulse/$'
     | '/design/brand'
+    | '/marketing/ads'
+    | '/marketing/email'
     | '/marketing/scheduler'
     | '/marketing/social'
     | '/settings/data-sources'
@@ -434,7 +458,9 @@ export interface FileRouteTypes {
     | '/_authenticated/app/$'
     | '/_authenticated/pulse/$'
     | '/_authenticated/_shell/design/brand'
+    | '/_authenticated/_shell/marketing/ads'
     | '/_authenticated/_shell/marketing/analytics'
+    | '/_authenticated/_shell/marketing/email'
     | '/_authenticated/_shell/marketing/scheduler'
     | '/_authenticated/_shell/marketing/social'
     | '/_authenticated/_shell/settings/data-sources'
@@ -603,11 +629,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellDesignBrandRouteImport
       parentRoute: typeof AuthenticatedShellRoute
     }
+    '/_authenticated/_shell/marketing/ads': {
+      id: '/_authenticated/_shell/marketing/ads'
+      path: '/marketing/ads'
+      fullPath: '/marketing/ads'
+      preLoaderRoute: typeof AuthenticatedShellMarketingAdsRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
     '/_authenticated/_shell/marketing/analytics': {
       id: '/_authenticated/_shell/marketing/analytics'
       path: '/marketing/analytics'
       fullPath: '/marketing/analytics'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
+    '/_authenticated/_shell/marketing/email': {
+      id: '/_authenticated/_shell/marketing/email'
+      path: '/marketing/email'
+      fullPath: '/marketing/email'
+      preLoaderRoute: typeof AuthenticatedShellMarketingEmailRouteImport
       parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/marketing/scheduler': {
@@ -773,7 +813,9 @@ interface AuthenticatedShellRouteChildren {
   AuthenticatedShellDashboardRoute: typeof AuthenticatedShellDashboardRoute
   AuthenticatedShellSettingsRoute: typeof AuthenticatedShellSettingsRouteWithChildren
   AuthenticatedShellDesignBrandRoute: typeof AuthenticatedShellDesignBrandRoute
+  AuthenticatedShellMarketingAdsRoute: typeof AuthenticatedShellMarketingAdsRoute
   AuthenticatedShellMarketingAnalyticsRoute: typeof AuthenticatedShellMarketingAnalyticsRouteWithChildren
+  AuthenticatedShellMarketingEmailRoute: typeof AuthenticatedShellMarketingEmailRoute
   AuthenticatedShellMarketingSchedulerRoute: typeof AuthenticatedShellMarketingSchedulerRoute
   AuthenticatedShellMarketingSocialRoute: typeof AuthenticatedShellMarketingSocialRoute
   AuthenticatedShellWebAiSearchRoute: typeof AuthenticatedShellWebAiSearchRoute
@@ -784,8 +826,10 @@ const AuthenticatedShellRouteChildren: AuthenticatedShellRouteChildren = {
   AuthenticatedShellDashboardRoute: AuthenticatedShellDashboardRoute,
   AuthenticatedShellSettingsRoute: AuthenticatedShellSettingsRouteWithChildren,
   AuthenticatedShellDesignBrandRoute: AuthenticatedShellDesignBrandRoute,
+  AuthenticatedShellMarketingAdsRoute: AuthenticatedShellMarketingAdsRoute,
   AuthenticatedShellMarketingAnalyticsRoute:
     AuthenticatedShellMarketingAnalyticsRouteWithChildren,
+  AuthenticatedShellMarketingEmailRoute: AuthenticatedShellMarketingEmailRoute,
   AuthenticatedShellMarketingSchedulerRoute:
     AuthenticatedShellMarketingSchedulerRoute,
   AuthenticatedShellMarketingSocialRoute:

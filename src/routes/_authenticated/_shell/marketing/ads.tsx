@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
 
 import { MetaAds } from "@/components/pulse/MetaAds";
@@ -53,7 +53,7 @@ function AdsPage() {
       </div>
       <WmCard>
         <CardHead title="LinkedIn & Google Ads" action={<button className={btnGhost}>Connect</button>} />
-        <EmptyState title="Not connected yet" body="Meta ads are live above. LinkedIn and Google Ads campaigns appear here once those accounts are linked." action={<a href="/settings/data-sources" className={btnPrimary}>Open data sources</a>} />
+        <EmptyState title="Not connected yet" body="Meta ads are live above. LinkedIn and Google Ads campaigns appear here once those accounts are linked." action={<Link to="/settings/data-sources" className={btnPrimary}>Open data sources</Link>} />
       </WmCard>
     </div>
   );
