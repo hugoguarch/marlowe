@@ -143,6 +143,18 @@ function Editor({ id, canWrite, onClose }: { id: string; canWrite: boolean; onCl
   const [msg, setMsg] = useState<string | null>(null);
   const frame = useRef<HTMLIFrameElement>(null);
   useEffect(() => { if (q.data) setDoc(q.data.data); }, [q.data]);
+  // Scale the A4 pages to fit the preview pane (screen only; printing is unaffected).
+  const fit = () => {
+    const f = frame.current, b = f?.contentDocument?.body;
+    if (f && b) b.style.zoom = String(Math.min(1, (f.clientWidth - 24) / 794));
+  };
+  useEffect(() => {
+    const f = frame.current;
+    if (!f) return;
+    const ro = new ResizeObserver(fit);
+    ro.observe(f);
+    return () => ro.disconnect();
+  });
 
   const html = useMemo(() => {
     if (!doc) return "";
@@ -170,7 +182,7 @@ function Editor({ id, canWrite, onClose }: { id: string; canWrite: boolean; onCl
       <div className="space-y-4">
         <div className="flex flex-wrap gap-2">
           <button className={btn} onClick={onClose}>← All reports</button>
-          <button className={btn} onClick={() => frame.current?.contentWindow?.print()}>Download PDF</button>
+          <button className={btn} onClick={() => frame.current?.contentDocument && (frame.current.contentDocument.body.style.zoom = "1"), frame.current?.contentWindow?.print(), fit()}>Download PDF</button>
         </div>
         <Panel title="Edit text" sub={q.data.status === "approved" ? "Approved" : "Draft"}>
           <fieldset disabled={!canWrite} className="space-y-3">
@@ -205,7 +217,7 @@ function Editor({ id, canWrite, onClose }: { id: string; canWrite: boolean; onCl
         </Panel>
       </div>
       <div className="overflow-hidden rounded-2xl border border-p-line bg-p-bg">
-        <iframe ref={frame} title="Report preview" srcDoc={html} className="h-[calc(100vh-180px)] min-h-[700px] w-full" />
+        <iframe ref={frame} title="Report preview" srcDoc={html} onLoad={fit} className="h-[calc(100vh-180px)] min-h-[700px] w-full" />
       </div>
     </div>
   );
