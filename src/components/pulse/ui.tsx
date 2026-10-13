@@ -46,7 +46,7 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={`rounded-2xl border border-p-line bg-p-card shadow-[0_1px_2px_rgba(0,28,38,0.04)] ${className}`}>
+    <section className={`rounded-[8px] border border-p-line bg-p-card shadow-[0_1px_2px_rgba(0,28,38,0.08)] ${className}`}>
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-p-line px-5 py-4">
         <div className="space-y-1">
           <h2 className="text-base font-medium tracking-tight text-p-text">{title}</h2>
@@ -87,11 +87,11 @@ export function Kpi({
   prev: number;
   kind?: "int" | "pct" | "dec";
   points?: number[];
-  to?: "/pulse/social" | "/pulse/google-business" | "/pulse/website" | "/pulse/ai-search";
+  to?: "/marketing/social" | "/marketing/analytics/google-business" | "/marketing/analytics/website" | "/web/ai-search";
   invert?: boolean | undefined;
 }) {
   const body = (
-    <div className="flex h-full flex-col rounded-2xl border border-p-line bg-p-card shadow-[0_1px_2px_rgba(0,28,38,0.04)] transition-all hover:-translate-y-0.5 hover:border-p-cerulean/40 hover:shadow-md">
+    <div className="flex h-full flex-col rounded-[8px] border border-p-line bg-p-card shadow-[0_1px_2px_rgba(0,28,38,0.08)] transition-all hover:-translate-y-0.5 hover:border-p-cerulean/40 hover:shadow-md">
       <div className="flex items-center justify-between border-b border-p-line px-4 py-3">
         <span className="text-xs text-p-muted">{label}</span>
         {!na && points.length > 1 && (
@@ -119,13 +119,13 @@ export function Kpi({
       </div>
     </div>
   );
-  if (na) return <Link to={to ?? "/pulse/settings"}>{body}</Link>;
+  if (na) return <Link to={to ?? "/settings/data-sources"}>{body}</Link>;
   return to ? <Link to={to}>{body}</Link> : body;
 }
 
 export function Empty({ title, body, action }: { title: string; body: string; action?: ReactNode }) {
   return (
-    <div className="rounded-xl border border-dashed border-p-line bg-p-soft/40 px-5 py-8 text-center">
+    <div className="rounded-[8px] border border-dashed border-p-line bg-p-soft/40 px-5 py-8 text-center">
       <div className="text-sm font-medium text-p-text">{title}</div>
       <p className="mx-auto mt-1 max-w-md text-xs text-p-muted">{body}</p>
       {action && <div className="mt-4">{action}</div>}
@@ -136,7 +136,7 @@ export function Empty({ title, body, action }: { title: string; body: string; ac
 export function PageTitle({ title, sub }: { title: string; sub?: string | undefined }) {
   return (
     <div className="mb-6">
-      <h1 className="text-3xl font-medium tracking-tight text-p-text md:text-4xl">{title}</h1>
+      <h2 className="text-xl font-light tracking-tight text-p-text">{title}</h2>
       {sub && <p className="mt-1 text-sm text-p-muted">{sub}</p>}
     </div>
   );
@@ -153,7 +153,7 @@ export const tooltipStyle = {
 };
 
 export function Loading() {
-  return <div className="h-40 animate-pulse rounded-2xl bg-p-soft/60" />;
+  return <div className="h-40 animate-pulse rounded-[8px] bg-p-soft/60" />;
 }
 
 type ComparePoint = { d: string; cur: number | null; prior: number | null; priorDate: string };
@@ -211,7 +211,7 @@ export function CompareChart({
 /** Shown in place of a chart or table when no live account feeds it. */
 export function SetupConnection({ label = "Set up connection" }: { label?: string }) {
   return (
-    <div className="relative h-56 overflow-hidden rounded-xl">
+    <div className="relative h-56 overflow-hidden rounded-[8px]">
       <div className="absolute inset-0 flex items-end gap-2 px-4 pb-4 opacity-[0.12]" aria-hidden>
         {[40, 55, 35, 70, 50, 80, 60, 75, 45, 90, 65, 85].map((h, i) => (
           <div key={i} className="flex-1 rounded-t bg-p-cerulean" style={{ height: `${h}%` }} />
@@ -219,7 +219,7 @@ export function SetupConnection({ label = "Set up connection" }: { label?: strin
       </div>
       <div className="relative flex h-full flex-col items-center justify-center gap-3 text-center">
         <p className="text-xs text-p-muted">No live data is being pulled for this yet.</p>
-        <Link to="/pulse/settings" className="rounded-lg bg-p-cerulean px-4 py-2 text-sm font-medium text-white hover:opacity-90">
+        <Link to="/settings/data-sources" className="rounded-lg bg-p-cerulean px-4 py-2 text-sm font-medium text-white hover:opacity-90">
           {label}
         </Link>
       </div>

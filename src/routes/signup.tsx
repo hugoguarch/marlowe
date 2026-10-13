@@ -52,7 +52,7 @@ function SignupPage() {
       return;
     }
     if (data.session) {
-      navigate({ to: "/app" });
+      navigate({ to: "/dashboard" });
       return;
     }
     setSent(true);
@@ -68,7 +68,7 @@ function SignupPage() {
       setError(result.error.message);
       return;
     }
-    navigate({ to: "/app" });
+    navigate({ to: "/dashboard" });
   }
 
   return (

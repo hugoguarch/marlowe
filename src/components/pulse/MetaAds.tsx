@@ -28,7 +28,7 @@ export function MetaAds() {
 
 function Card({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-p-line bg-p-card p-4">
+    <div className="rounded-[8px] border border-p-line bg-p-card p-4">
       <div className="text-[11px] uppercase tracking-wider text-p-muted">{label}</div>
       <div className="mt-2 text-2xl font-semibold text-p-text">{value}</div>
     </div>

@@ -47,7 +47,7 @@ export function PostModal({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="grid max-h-[90vh] w-full max-w-3xl gap-6 overflow-y-auto rounded-3xl border border-app-line bg-app-card p-6 sm:grid-cols-[minmax(0,260px)_1fr] sm:p-7"
+        className="grid max-h-[90vh] w-full max-w-3xl gap-6 overflow-y-auto rounded-[8px] border border-app-line bg-app-card p-6 sm:grid-cols-[minmax(0,260px)_1fr] sm:p-7"
       >
         <PostDesign
           template={post.template ?? "carousel"}
@@ -85,7 +85,7 @@ export function PostModal({
                 type="datetime-local"
                 value={when}
                 onChange={(e) => setWhen(e.target.value)}
-                className="mt-2 w-full rounded-xl border border-app-line bg-app-bg/60 px-3 py-2 text-sm text-ink-navy outline-none focus:border-cerulean"
+                className="mt-2 w-full rounded-[8px] border border-app-line bg-app-bg/60 px-3 py-2 text-sm text-ink-navy outline-none focus:border-cerulean"
               />
             </div>
           ) : null}

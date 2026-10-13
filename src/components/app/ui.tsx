@@ -11,7 +11,7 @@ export function Card({
 }) {
   return (
     <section
-      className={`rounded-3xl border p-6 sm:p-7 ${
+      className={`rounded-[8px] border p-6 sm:p-7 ${
         dark
           ? "border-ink-navy bg-ink-navy text-white/85"
           : "border-app-line bg-app-card text-ink-navy shadow-[0_28px_70px_-64px_rgba(20,40,70,0.7)]"
