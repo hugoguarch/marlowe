@@ -16,6 +16,7 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AuthenticatedShellRouteImport } from './routes/_authenticated/_shell'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as OauthCallbackRouteImport } from './routes/oauth.callback'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -72,6 +73,10 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedShellRoute = AuthenticatedShellRouteImport.update({
+  id: '/_shell',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
@@ -88,45 +93,45 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedShellAgentRoute = AuthenticatedShellAgentRouteImport.update({
-  id: '/_shell/agent',
+  id: '/agent',
   path: '/agent',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AuthenticatedShellRoute,
 } as any)
 const AuthenticatedShellDesignBrandRoute =
   AuthenticatedShellDesignBrandRouteImport.update({
-    id: '/_shell/design/brand',
+    id: '/design/brand',
     path: '/design/brand',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const AuthenticatedShellMarketingSchedulerRoute =
   AuthenticatedShellMarketingSchedulerRouteImport.update({
-    id: '/_shell/marketing/scheduler',
+    id: '/marketing/scheduler',
     path: '/marketing/scheduler',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const AuthenticatedShellMarketingSocialRoute =
   AuthenticatedShellMarketingSocialRouteImport.update({
-    id: '/_shell/marketing/social',
+    id: '/marketing/social',
     path: '/marketing/social',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const AuthenticatedShellSettingsIndexRoute =
   AuthenticatedShellSettingsIndexRouteImport.update({
-    id: '/_shell/settings/',
+    id: '/settings/',
     path: '/settings/',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const AuthenticatedShellSettingsDataSourcesRoute =
   AuthenticatedShellSettingsDataSourcesRouteImport.update({
-    id: '/_shell/settings/data-sources',
+    id: '/settings/data-sources',
     path: '/settings/data-sources',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const AuthenticatedShellWebAiSearchRoute =
   AuthenticatedShellWebAiSearchRouteImport.update({
-    id: '/_shell/web/ai-search',
+    id: '/web/ai-search',
     path: '/web/ai-search',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const ApiPublicHooksPulseSyncRoute = ApiPublicHooksPulseSyncRouteImport.update({
   id: '/api/public/hooks/pulse-sync',
@@ -135,45 +140,45 @@ const ApiPublicHooksPulseSyncRoute = ApiPublicHooksPulseSyncRouteImport.update({
 } as any)
 const AuthenticatedShellMarketingAnalyticsIndexRoute =
   AuthenticatedShellMarketingAnalyticsIndexRouteImport.update({
-    id: '/_shell/marketing/analytics/',
+    id: '/marketing/analytics/',
     path: '/marketing/analytics/',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const AuthenticatedShellMarketingAnalyticsCompetitorsRoute =
   AuthenticatedShellMarketingAnalyticsCompetitorsRouteImport.update({
-    id: '/_shell/marketing/analytics/competitors',
+    id: '/marketing/analytics/competitors',
     path: '/marketing/analytics/competitors',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const AuthenticatedShellMarketingAnalyticsGoogleBusinessRoute =
   AuthenticatedShellMarketingAnalyticsGoogleBusinessRouteImport.update({
-    id: '/_shell/marketing/analytics/google-business',
+    id: '/marketing/analytics/google-business',
     path: '/marketing/analytics/google-business',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const AuthenticatedShellMarketingAnalyticsNewsRoute =
   AuthenticatedShellMarketingAnalyticsNewsRouteImport.update({
-    id: '/_shell/marketing/analytics/news',
+    id: '/marketing/analytics/news',
     path: '/marketing/analytics/news',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const AuthenticatedShellMarketingAnalyticsReportsRoute =
   AuthenticatedShellMarketingAnalyticsReportsRouteImport.update({
-    id: '/_shell/marketing/analytics/reports',
+    id: '/marketing/analytics/reports',
     path: '/marketing/analytics/reports',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const AuthenticatedShellMarketingAnalyticsTrendsRoute =
   AuthenticatedShellMarketingAnalyticsTrendsRouteImport.update({
-    id: '/_shell/marketing/analytics/trends',
+    id: '/marketing/analytics/trends',
     path: '/marketing/analytics/trends',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const AuthenticatedShellMarketingAnalyticsWebsiteRoute =
   AuthenticatedShellMarketingAnalyticsWebsiteRouteImport.update({
-    id: '/_shell/marketing/analytics/website',
+    id: '/marketing/analytics/website',
     path: '/marketing/analytics/website',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    getParentRoute: () => AuthenticatedShellRoute,
   } as any)
 const ApiPublicOauthGoogleCallbackRoute =
   ApiPublicOauthGoogleCallbackRouteImport.update({
@@ -253,6 +258,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/_authenticated/_shell': typeof AuthenticatedShellRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -340,6 +346,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/.well-known/oauth-protected-resource'
+    | '/_authenticated/_shell'
     | '/auth/callback'
     | '/oauth/callback'
     | '/.lovable/oauth/consent'
@@ -429,6 +436,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/_shell': {
+      id: '/_authenticated/_shell'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedShellRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/auth/callback': {
       id: '/auth/callback'
       path: '/auth/callback'
@@ -455,49 +469,49 @@ declare module '@tanstack/react-router' {
       path: '/agent'
       fullPath: '/agent'
       preLoaderRoute: typeof AuthenticatedShellAgentRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/design/brand': {
       id: '/_authenticated/_shell/design/brand'
       path: '/design/brand'
       fullPath: '/design/brand'
       preLoaderRoute: typeof AuthenticatedShellDesignBrandRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/marketing/scheduler': {
       id: '/_authenticated/_shell/marketing/scheduler'
       path: '/marketing/scheduler'
       fullPath: '/marketing/scheduler'
       preLoaderRoute: typeof AuthenticatedShellMarketingSchedulerRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/marketing/social': {
       id: '/_authenticated/_shell/marketing/social'
       path: '/marketing/social'
       fullPath: '/marketing/social'
       preLoaderRoute: typeof AuthenticatedShellMarketingSocialRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/settings/': {
       id: '/_authenticated/_shell/settings/'
       path: '/settings'
       fullPath: '/settings/'
       preLoaderRoute: typeof AuthenticatedShellSettingsIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/settings/data-sources': {
       id: '/_authenticated/_shell/settings/data-sources'
       path: '/settings/data-sources'
       fullPath: '/settings/data-sources'
       preLoaderRoute: typeof AuthenticatedShellSettingsDataSourcesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/web/ai-search': {
       id: '/_authenticated/_shell/web/ai-search'
       path: '/web/ai-search'
       fullPath: '/web/ai-search'
       preLoaderRoute: typeof AuthenticatedShellWebAiSearchRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/api/public/hooks/pulse-sync': {
       id: '/api/public/hooks/pulse-sync'
@@ -511,49 +525,49 @@ declare module '@tanstack/react-router' {
       path: '/marketing/analytics'
       fullPath: '/marketing/analytics/'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/marketing/analytics/competitors': {
       id: '/_authenticated/_shell/marketing/analytics/competitors'
       path: '/marketing/analytics/competitors'
       fullPath: '/marketing/analytics/competitors'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsCompetitorsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/marketing/analytics/google-business': {
       id: '/_authenticated/_shell/marketing/analytics/google-business'
       path: '/marketing/analytics/google-business'
       fullPath: '/marketing/analytics/google-business'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsGoogleBusinessRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/marketing/analytics/news': {
       id: '/_authenticated/_shell/marketing/analytics/news'
       path: '/marketing/analytics/news'
       fullPath: '/marketing/analytics/news'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsNewsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/marketing/analytics/reports': {
       id: '/_authenticated/_shell/marketing/analytics/reports'
       path: '/marketing/analytics/reports'
       fullPath: '/marketing/analytics/reports'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsReportsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/marketing/analytics/trends': {
       id: '/_authenticated/_shell/marketing/analytics/trends'
       path: '/marketing/analytics/trends'
       fullPath: '/marketing/analytics/trends'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsTrendsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/marketing/analytics/website': {
       id: '/_authenticated/_shell/marketing/analytics/website'
       path: '/marketing/analytics/website'
       fullPath: '/marketing/analytics/website'
       preLoaderRoute: typeof AuthenticatedShellMarketingAnalyticsWebsiteRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedShellRoute
     }
     '/api/public/oauth/google/callback': {
       id: '/api/public/oauth/google/callback'
@@ -572,7 +586,7 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
+interface AuthenticatedShellRouteChildren {
   AuthenticatedShellAgentRoute: typeof AuthenticatedShellAgentRoute
   AuthenticatedShellDesignBrandRoute: typeof AuthenticatedShellDesignBrandRoute
   AuthenticatedShellMarketingSchedulerRoute: typeof AuthenticatedShellMarketingSchedulerRoute
@@ -589,7 +603,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedShellMarketingAnalyticsIndexRoute: typeof AuthenticatedShellMarketingAnalyticsIndexRoute
 }
 
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+const AuthenticatedShellRouteChildren: AuthenticatedShellRouteChildren = {
   AuthenticatedShellAgentRoute: AuthenticatedShellAgentRoute,
   AuthenticatedShellDesignBrandRoute: AuthenticatedShellDesignBrandRoute,
   AuthenticatedShellMarketingSchedulerRoute:
@@ -614,6 +628,17 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedShellMarketingAnalyticsWebsiteRoute,
   AuthenticatedShellMarketingAnalyticsIndexRoute:
     AuthenticatedShellMarketingAnalyticsIndexRoute,
+}
+
+const AuthenticatedShellRouteWithChildren =
+  AuthenticatedShellRoute._addFileChildren(AuthenticatedShellRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedShellRoute: typeof AuthenticatedShellRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedShellRoute: AuthenticatedShellRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
