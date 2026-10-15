@@ -1,4 +1,4 @@
-/** Agent skills: reusable playbooks folded into the system prompt. Add new ones here. */
+/** Built-in agent skills: reusable playbooks folded into the system prompt. People can add their own in the Skills panel. */
 export const SKILLS: { id: string; name: string; summary: string; instructions: string }[] = [
   {
     id: "post-ideas",
@@ -8,9 +8,9 @@ export const SKILLS: { id: string; name: string; summary: string; instructions: 
   },
   {
     id: "social-post",
-    name: "Create and schedule posts",
-    summary: "Writes on-brand posts and puts them in the Scheduler.",
-    instructions: "Call get_brand_kit, check list_schedule to avoid clashes, then call create_post once per post with real copy, slides and a sensible time (weekdays 07:45 or 12:30 unless told otherwise).",
+    name: "Design and schedule posts",
+    summary: "Writes on-brand posts, generates the artwork and puts them in the Scheduler.",
+    instructions: "Call get_brand_kit, check list_schedule to avoid clashes, then call create_post once per post with real copy, 1 slide for single/story or 3-5 for carousels, an image brief describing the photo, and a sensible time (weekdays 07:45 or 12:30 unless told otherwise). create_post generates the artwork itself; never say you can only write text.",
   },
   {
     id: "monthly-report",
@@ -25,9 +25,15 @@ export const SKILLS: { id: string; name: string; summary: string; instructions: 
     instructions: "Call get_brand_kit, then create_site_page with nav, hero, 2-4 content sections, a form and a footer. Never invent statistics; use '—' placeholders.",
   },
   {
+    id: "email",
+    name: "Email campaign",
+    summary: "Drafts an email in Email Designer on the brand kit.",
+    instructions: "Call get_brand_kit, then create_email with a subject, a hero, 1-3 text blocks, a button and a footer. Set sendAt only when the user gives a date.",
+  },
+  {
     id: "autopilot",
     name: "Recurring work",
     summary: "Schedules the agent to repeat a job.",
-    instructions: "When the user says 'every week/month' or 'later', call schedule_task with the instruction written so it can run without them.",
+    instructions: "When the user says 'every day/week/month', 'on the 1st', or 'later', call schedule_task with a self-contained instruction (it runs without them, so include the account, channel and what to make), the first run time and the repeat. For a monthly report on the 1st, the instruction should say 'Make the report for the previous month'. Times are UK time unless told otherwise; 09:00 if not given.",
   },
 ];
