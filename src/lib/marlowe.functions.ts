@@ -128,7 +128,7 @@ export const getChatHistory = createServerFn({ method: "GET" })
       .eq("user_id", userId)
       .order("created_at", { ascending: true })
       .limit(100);
-    return (data ?? []) as { id: string; role: string; body: string; created_at: string }[];
+    return (data ?? []) as { id: string; role: string; body: string; created_at: string; attachments: any[]; tools: any[] }[];
   });
 
 /** create_post — writes a content item and, optionally, its schedule rows. */
