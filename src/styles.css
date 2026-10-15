@@ -538,3 +538,14 @@
 @keyframes wm-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @utility wm-fade { animation: wm-in 200ms ease-out both; }
 @utility kicker { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; }
+
+/* Agent replies rendered from markdown */
+.prose-agent p { margin: 0 0 0.6em; }
+.prose-agent p:last-child { margin-bottom: 0; }
+.prose-agent ul, .prose-agent ol { margin: 0.4em 0 0.7em; padding-left: 1.2em; }
+.prose-agent ul { list-style: disc; }
+.prose-agent ol { list-style: decimal; }
+.prose-agent li { margin: 0.2em 0; }
+.prose-agent strong { font-weight: 600; }
+.prose-agent h1, .prose-agent h2, .prose-agent h3 { font-weight: 600; margin: 0.8em 0 0.4em; }
+.prose-agent code { font-size: 0.9em; padding: 0 0.25em; border-radius: 4px; background: var(--color-app-bg, transparent); }

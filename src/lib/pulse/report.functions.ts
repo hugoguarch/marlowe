@@ -216,8 +216,11 @@ export const generateReport = createServerFn({ method: "POST" })
     clientId: z.string().uuid(), from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     period: z.string().min(1).max(60), nextPeriod: z.string().min(1).max(60),
   }).parse(d))
-  .handler(async ({ data, context }) => {
-    const ctx = context as unknown as Ctx;
+  .handler(async ({ data, context }) => createReportFor(context as unknown as Ctx, data));
+
+/** Shared by the report screen and the agent's create_report tool. */
+export async function createReportFor(ctx: Ctx, data: { clientId: string; from: string; to: string; period: string; nextPeriod: string }) {
+  {
     if (!(await canWrite(ctx))) throw new Error("Only admins and account managers can create reports");
     const c = await collect(ctx, data.clientId, data.from, data.to);
     let narrative: Narrative;
@@ -234,7 +237,8 @@ export const generateReport = createServerFn({ method: "POST" })
     }).select("id").single();
     if (error) throw new Error(error.message);
     return { id: row.id as string, aiError };
-  });
+  }
+}
 
 export const listReports = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

@@ -55,6 +55,45 @@ export type Database = {
           },
         ]
       }
+      agent_tasks: {
+        Row: {
+          brand_id: string | null
+          created_at: string
+          id: string
+          last_result: string | null
+          last_run_at: string | null
+          prompt: string
+          repeat: string
+          run_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          last_result?: string | null
+          last_run_at?: string | null
+          prompt: string
+          repeat?: string
+          run_at: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          last_result?: string | null
+          last_run_at?: string | null
+          prompt?: string
+          repeat?: string
+          run_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       brand_assets: {
         Row: {
           brand_id: string
@@ -211,27 +250,33 @@ export type Database = {
       }
       chat_messages: {
         Row: {
+          attachments: Json
           body: string
           brand_id: string | null
           created_at: string
           id: string
           role: string
+          tools: Json
           user_id: string
         }
         Insert: {
+          attachments?: Json
           body: string
           brand_id?: string | null
           created_at?: string
           id?: string
           role?: string
+          tools?: Json
           user_id: string
         }
         Update: {
+          attachments?: Json
           body?: string
           brand_id?: string | null
           created_at?: string
           id?: string
           role?: string
+          tools?: Json
           user_id?: string
         }
         Relationships: [
@@ -689,6 +734,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          purpose: string
           refresh_token_enc: string
           scopes: string | null
           updated_at: string
@@ -697,6 +743,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          purpose?: string
           refresh_token_enc: string
           scopes?: string | null
           updated_at?: string
@@ -705,6 +752,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          purpose?: string
           refresh_token_enc?: string
           scopes?: string | null
           updated_at?: string
