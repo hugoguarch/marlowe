@@ -20,7 +20,7 @@ export const Route = createFileRoute("/api/public/oauth/google/callback")({
         const s = await g.verifyState(state);
         if (!s) return page("Link expired", "Start the connection again from Settings.");
         try {
-          const { email, accountId, accessToken } = await g.finishOAuth(code, s.o);
+          const { email, accountId, accessToken } = await g.finishOAuth(code, s.o, s.p);
           // YouTube channels on this sign-in are linked to the client straight away.
           const channels = s.p === "gbp" ? [] : await g.youtubeChannels(accessToken).catch(() => []);
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

@@ -53,8 +53,11 @@ export async function verifyState(s: string): Promise<{ c: string; o: string; p?
   return p.exp > Date.now() && allowedOrigin(p.o) ? p : null;
 }
 
-function creds() {
-  const id = process.env["GOOGLE_OAUTH_CLIENT_ID"], sec = process.env["GOOGLE_OAUTH_CLIENT_SECRET"];
+/** YouTube uses its own Google client (YOUTUBE_OAUTH_*); Business Profile uses GOOGLE_OAUTH_*. */
+function creds(purpose?: string) {
+  const yt = purpose === "youtube" && process.env["YOUTUBE_OAUTH_CLIENT_ID"];
+  const id = yt ? process.env["YOUTUBE_OAUTH_CLIENT_ID"] : process.env["GOOGLE_OAUTH_CLIENT_ID"];
+  const sec = yt ? process.env["YOUTUBE_OAUTH_CLIENT_SECRET"] : process.env["GOOGLE_OAUTH_CLIENT_SECRET"];
   if (!id || !sec) throw new Error("Google sign-in app is not configured");
   return { id, sec };
 }
@@ -64,12 +67,12 @@ export const PURPOSE_SCOPES: Record<string, string[]> = {
 };
 export function authUrl(origin: string, state: string, purpose?: string) {
   const u = new URL("https://accounts.google.com/o/oauth2/v2/auth");
-  u.search = new URLSearchParams({ client_id: creds().id, redirect_uri: origin + CALLBACK_PATH, response_type: "code", scope: (PURPOSE_SCOPES[purpose ?? ""] ?? GOOGLE_SCOPES).join(" "), access_type: "offline", prompt: "consent select_account", include_granted_scopes: "true", state }).toString();
+  u.search = new URLSearchParams({ client_id: creds(purpose).id, redirect_uri: origin + CALLBACK_PATH, response_type: "code", scope: (PURPOSE_SCOPES[purpose ?? ""] ?? GOOGLE_SCOPES).join(" "), access_type: "offline", prompt: "consent select_account", include_granted_scopes: "true", state }).toString();
   return u.toString();
 }
 
-async function tokenCall(params: Record<string, string>) {
-  const { id, sec } = creds();
+async function tokenCall(params: Record<string, string>, purpose?: string) {
+  const { id, sec } = creds(purpose);
   const res = await fetch("https://oauth2.googleapis.com/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ client_id: id, client_secret: sec, ...params }) });
   const j = (await res.json()) as any;
   if (!res.ok) throw new Error(`Google sign-in failed: ${j.error_description ?? j.error ?? res.status}`);
@@ -79,16 +82,17 @@ async function tokenCall(params: Record<string, string>) {
 const admin = async () => (await import("@/integrations/supabase/client.server")).supabaseAdmin;
 
 /** Exchange the code, store the encrypted refresh token, return the account row id + email. */
-export async function finishOAuth(code: string, origin: string) {
-  const t = await tokenCall({ code, grant_type: "authorization_code", redirect_uri: origin + CALLBACK_PATH });
+export async function finishOAuth(code: string, origin: string, purpose = "gbp") {
+  purpose = purpose === "youtube" ? "youtube" : "gbp";
+  const t = await tokenCall({ code, grant_type: "authorization_code", redirect_uri: origin + CALLBACK_PATH }, purpose);
   const info = (await (await fetch("https://openidconnect.googleapis.com/v1/userinfo", { headers: { Authorization: `Bearer ${t.access_token}` } })).json()) as any;
   const email = String(info.email ?? "unknown");
   const sb = await admin();
-  const { data: existing } = await sb.from("pulse_google_accounts").select("id").eq("email", email).maybeSingle();
+  const { data: existing } = await sb.from("pulse_google_accounts").select("id").eq("email", email).eq("purpose", purpose).maybeSingle();
   if (!t.refresh_token && !existing) throw new Error("Google did not return offline access. Remove Pulse from your Google account permissions and try again.");
-  const patch: any = { email, scopes: t.scope ?? null, updated_at: new Date().toISOString() };
+  const patch: any = { email, purpose, scopes: t.scope ?? null, updated_at: new Date().toISOString() };
   if (t.refresh_token) patch.refresh_token_enc = await encrypt(t.refresh_token);
-  const { data, error } = await sb.from("pulse_google_accounts").upsert(patch, { onConflict: "email" }).select("id").single();
+  const { data, error } = await sb.from("pulse_google_accounts").upsert(patch, { onConflict: "email,purpose" }).select("id").single();
   if (error) throw new Error(error.message);
   return { accountId: data.id as string, email, accessToken: t.access_token };
 }
@@ -98,9 +102,9 @@ export async function accessToken(accountId: string) {
   const c = tokenCache.get(accountId);
   if (c && c.exp > Date.now()) return c.t;
   const sb = await admin();
-  const { data } = await sb.from("pulse_google_accounts").select("refresh_token_enc").eq("id", accountId).maybeSingle();
+  const { data } = await sb.from("pulse_google_accounts").select("refresh_token_enc, purpose").eq("id", accountId).maybeSingle();
   if (!data) throw new Error("Google account is no longer connected — reconnect it");
-  const t = await tokenCall({ refresh_token: await decrypt(data.refresh_token_enc), grant_type: "refresh_token" });
+  const t = await tokenCall({ refresh_token: await decrypt(data.refresh_token_enc), grant_type: "refresh_token" }, (data as any).purpose);
   tokenCache.set(accountId, { t: t.access_token, exp: Date.now() + 50 * 60_000 });
   return t.access_token;
 }
