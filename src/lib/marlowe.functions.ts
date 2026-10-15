@@ -66,28 +66,55 @@ export const generateBrief = createServerFn({ method: "GET" })
     };
   });
 
-/** chat_with_marlowe — persists both sides of the thread in chat_messages. */
+/** chat_with_marlowe — real agent: LLM + tools, both sides persisted in chat_messages. */
 export const chatWithMarlowe = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { body: string }) => {
+  .inputValidator((input: { body: string; brandId?: string | null; clientId?: string | null; files?: { path: string; name: string; mime: string }[] }) => {
     const body = String(input?.body ?? "").trim();
-    if (!body) throw new Error("Empty message");
-    return { body: body.slice(0, 4000) };
+    const files = Array.isArray(input?.files) ? input.files.slice(0, 6).map((f) => ({ path: String(f.path), name: String(f.name).slice(0, 200), mime: String(f.mime).slice(0, 100) })) : [];
+    if (!body && !files.length) throw new Error("Empty message");
+    const uuid = (v: unknown) => (typeof v === "string" && /^[0-9a-f-]{36}$/i.test(v) ? v : null);
+    return { body: (body || "See the attached files.").slice(0, 8000), brandId: uuid(input?.brandId), clientId: uuid(input?.clientId), files };
   })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as unknown as Ctx;
-    const brandId = await ensureBrand({ supabase, userId });
-
-    const reply =
-      "Understood. I'll fold that into this week — the calendar reshapes around it and you'll see the revised plan in the Studio shortly.";
-
+    const brandId = data.brandId ?? (await ensureBrand({ supabase, userId }));
+    const { data: hist } = await supabase.from("chat_messages").select("role, body").eq("user_id", userId).order("created_at", { ascending: false }).limit(20);
+    const { runAgent } = await import("./agent/agent.server");
+    let reply: string, tools: unknown[] = [];
+    try {
+      const out = await runAgent({ supabase, userId }, { brandId, clientId: data.clientId }, (hist ?? []).reverse(), data.body, data.files);
+      reply = out.reply; tools = out.tools;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("agent failed", msg);
+      reply = /402|credit/i.test(msg) ? "AI credits have run out for this workspace. Top up in Settings → Plans & credits." : /429/.test(msg) ? "The AI is busy right now. Try again in a minute." : `I couldn't finish that: ${msg.slice(0, 200)}`;
+    }
     const { error } = await supabase.from("chat_messages").insert([
-      { user_id: userId, brand_id: brandId, role: "user", body: data.body },
-      { user_id: userId, brand_id: brandId, role: "marlowe", body: reply },
+      { user_id: userId, brand_id: brandId, role: "user", body: data.body, attachments: data.files },
+      { user_id: userId, brand_id: brandId, role: "marlowe", body: reply, tools },
     ]);
-    if (error) throw error;
+    if (error) console.error("chat save failed", error.message);
+    return { reply, tools: tools as any[] };
+  });
 
-    return { reply, source: "stub" as const };
+/** Scheduled agent tasks for the signed-in user. */
+export const listAgentTasks = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context as unknown as Ctx;
+    const { data } = await supabase.from("agent_tasks").select("id, prompt, run_at, repeat, status, last_result, last_run_at").eq("user_id", userId).order("run_at").limit(50);
+    return (data ?? []) as { id: string; prompt: string; run_at: string; repeat: string; status: string; last_result: string | null; last_run_at: string | null }[];
+  });
+
+export const cancelAgentTask = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: { id: string }) => ({ id: String(i.id) }))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as unknown as Ctx;
+    const { error } = await supabase.from("agent_tasks").delete().eq("id", data.id).eq("user_id", userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 /** Thread history for the Marlowe page. */
@@ -97,7 +124,7 @@ export const getChatHistory = createServerFn({ method: "GET" })
     const { supabase, userId } = context as unknown as Ctx;
     const { data } = await supabase
       .from("chat_messages")
-      .select("id, role, body, created_at")
+      .select("id, role, body, created_at, attachments, tools")
       .eq("user_id", userId)
       .order("created_at", { ascending: true })
       .limit(100);
