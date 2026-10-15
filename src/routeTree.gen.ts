@@ -48,6 +48,7 @@ import { Route as AuthenticatedShellWebArticlesRouteImport } from './routes/_aut
 import { Route as AuthenticatedShellWebBugsRouteImport } from './routes/_authenticated/_shell/web/bugs'
 import { Route as AuthenticatedShellWebCmsRouteImport } from './routes/_authenticated/_shell/web/cms'
 import { Route as AuthenticatedShellWebSiteBuilderRouteImport } from './routes/_authenticated/_shell/web/site-builder'
+import { Route as ApiPublicHooksAgentTasksRouteImport } from './routes/api/public/hooks/agent-tasks'
 import { Route as ApiPublicHooksPulseSyncRouteImport } from './routes/api/public/hooks/pulse-sync'
 import { Route as AuthenticatedShellMarketingAnalyticsIndexRouteImport } from './routes/_authenticated/_shell/marketing/analytics/index'
 import { Route as AuthenticatedShellMarketingAnalyticsCompetitorsRouteImport } from './routes/_authenticated/_shell/marketing/analytics/competitors'
@@ -275,6 +276,12 @@ const AuthenticatedShellWebSiteBuilderRoute =
     path: '/web/site-builder',
     getParentRoute: () => AuthenticatedShellRoute,
   } as any)
+const ApiPublicHooksAgentTasksRoute =
+  ApiPublicHooksAgentTasksRouteImport.update({
+    id: '/api/public/hooks/agent-tasks',
+    path: '/api/public/hooks/agent-tasks',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksPulseSyncRoute = ApiPublicHooksPulseSyncRouteImport.update({
   id: '/api/public/hooks/pulse-sync',
   path: '/api/public/hooks/pulse-sync',
@@ -372,6 +379,7 @@ export interface FileRoutesByFullPath {
   '/web/bugs': typeof AuthenticatedShellWebBugsRoute
   '/web/cms': typeof AuthenticatedShellWebCmsRoute
   '/web/site-builder': typeof AuthenticatedShellWebSiteBuilderRoute
+  '/api/public/hooks/agent-tasks': typeof ApiPublicHooksAgentTasksRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
   '/settings/': typeof AuthenticatedShellSettingsIndexRoute
   '/marketing/analytics/competitors': typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
@@ -419,6 +427,7 @@ export interface FileRoutesByTo {
   '/web/bugs': typeof AuthenticatedShellWebBugsRoute
   '/web/cms': typeof AuthenticatedShellWebCmsRoute
   '/web/site-builder': typeof AuthenticatedShellWebSiteBuilderRoute
+  '/api/public/hooks/agent-tasks': typeof ApiPublicHooksAgentTasksRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
   '/settings': typeof AuthenticatedShellSettingsIndexRoute
   '/marketing/analytics/competitors': typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
@@ -471,6 +480,7 @@ export interface FileRoutesById {
   '/_authenticated/_shell/web/bugs': typeof AuthenticatedShellWebBugsRoute
   '/_authenticated/_shell/web/cms': typeof AuthenticatedShellWebCmsRoute
   '/_authenticated/_shell/web/site-builder': typeof AuthenticatedShellWebSiteBuilderRoute
+  '/api/public/hooks/agent-tasks': typeof ApiPublicHooksAgentTasksRoute
   '/api/public/hooks/pulse-sync': typeof ApiPublicHooksPulseSyncRoute
   '/_authenticated/_shell/settings/': typeof AuthenticatedShellSettingsIndexRoute
   '/_authenticated/_shell/marketing/analytics/competitors': typeof AuthenticatedShellMarketingAnalyticsCompetitorsRoute
@@ -522,6 +532,7 @@ export interface FileRouteTypes {
     | '/web/bugs'
     | '/web/cms'
     | '/web/site-builder'
+    | '/api/public/hooks/agent-tasks'
     | '/api/public/hooks/pulse-sync'
     | '/settings/'
     | '/marketing/analytics/competitors'
@@ -569,6 +580,7 @@ export interface FileRouteTypes {
     | '/web/bugs'
     | '/web/cms'
     | '/web/site-builder'
+    | '/api/public/hooks/agent-tasks'
     | '/api/public/hooks/pulse-sync'
     | '/settings'
     | '/marketing/analytics/competitors'
@@ -620,6 +632,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_shell/web/bugs'
     | '/_authenticated/_shell/web/cms'
     | '/_authenticated/_shell/web/site-builder'
+    | '/api/public/hooks/agent-tasks'
     | '/api/public/hooks/pulse-sync'
     | '/_authenticated/_shell/settings/'
     | '/_authenticated/_shell/marketing/analytics/competitors'
@@ -645,6 +658,7 @@ export interface RootRouteChildren {
   OauthCallbackRoute: typeof OauthCallbackRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   SiteBrandIdSlugRoute: typeof SiteBrandIdSlugRoute
+  ApiPublicHooksAgentTasksRoute: typeof ApiPublicHooksAgentTasksRoute
   ApiPublicHooksPulseSyncRoute: typeof ApiPublicHooksPulseSyncRoute
   ApiPublicOauthGoogleCallbackRoute: typeof ApiPublicOauthGoogleCallbackRoute
   ApiPublicOauthLinkedinCallbackRoute: typeof ApiPublicOauthLinkedinCallbackRoute
@@ -925,6 +939,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedShellWebSiteBuilderRouteImport
       parentRoute: typeof AuthenticatedShellRoute
     }
+    '/api/public/hooks/agent-tasks': {
+      id: '/api/public/hooks/agent-tasks'
+      path: '/api/public/hooks/agent-tasks'
+      fullPath: '/api/public/hooks/agent-tasks'
+      preLoaderRoute: typeof ApiPublicHooksAgentTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/pulse-sync': {
       id: '/api/public/hooks/pulse-sync'
       path: '/api/public/hooks/pulse-sync'
@@ -1154,6 +1175,7 @@ const rootRouteChildren: RootRouteChildren = {
   OauthCallbackRoute: OauthCallbackRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   SiteBrandIdSlugRoute: SiteBrandIdSlugRoute,
+  ApiPublicHooksAgentTasksRoute: ApiPublicHooksAgentTasksRoute,
   ApiPublicHooksPulseSyncRoute: ApiPublicHooksPulseSyncRoute,
   ApiPublicOauthGoogleCallbackRoute: ApiPublicOauthGoogleCallbackRoute,
   ApiPublicOauthLinkedinCallbackRoute: ApiPublicOauthLinkedinCallbackRoute,
