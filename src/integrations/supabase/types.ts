@@ -55,41 +55,164 @@ export type Database = {
           },
         ]
       }
+      agent_mcp_servers: {
+        Row: {
+          auth_headers: Json
+          created_at: string
+          enabled: boolean
+          id: string
+          last_error: string | null
+          name: string
+          status: string
+          tool_names: string[]
+          url: string
+          user_id: string
+        }
+        Insert: {
+          auth_headers?: Json
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_error?: string | null
+          name: string
+          status?: string
+          tool_names?: string[]
+          url: string
+          user_id: string
+        }
+        Update: {
+          auth_headers?: Json
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_error?: string | null
+          name?: string
+          status?: string
+          tool_names?: string[]
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      agent_settings: {
+        Row: {
+          disabled_skills: string[]
+          disabled_tools: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          disabled_skills?: string[]
+          disabled_tools?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          disabled_skills?: string[]
+          disabled_tools?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      agent_skills: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          instructions: string
+          name: string
+          summary: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          instructions: string
+          name: string
+          summary?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          instructions?: string
+          name?: string
+          summary?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       agent_tasks: {
         Row: {
           brand_id: string | null
+          client_id: string | null
           created_at: string
           id: string
           last_result: string | null
           last_run_at: string | null
+          locked_until: string | null
           prompt: string
           repeat: string
           run_at: string
           status: string
+          thread_id: string | null
           user_id: string
         }
         Insert: {
           brand_id?: string | null
+          client_id?: string | null
           created_at?: string
           id?: string
           last_result?: string | null
           last_run_at?: string | null
+          locked_until?: string | null
           prompt: string
           repeat?: string
           run_at: string
           status?: string
+          thread_id?: string | null
           user_id: string
         }
         Update: {
           brand_id?: string | null
+          client_id?: string | null
           created_at?: string
           id?: string
           last_result?: string | null
           last_run_at?: string | null
+          locked_until?: string | null
           prompt?: string
           repeat?: string
           run_at?: string
           status?: string
+          thread_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      agent_threads: {
+        Row: {
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -256,6 +379,7 @@ export type Database = {
           created_at: string
           id: string
           role: string
+          thread_id: string | null
           tools: Json
           user_id: string
         }
@@ -266,6 +390,7 @@ export type Database = {
           created_at?: string
           id?: string
           role?: string
+          thread_id?: string | null
           tools?: Json
           user_id: string
         }
@@ -276,6 +401,7 @@ export type Database = {
           created_at?: string
           id?: string
           role?: string
+          thread_id?: string | null
           tools?: Json
           user_id?: string
         }
@@ -285,6 +411,13 @@ export type Database = {
             columns: ["brand_id"]
             isOneToOne: false
             referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "agent_threads"
             referencedColumns: ["id"]
           },
         ]

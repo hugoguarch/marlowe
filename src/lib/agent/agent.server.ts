@@ -1,12 +1,13 @@
 /**
  * Why Media agent — server-only. One LLM (Lovable AI Gateway, Responses API) with
  * tools that call into the same tables every section of the app uses, so the
- * agent's work shows up in Scheduler, Reports, Site Builder etc.
+ * agent's work shows up in Scheduler, Reports, Site Builder, Email Designer etc.
  * Every tool filters by userId explicitly so it is safe under RLS and under the
- * service-role client used by the task scheduler.
+ * service-role client used by the task runner. Remote MCP servers the user
+ * connected are loaded per run and closed afterwards.
  */
 import { createOpenAI } from "@ai-sdk/openai";
-import { isStepCount, streamText, tool, type ModelMessage } from "ai";
+import { isStepCount, streamText, tool, type ModelMessage, type ToolSet } from "ai";
 import { z } from "zod";
 
 import { SKILLS } from "./skills";
@@ -23,6 +24,16 @@ function isoDay(d: Date) {
   return d.toISOString().slice(0, 10);
 }
 
+const uid = () => Math.random().toString(36).slice(2, 10);
+
+/** Brand tokens for the post preview in chat. */
+function designTokens(brandName: string, brain: any) {
+  const pal = (brain?.palette as { hex: string }[] | null) ?? [];
+  const typo = (brain?.typography as { family?: string; name?: string }[] | null) ?? [];
+  const fam = (i: number) => typo[i]?.family ?? typo[i]?.name ?? typo[0]?.family ?? "Helvetica Neue";
+  return { name: brandName, ink: pal[0]?.hex ?? "#001C26", accent: pal[2]?.hex ?? pal[1]?.hex ?? "#ECC032", light: "#FFFFFF", headlineFont: fam(0), bodyFont: fam(1) };
+}
+
 function buildTools(ctx: AgentCtx, scope: AgentScope) {
   const { supabase, userId } = ctx;
   const needBrand = () => {
@@ -30,7 +41,7 @@ function buildTools(ctx: AgentCtx, scope: AgentScope) {
     return scope.brandId;
   };
   const needClient = () => {
-    if (!scope.clientId) throw new Error("No analytics client selected — pick a client (not All accounts) first.");
+    if (!scope.clientId) throw new Error("No analytics account selected — pick an account (not All accounts) first.");
     return scope.clientId;
   };
 
@@ -47,7 +58,7 @@ function buildTools(ctx: AgentCtx, scope: AgentScope) {
     }),
 
     get_analytics: tool({
-      description: "Totals per channel and metric for the selected analytics client over the last N days (website, search, social, Google Business, YouTube).",
+      description: "Totals per channel and metric for the selected analytics account over the last N days (website, search, social, Google Business, YouTube).",
       inputSchema: z.object({ days: z.number().describe("Look-back window in days, e.g. 28") }),
       execute: async ({ days }) => {
         const cid = needClient();
@@ -60,7 +71,7 @@ function buildTools(ctx: AgentCtx, scope: AgentScope) {
     }),
 
     get_top_posts: tool({
-      description: "Best-performing published social posts/videos for the selected client, ranked by views or engagement.",
+      description: "Best-performing published social posts/videos for the selected account, ranked by views.",
       inputSchema: z.object({ channel: z.string().nullable().describe("e.g. instagram, facebook, youtube, linkedin; null for all"), limit: z.number() }),
       execute: async ({ channel, limit }) => {
         const cid = needClient();
@@ -82,23 +93,45 @@ function buildTools(ctx: AgentCtx, scope: AgentScope) {
     }),
 
     create_post: tool({
-      description: "Create a social post in Post Designer and schedule it so it appears in the Post Scheduler. Use real copy in the brand voice.",
+      description: "Design a social post exactly like Post Designer does: writes the slides, generates the background artwork on the brand palette, saves it and schedules it so it appears in the Post Scheduler.",
       inputSchema: z.object({
-        title: z.string(),
+        title: z.string().describe("Main headline, 3-6 words"),
         caption: z.string().describe("Full caption including hashtags"),
-        template: z.string().describe("carousel, single, story or reel"),
+        template: z.string().describe("carousel, single, quote, stat, announcement or story"),
         slides: z.array(z.object({ headline: z.string(), body: z.string() })),
-        channels: z.array(z.string()).describe("Instagram, Facebook, LinkedIn, TikTok, X"),
+        imageBrief: z.string().describe("What the background photo should show; no text in the image"),
+        channels: z.array(z.string()).describe("Instagram, Facebook, LinkedIn, TikTok, Google Business"),
         scheduledFor: z.string().describe("ISO date-time"),
       }),
       execute: async (p) => {
         const id = needBrand();
+        const { data: brand } = await supabase.from("brands").select("name").eq("id", id).eq("user_id", userId).maybeSingle();
+        if (!brand) throw new Error("That brand no longer exists.");
+        const { data: brain } = await supabase.from("brand_brain").select("palette, typography").eq("brand_id", id).maybeSingle();
         const when = new Date(p.scheduledFor);
         const at = isNaN(+when) ? new Date(Date.now() + 864e5) : when;
         const channels = p.channels.length ? p.channels.slice(0, 6) : ["Instagram"];
+        const slides = (p.slides.length ? p.slides : [{ headline: p.title, body: "" }]).slice(0, 10).map((s) => ({ title: s.headline, caption: s.body }));
+
+        // Artwork, same pipeline as Post Designer.
+        let imagePath: string | null = null;
+        try {
+          const { generateImage } = await import("@/lib/ai.server");
+          const colours = ((brain?.palette as { name: string; hex: string }[] | null) ?? []).map((c) => `${c.name} ${c.hex}`).join(", ");
+          const img = await generateImage(
+            `Editorial photographic background for a premium ${brand.name} social post: ${p.imageBrief || p.title}. Cinematic natural light, shallow depth of field, generous empty space for text, no text, letters or logos in the image. Colour mood: ${colours || "deep ink navy, cerulean blue, warm gold"}.`,
+            "1024x1024",
+          );
+          const path = `${userId}/${id}/renders/${crypto.randomUUID()}.png`;
+          const up = await supabase.storage.from("brand-assets").upload(path, img.bytes, { contentType: img.contentType, upsert: false });
+          if (!up.error) imagePath = path;
+        } catch (e) {
+          console.warn("post artwork failed", e instanceof Error ? e.message : e);
+        }
+
         const { data: item, error } = await supabase.from("content_items").insert({
           user_id: userId, brand_id: id, title: p.title.slice(0, 200), caption: p.caption.slice(0, 2000), format: p.template, template: p.template,
-          channel: channels[0], status: "queued", slides: p.slides.slice(0, 10),
+          channel: channels[0], status: "queued", slides, render_url: imagePath,
         }).select("id").single();
         if (error) throw new Error(error.message);
         const { error: e2 } = await supabase.from("schedule").insert(channels.map((channel) => ({
@@ -108,12 +141,16 @@ function buildTools(ctx: AgentCtx, scope: AgentScope) {
           await supabase.from("content_items").delete().eq("id", item.id);
           throw new Error(e2.message);
         }
-        return { id: item.id, scheduledFor: at.toISOString(), channels, link: "/marketing/scheduler" };
+        return {
+          id: item.id, scheduledFor: at.toISOString(), channels, link: "/marketing/scheduler",
+          design: { template: p.template, title: p.title, subhead: slides[0]?.caption ?? "", slides, caption: p.caption, imagePath, tokens: designTokens(brand.name, brain) },
+          artwork: imagePath ? "generated" : "failed — the post was saved without a photo",
+        };
       },
     }),
 
     create_report: tool({
-      description: "Generate a client performance report from live analytics data using the Why Media template. Saved to Reports for review.",
+      description: "Generate an account performance report from live analytics data using the Why Media template. Saved to Reports for review.",
       inputSchema: z.object({ from: z.string().describe("YYYY-MM-DD"), to: z.string().describe("YYYY-MM-DD"), period: z.string().describe("e.g. October 2026"), nextPeriod: z.string().describe("e.g. November 2026") }),
       execute: async (d) => {
         const clientId = needClient();
@@ -144,27 +181,113 @@ function buildTools(ctx: AgentCtx, scope: AgentScope) {
       },
     }),
 
+    create_email: tool({
+      description: "Draft a marketing email in Email Designer for the selected brand. Sending to a mailing list is not connected yet; sendAt only records the planned date.",
+      inputSchema: z.object({
+        name: z.string(),
+        subject: z.string(),
+        kicker: z.string(),
+        heroTitle: z.string(),
+        paragraphs: z.array(z.string()),
+        buttonLabel: z.string(),
+        sendAt: z.string().nullable().describe("ISO date-time or null"),
+      }),
+      execute: async (p) => {
+        const id = needBrand();
+        const blocks = [
+          { id: uid(), type: "header", label: "" },
+          { id: uid(), type: "hero", image: "", kicker: p.kicker, title: p.heroTitle, accent: "" },
+          ...p.paragraphs.slice(0, 6).map((b) => ({ id: uid(), type: "text", body: b })),
+          { id: uid(), type: "button", label: p.buttonLabel, secondary: "" },
+          { id: uid(), type: "footer", text: "" },
+        ];
+        const at = p.sendAt ? new Date(p.sendAt) : null;
+        const { data, error } = await supabase.from("email_designs").insert({
+          user_id: userId, brand_id: id, name: p.name.slice(0, 120), subject: p.subject.slice(0, 200), blocks,
+          status: at && !isNaN(+at) ? "scheduled" : "draft", scheduled_for: at && !isNaN(+at) ? at.toISOString() : null,
+        }).select("id").single();
+        if (error) throw new Error(error.message);
+        return { id: data.id, link: "/design/email-designer" };
+      },
+    }),
+
     schedule_task: tool({
-      description: "Schedule the agent to run an instruction later or on repeat (e.g. every Monday draft the week's posts). Runs with the nightly refresh after it is due.",
-      inputSchema: z.object({ prompt: z.string(), runAt: z.string().describe("ISO date-time"), repeat: z.string().describe("none, daily, weekly or monthly") }),
+      description: "Schedule the agent to run an instruction later or on repeat (e.g. on the 1st of every month make last month's report). The task runner checks every hour.",
+      inputSchema: z.object({ prompt: z.string().describe("Self-contained instruction"), runAt: z.string().describe("ISO date-time with offset for the first run"), repeat: z.string().describe("none, daily, weekly or monthly") }),
       execute: async (p) => {
         const repeat = ["daily", "weekly", "monthly"].includes(p.repeat) ? p.repeat : "none";
-        const { data, error } = await supabase.from("agent_tasks").insert({ user_id: userId, brand_id: scope.brandId, prompt: p.prompt.slice(0, 2000), run_at: new Date(p.runAt).toISOString(), repeat }).select("id, run_at").single();
+        const at = new Date(p.runAt);
+        if (isNaN(+at)) throw new Error("That start time isn't a valid date.");
+        const { data, error } = await supabase.from("agent_tasks").insert({ user_id: userId, brand_id: scope.brandId, client_id: scope.clientId, prompt: p.prompt.slice(0, 2000), run_at: at.toISOString(), repeat }).select("id, run_at, repeat").single();
         if (error) throw new Error(error.message);
-        return data;
+        return { ...data, link: "/agent" };
+      },
+    }),
+
+    list_tasks: tool({
+      description: "List the agent's scheduled tasks.",
+      inputSchema: z.object({}),
+      execute: async () => {
+        const { data } = await supabase.from("agent_tasks").select("id, prompt, run_at, repeat, status, last_run_at").eq("user_id", userId).order("run_at").limit(50);
+        return { tasks: data ?? [] };
       },
     }),
   };
 }
 
-function systemPrompt(scope: AgentScope) {
+type Config = { disabledTools: string[]; disabledSkills: string[]; custom: { name: string; instructions: string }[] };
+
+async function loadConfig(ctx: AgentCtx): Promise<Config> {
+  const [{ data: s }, { data: custom }] = await Promise.all([
+    ctx.supabase.from("agent_settings").select("disabled_tools, disabled_skills").eq("user_id", ctx.userId).maybeSingle(),
+    ctx.supabase.from("agent_skills").select("name, instructions").eq("user_id", ctx.userId).eq("enabled", true).limit(30),
+  ]);
+  return { disabledTools: s?.disabled_tools ?? [], disabledSkills: s?.disabled_skills ?? [], custom: custom ?? [] };
+}
+
+/** Opens every enabled remote MCP server for this user; tools are namespaced by server. */
+async function loadMcpTools(userId: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: servers } = await supabaseAdmin.from("agent_mcp_servers").select("id, name, url, auth_headers").eq("user_id", userId).eq("enabled", true).limit(8);
+  const clients: { close: () => Promise<void> }[] = [];
+  const tools: ToolSet = {};
+  const names: string[] = [];
+  if (!servers?.length) return { tools, clients, names };
+  const { createMCPClient } = await import("@ai-sdk/mcp");
+  for (const s of servers) {
+    const slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 20) || "mcp";
+    try {
+      const client = await createMCPClient({ transport: { type: "http", url: s.url, headers: (s.auth_headers ?? {}) as Record<string, string>, redirect: "error" } });
+      clients.push(client);
+      const t = await client.tools();
+      for (const [n, def] of Object.entries(t).slice(0, 40)) {
+        const key = `${slug}__${n}`.slice(0, 64);
+        tools[key] = def as any;
+        names.push(`${s.name}: ${n}`);
+      }
+    } catch (e) {
+      console.warn("mcp load failed", s.name, e instanceof Error ? e.message : e);
+      await supabaseAdmin.from("agent_mcp_servers").update({ status: "error", last_error: (e instanceof Error ? e.message : String(e)).slice(0, 300) }).eq("id", s.id);
+    }
+  }
+  return { tools, clients, names };
+}
+
+function londonNow() {
+  return new Date().toLocaleString("en-GB", { timeZone: "Europe/London", dateStyle: "full", timeStyle: "short", timeZoneName: "short" });
+}
+
+function systemPrompt(scope: AgentScope, cfg: Config, mcpNames: string[]) {
+  const skills = SKILLS.filter((s) => !cfg.disabledSkills.includes(s.id));
   return [
-    "You are the Why Media AI agent, the operator of a marketing agency platform. You can read analytics and brand kits and you can create work in the app's sections with tools.",
-    `Today is ${new Date().toISOString().slice(0, 10)}. Selected brand: ${scope.brandId ?? "none"}. Selected analytics client: ${scope.clientId ?? "all accounts"}.`,
-    "Rules: use tools for anything that needs data or should be created — never invent figures; if data is missing say so. When asked to make something (post, report, page), call the tool to actually create it, then tell the user where it is. Keep replies short, clear, British English, no emoji. Use markdown lists where helpful.",
+    "You are the Why Media AI agent, the operator of a marketing agency platform. You read analytics and brand kits and you create real work in the app's sections with tools.",
+    `Now: ${londonNow()} (UK time). UTC: ${new Date().toISOString()}. Selected brand: ${scope.brandId ?? "none"}. Selected analytics account: ${scope.clientId ?? "all accounts"}.`,
+    "Rules: use tools for anything that needs data or should be created — never invent figures; if data is missing say so. When asked to make something (post, report, page, email, recurring task), call the tool to actually create it, then tell the user where it is. Keep replies short, clear, British English, no emoji. Use markdown lists where helpful.",
+    mcpNames.length ? `Connected outside tools (namespaced server__tool): ${mcpNames.slice(0, 60).join("; ")}. Ask before using any outside tool that sends, publishes, deletes or spends money.` : "",
     "Skills:",
-    ...SKILLS.map((s) => `- ${s.name}: ${s.instructions}`),
-  ].join("\n");
+    ...skills.map((s) => `- ${s.name}: ${s.instructions}`),
+    ...cfg.custom.map((s) => `- ${s.name}: ${s.instructions}`),
+  ].filter(Boolean).join("\n");
 }
 
 async function attachmentParts(ctx: AgentCtx, files: Attachment[]) {
@@ -198,57 +321,100 @@ export async function runAgent(ctx: AgentCtx, scope: AgentScope, history: { role
     },
   });
 
+  const cfg = await loadConfig(ctx);
+  const builtIn = buildTools(ctx, scope) as ToolSet;
+  for (const n of cfg.disabledTools) delete builtIn[n];
+  const mcp = await loadMcpTools(ctx.userId);
+
   const messages: ModelMessage[] = history.slice(-20).map((m) => ({ role: m.role === "user" ? "user" : "assistant", content: m.body }) as ModelMessage);
   messages.push({ role: "user", content: [{ type: "text", text }, ...(await attachmentParts(ctx, files))] });
 
-  const result = streamText({
-    model: provider.responses(MODEL),
-    instructions: systemPrompt(scope),
-    messages,
-    tools: buildTools(ctx, scope),
-    stopWhen: isStepCount(50),
-    providerOptions: {
-      openai: { forceReasoning: true, reasoningEffort: "low", reasoningSummary: "auto", store: false, include: ["reasoning.encrypted_content"] },
-    },
-  });
+  try {
+    const result = streamText({
+      model: provider.responses(MODEL),
+      instructions: systemPrompt(scope, cfg, mcp.names),
+      messages,
+      tools: { ...mcp.tools, ...builtIn },
+      stopWhen: isStepCount(50),
+      providerOptions: {
+        openai: { forceReasoning: true, reasoningEffort: "low", reasoningSummary: "auto", store: false, include: ["reasoning.encrypted_content"] },
+      },
+    });
 
-  const reply = await result.text;
-  const steps = await result.steps;
-  const tools: ToolLog[] = [];
-  for (const s of steps) {
-    for (const r of s.toolResults as any[]) tools.push({ name: r.toolName, input: r.input, output: r.output, ok: true });
-    for (const c of s.content as any[]) if (c.type === "tool-error") tools.push({ name: c.toolName, input: c.input, output: String(c.error?.message ?? c.error), ok: false });
+    const reply = await result.text;
+    const steps = await result.steps;
+    const tools: ToolLog[] = [];
+    for (const s of steps) {
+      for (const r of s.toolResults as any[]) tools.push({ name: r.toolName, input: r.input, output: r.output, ok: true });
+      for (const c of s.content as any[]) if (c.type === "tool-error") tools.push({ name: c.toolName, input: c.input, output: String(c.error?.message ?? c.error), ok: false });
+    }
+    return { reply: reply.trim() || "Done.", tools };
+  } finally {
+    await Promise.all(mcp.clients.map((c) => c.close().catch(() => {})));
   }
-  return { reply: reply.trim() || "Done.", tools };
 }
 
-/** Called from the nightly hook: runs every due task as its owner. */
+function nextRun(from: Date, repeat: string) {
+  const next = new Date(from);
+  const step = () => {
+    if (repeat === "daily") next.setUTCDate(next.getUTCDate() + 1);
+    else if (repeat === "weekly") next.setUTCDate(next.getUTCDate() + 7);
+    else next.setUTCMonth(next.getUTCMonth() + 1);
+  };
+  do step(); while (next.getTime() <= Date.now());
+  return next;
+}
+
+/** Called hourly by the task runner: runs every due task as its owner, at most 10 per run. */
 export async function runDueTasks() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data: due } = await supabaseAdmin.from("agent_tasks").select("*").eq("status", "scheduled").lte("run_at", new Date().toISOString()).limit(20);
+  const now = new Date().toISOString();
+  const { data: due } = await supabaseAdmin.from("agent_tasks").select("*").eq("status", "scheduled").lte("run_at", now).or(`locked_until.is.null,locked_until.lt.${now}`).order("run_at").limit(10);
   let ran = 0;
   for (const t of due ?? []) {
+    // Claim the task so an overlapping run skips it.
+    const { data: claimed } = await supabaseAdmin.from("agent_tasks").update({ locked_until: new Date(Date.now() + 15 * 60_000).toISOString() })
+      .eq("id", t.id).eq("status", "scheduled").or(`locked_until.is.null,locked_until.lt.${now}`).select("id");
+    if (!claimed?.length) continue;
     const ctx = { supabase: supabaseAdmin, userId: t.user_id };
     let result: string;
+    let stop = false;
     try {
-      const out = await runAgent(ctx, { brandId: t.brand_id, clientId: null }, [], t.prompt, []);
+      const out = await runAgent(ctx, { brandId: t.brand_id, clientId: t.client_id }, [], t.prompt, []);
       result = out.reply;
+      let threadId = t.thread_id as string | null;
+      if (!threadId) {
+        const { data: th } = await supabaseAdmin.from("agent_threads").insert({ user_id: t.user_id, title: `Scheduled: ${t.prompt.slice(0, 50)}` }).select("id").single();
+        threadId = th?.id ?? null;
+      }
       await supabaseAdmin.from("chat_messages").insert([
-        { user_id: t.user_id, brand_id: t.brand_id, role: "user", body: `Scheduled task: ${t.prompt}` },
-        { user_id: t.user_id, brand_id: t.brand_id, role: "marlowe", body: out.reply, tools: out.tools as any },
+        { user_id: t.user_id, brand_id: t.brand_id, thread_id: threadId, role: "user", body: `Scheduled task: ${t.prompt}`, attachments: [], tools: [] },
+        { user_id: t.user_id, brand_id: t.brand_id, thread_id: threadId, role: "marlowe", body: out.reply, attachments: [], tools: out.tools as any },
       ]);
+      if (threadId) await supabaseAdmin.from("agent_threads").update({ updated_at: new Date().toISOString() }).eq("id", threadId);
       ran++;
     } catch (e) {
-      result = `Failed: ${e instanceof Error ? e.message : String(e)}`;
+      const msg = e instanceof Error ? e.message : String(e);
+      result = `Failed: ${msg}`;
+      // Credits or access problems: pause the task until someone re-enables it.
+      if (/402|403|credit/i.test(msg)) stop = true;
     }
-    const next = new Date(t.run_at);
-    if (t.repeat === "daily") next.setDate(next.getDate() + 1);
-    else if (t.repeat === "weekly") next.setDate(next.getDate() + 7);
-    else if (t.repeat === "monthly") next.setMonth(next.getMonth() + 1);
     await supabaseAdmin.from("agent_tasks").update({
-      last_result: result.slice(0, 4000), last_run_at: new Date().toISOString(),
-      ...(t.repeat === "none" ? { status: "done" } : { run_at: next.toISOString() }),
+      last_result: result.slice(0, 4000), last_run_at: new Date().toISOString(), locked_until: null,
+      ...(stop ? { status: "paused" } : t.repeat === "none" ? { status: "done" } : { run_at: nextRun(new Date(t.run_at), t.repeat).toISOString() }),
     }).eq("id", t.id);
+    if (stop) break;
   }
   return { ran };
+}
+
+/** Probe a remote MCP server and return its tool names. */
+export async function probeMcp(url: string, headers: Record<string, string>) {
+  const { createMCPClient } = await import("@ai-sdk/mcp");
+  const client = await createMCPClient({ transport: { type: "http", url, headers, redirect: "error" } });
+  try {
+    return Object.keys(await client.tools());
+  } finally {
+    await client.close().catch(() => {});
+  }
 }

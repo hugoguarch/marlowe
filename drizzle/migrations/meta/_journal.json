@@ -92,6 +92,13 @@
       "when": 1791895720175,
       "tag": "0012_brand_kit_site_versions",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792073008820,
+      "tag": "0013_agent_threads_skills_connections",
+      "breakpoints": true
     }
   ]
 }

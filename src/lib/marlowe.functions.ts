@@ -66,37 +66,60 @@ export const generateBrief = createServerFn({ method: "GET" })
     };
   });
 
-/** chat_with_marlowe — real agent: LLM + tools, both sides persisted in chat_messages. */
+const uuidOrNull = (v: unknown) => (typeof v === "string" && /^[0-9a-f-]{36}$/i.test(v) ? v : null);
+
+/** chat_with_marlowe — real agent: LLM + tools, both sides persisted in chat_messages under a thread. */
 export const chatWithMarlowe = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { body: string; brandId?: string | null; clientId?: string | null; files?: { path: string; name: string; mime: string }[] }) => {
+  .inputValidator((input: { body: string; threadId?: string | null; brandId?: string | null; clientId?: string | null; files?: { path: string; name: string; mime: string }[] }) => {
     const body = String(input?.body ?? "").trim();
     const files = Array.isArray(input?.files) ? input.files.slice(0, 6).map((f) => ({ path: String(f.path), name: String(f.name).slice(0, 200), mime: String(f.mime).slice(0, 100) })) : [];
     if (!body && !files.length) throw new Error("Empty message");
-    const uuid = (v: unknown) => (typeof v === "string" && /^[0-9a-f-]{36}$/i.test(v) ? v : null);
-    return { body: (body || "See the attached files.").slice(0, 8000), brandId: uuid(input?.brandId), clientId: uuid(input?.clientId), files };
+    return { body: (body || "See the attached files.").slice(0, 8000), threadId: uuidOrNull(input?.threadId), brandId: uuidOrNull(input?.brandId), clientId: uuidOrNull(input?.clientId), files };
   })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as unknown as Ctx;
     const brandId = data.brandId ?? (await ensureBrand({ supabase, userId }));
-    const { data: hist } = await supabase.from("chat_messages").select("role, body").eq("user_id", userId).order("created_at", { ascending: false }).limit(20);
+    let threadId = data.threadId;
+    if (threadId) {
+      const { data: t } = await supabase.from("agent_threads").select("id").eq("id", threadId).eq("user_id", userId).maybeSingle();
+      if (!t) threadId = null;
+    }
+    if (!threadId) {
+      const { data: t, error } = await supabase.from("agent_threads").insert({ user_id: userId, title: data.body.replace(/\s+/g, " ").slice(0, 60) }).select("id").single();
+      if (error) throw new Error(error.message);
+      threadId = t.id as string;
+    }
+    // Save the question straight away so it survives leaving the page mid-run.
+    const { error: e1 } = await supabase.from("chat_messages").insert({ user_id: userId, brand_id: brandId, thread_id: threadId, role: "user", body: data.body, attachments: data.files, tools: [] });
+    if (e1) console.error("chat save failed", e1.message);
+    const { data: hist } = await supabase.from("chat_messages").select("role, body").eq("thread_id", threadId).order("created_at", { ascending: false }).limit(21);
+    const history = (hist ?? []).reverse().slice(0, -1);
     const { runAgent } = await import("./agent/agent.server");
     let reply: string, tools: unknown[] = [];
     try {
-      const out = await runAgent({ supabase, userId }, { brandId, clientId: data.clientId }, (hist ?? []).reverse(), data.body, data.files);
+      const out = await runAgent({ supabase, userId }, { brandId, clientId: data.clientId }, history, data.body, data.files);
       reply = out.reply; tools = out.tools;
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.error("agent failed", msg);
       reply = /402|credit/i.test(msg) ? "AI credits have run out for this workspace. Top up in Settings → Plans & credits." : /429/.test(msg) ? "The AI is busy right now. Try again in a minute." : `I couldn't finish that: ${msg.slice(0, 200)}`;
     }
-    const { error } = await supabase.from("chat_messages").insert([
-      { user_id: userId, brand_id: brandId, role: "user", body: data.body, attachments: data.files },
-      { user_id: userId, brand_id: brandId, role: "marlowe", body: reply, tools },
-    ]);
+    const { error } = await supabase.from("chat_messages").insert({ user_id: userId, brand_id: brandId, thread_id: threadId, role: "marlowe", body: reply, attachments: [], tools });
     if (error) console.error("chat save failed", error.message);
-    return { reply, tools: tools as any[] };
+    await supabase.from("agent_threads").update({ updated_at: new Date().toISOString() }).eq("id", threadId);
+    return { threadId, reply, tools: await signTools(supabase, tools as any[]) };
   });
+
+/** Post previews keep a storage path; give the browser a fresh signed link each time. */
+async function signTools(supabase: any, tools: any[]) {
+  return Promise.all((tools ?? []).map(async (t) => {
+    const path = t?.output?.design?.imagePath;
+    if (!path) return t;
+    const { data } = await supabase.storage.from("brand-assets").createSignedUrl(path, 60 * 60 * 6);
+    return { ...t, output: { ...t.output, design: { ...t.output.design, imageUrl: data?.signedUrl ?? null } } };
+  }));
+}
 
 /** Scheduled agent tasks for the signed-in user. */
 export const listAgentTasks = createServerFn({ method: "GET" })
@@ -117,18 +140,58 @@ export const cancelAgentTask = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/** Thread history for the Marlowe page. */
-export const getChatHistory = createServerFn({ method: "GET" })
+/** Add a task by hand from the Tasks panel. */
+export const createAgentTask = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: { prompt: string; runAt: string; repeat: string; brandId?: string | null; clientId?: string | null }) => {
+    const prompt = String(i?.prompt ?? "").trim().slice(0, 2000);
+    const at = new Date(String(i?.runAt));
+    if (!prompt) throw new Error("Write what the agent should do.");
+    if (isNaN(+at)) throw new Error("Pick a start time.");
+    return { prompt, runAt: at.toISOString(), repeat: ["daily", "weekly", "monthly"].includes(i.repeat) ? i.repeat : "none", brandId: uuidOrNull(i.brandId), clientId: uuidOrNull(i.clientId) };
+  })
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as unknown as Ctx;
+    const { error } = await supabase.from("agent_tasks").insert({ user_id: userId, brand_id: data.brandId, client_id: data.clientId, prompt: data.prompt, run_at: data.runAt, repeat: data.repeat });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Conversations, newest first. */
+export const listThreads = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const { supabase, userId } = context as unknown as Ctx;
+    const { data } = await supabase.from("agent_threads").select("id, title, updated_at").eq("user_id", userId).order("updated_at", { ascending: false }).limit(100);
+    return (data ?? []) as { id: string; title: string; updated_at: string }[];
+  });
+
+export const deleteThread = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: { id: string }) => ({ id: String(i.id) }))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as unknown as Ctx;
+    const { error } = await supabase.from("agent_threads").delete().eq("id", data.id).eq("user_id", userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** One conversation's messages. */
+export const getChatHistory = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((i: { threadId: string }) => ({ threadId: String(i?.threadId ?? "") }))
+  .handler(async ({ data: input, context }) => {
     const { supabase, userId } = context as unknown as Ctx;
     const { data } = await supabase
       .from("chat_messages")
       .select("id, role, body, created_at, attachments, tools")
       .eq("user_id", userId)
+      .eq("thread_id", input.threadId)
       .order("created_at", { ascending: true })
-      .limit(100);
-    return (data ?? []) as { id: string; role: string; body: string; created_at: string; attachments: any[]; tools: any[] }[];
+      .limit(200);
+    return Promise.all(((data ?? []) as any[]).map(async (m) => ({ ...m, attachments: m.attachments ?? [], tools: await signTools(supabase, m.tools ?? []) }))) as Promise<
+      { id: string; role: string; body: string; created_at: string; attachments: any[]; tools: any[] }[]
+    >;
   });
 
 /** create_post — writes a content item and, optionally, its schedule rows. */
