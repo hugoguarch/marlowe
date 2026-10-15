@@ -163,7 +163,7 @@ function AgentPage() {
         >
           {files.length ? (
             <div className="mb-2 flex flex-wrap gap-1.5">
-              {files.map((f) => <FileChip key={f.path} name={f.name} busy={f.uploading} onRemove={() => setFiles((x) => x.filter((y) => y.path !== f.path))} />)}
+              {files.map((f) => <FileChip key={f.path} name={f.name} busy={!!f.uploading} onRemove={() => setFiles((x) => x.filter((y) => y.path !== f.path))} />)}
             </div>
           ) : null}
           <div className="flex items-end gap-2 rounded-[8px] border border-app-line bg-app-bg px-3 py-2 focus-within:border-cerulean">
