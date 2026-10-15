@@ -55,14 +55,6 @@ export function Sidebar({ name, role, onSignOut }: { name: string; role: string;
         </Link>
         {wide ? <span className="ml-auto text-[10px] font-bold tracking-[0.18em] text-cerulean-300">AI</span> : null}
       </div>
-      <button
-        onClick={toggle}
-        aria-label={wide ? "Collapse sidebar" : "Expand sidebar"}
-        title={wide ? "Collapse sidebar" : "Expand sidebar"}
-        className="absolute top-[26px] -right-3 z-10 flex h-6 w-6 items-center justify-center rounded-full border border-app-line bg-app-card text-ink-navy shadow-[0_2px_6px_rgba(0,28,38,0.18)] transition-colors hover:text-cerulean"
-      >
-        {wide ? <PanelLeftClose size={13} /> : <PanelLeftOpen size={13} />}
-      </button>
 
       <AccountSwitcher wide={wide} />
 
@@ -118,12 +110,24 @@ export function Sidebar({ name, role, onSignOut }: { name: string; role: string;
       </nav>
 
       <div className="relative mt-3 flex flex-col gap-0.5">
-        {BOTTOM.map((b) => (
-          <Link key={b.to} to={b.to} title={wide ? undefined : b.label} className={`flex items-center gap-[11px] rounded-[6px] px-2.5 py-[9px] text-sm transition-colors duration-150 ${path.startsWith(b.to) ? ON : DIM}`}>
-            <b.icon size={17} strokeWidth={1.75} />
-            {wide ? <span>{b.label}</span> : null}
-          </Link>
-        ))}
+        <div className={`flex gap-0.5 ${wide ? "items-center" : "flex-col"}`}>
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            {BOTTOM.map((b) => (
+              <Link key={b.to} to={b.to} title={wide ? undefined : b.label} className={`flex items-center gap-[11px] rounded-[6px] px-2.5 py-[9px] text-sm transition-colors duration-150 ${path.startsWith(b.to) ? ON : DIM}`}>
+                <b.icon size={17} strokeWidth={1.75} />
+                {wide ? <span>{b.label}</span> : null}
+              </Link>
+            ))}
+          </div>
+          <button
+            onClick={toggle}
+            aria-label={wide ? "Collapse sidebar" : "Expand sidebar"}
+            title={wide ? "Collapse sidebar" : "Expand sidebar"}
+            className={`flex items-center rounded-[6px] px-2.5 py-[9px] ${DIM} ${wide ? "self-end" : ""}`}
+          >
+            {wide ? <PanelLeftClose size={17} strokeWidth={1.75} /> : <PanelLeftOpen size={17} strokeWidth={1.75} />}
+          </button>
+        </div>
         <div className={`mt-2 flex items-center gap-2.5 border-t border-hair-dark pt-3 ${wide ? "px-2.5" : "px-1.5"}`}>
           <span title={wide ? undefined : name} className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-cerulean text-[11px] font-bold">{initials(name || "?")}</span>
           {wide ? (

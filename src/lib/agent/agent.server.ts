@@ -274,7 +274,7 @@ async function loadMcpTools(userId: string) {
 }
 
 function londonNow() {
-  return new Date().toLocaleString("en-GB", { timeZone: "Europe/London", dateStyle: "full", timeStyle: "short", timeZoneName: "short" });
+  return new Date().toLocaleString("en-GB", { timeZone: "Europe/London", weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", timeZoneName: "short" });
 }
 
 function systemPrompt(scope: AgentScope, cfg: Config, mcpNames: string[]) {

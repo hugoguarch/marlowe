@@ -21,3 +21,6 @@
 - Site pages are typed section JSON rendered by components/site/SitePage in builder, preview and the public /site/$brandId/$slug route; the public route reads only status='published' rows server-side. Why: the builder and the live site can never drift.
 - The in-app agent lives in src/lib/agent/ (agent.server.ts = LLM + tools, skills.ts = playbooks) and is called via chatWithMarlowe; its tools write the same tables the screens read, and filter by userId explicitly. Why: the nightly hook runs scheduled agent tasks with the service-role client.
 - YouTube sign-ins use the YOUTUBE_OAUTH_* client, Business Profile uses GOOGLE_OAUTH_*; pulse_google_accounts is unique per email+purpose. Why: separate Google apps issue separate refresh tokens.
+
+- Agent chats live in agent_threads + chat_messages.thread_id; scheduled tasks run hourly via /api/public/hooks/agent-tasks (managed cron), not the nightly pulse-sync. Why: tasks like 'report on the 1st' need timely runs and results land in their own thread.
+- Agent skills/tool switches/remote MCP servers are per user (agent_skills, agent_settings, agent_mcp_servers); MCP auth headers are readable only by the service role and loaded inside runAgent. Why: keys never reach the browser.
