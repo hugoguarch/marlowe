@@ -16,7 +16,7 @@
 - [x] Skills / Tools / Connections (remote MCP) / Scheduled tasks panels; hourly task runner
 - [x] File upload in agent fixed
 - [x] Sidebar expander moved to bottom next to Settings
-- [ ] Google Business Profile: stored Google app was deleted at Google — waiting on new client ID/secret from user
+- [x] Google Business Profile: new Google app keys saved (old app had been deleted at Google)
 - [ ] Phase 2: stream replies live
 - [ ] Phase 4: external MCP servers the agent can call (GoHighLevel, Semrush) + publish tools on /mcp
 - [ ] Phase 5: stronger coding model for Site Builder + component library from your real sites
