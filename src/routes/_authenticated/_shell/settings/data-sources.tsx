@@ -353,11 +353,20 @@ function SearchConsole({ client }: { client: PulseClient }) {
 
 /** Open a provider sign-in in its own window. Never loads it inside the app (providers refuse to be framed). */
 async function openSignIn(getUrl: () => Promise<{ url: string }>) {
-  const w = window.open("about:blank", "pulse-oauth", "popup,width=520,height=680");
+  // Google/LinkedIn refuse to load inside frames. In the editor preview (a frame), open this page in its own tab instead.
+  let framed = false;
+  try { framed = window.self !== window.top; } catch { framed = true; }
+  if (framed) {
+    const tab = window.open(window.location.href, "_blank");
+    if (!tab) toast("Open this page in its own browser tab to connect Google", { duration: 10000 });
+    else toast("Opened Settings in a new tab — click Connect there.");
+    return;
+  }
+  const w = window.open("about:blank", "_blank", "popup,width=520,height=680");
   try {
     const { url } = await getUrl();
     if (w && !w.closed) { w.location.href = url; return; }
-    toast("Your browser blocked the sign-in window", { action: { label: "Open sign-in", onClick: () => window.open(url, "_blank", "noopener") } });
+    window.location.href = url;
   } catch (e) { w?.close(); toast.error(e instanceof Error ? e.message : "Failed"); }
 }
 
