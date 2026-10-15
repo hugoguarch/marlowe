@@ -11,8 +11,13 @@
 ## Agent roadmap
 - [x] Separate YouTube / Business Profile Google sign-ins
 - [x] Agent: real AI replies, file attachments, tools, skills, scheduled tasks
-- [ ] Phase 2: stream replies live; multiple conversations
-- [ ] Phase 3: post images in chat (image generation + brand templates rendered as artefacts)
+- [x] Saved conversations (multiple chats, kept when you leave)
+- [x] Agent designs posts with artwork (same pipeline as Post Designer)
+- [x] Skills / Tools / Connections (remote MCP) / Scheduled tasks panels; hourly task runner
+- [x] File upload in agent fixed
+- [x] Sidebar expander moved to bottom next to Settings
+- [ ] Google Business Profile: stored Google app was deleted at Google — waiting on new client ID/secret from user
+- [ ] Phase 2: stream replies live
 - [ ] Phase 4: external MCP servers the agent can call (GoHighLevel, Semrush) + publish tools on /mcp
 - [ ] Phase 5: stronger coding model for Site Builder + component library from your real sites
-- [ ] Phase 6: approvals queue before anything is published live; hourly task runner
+- [ ] Phase 6: approvals queue before anything is published live; real email sending
