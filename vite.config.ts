@@ -16,6 +16,6 @@ export default defineConfig({
   vite: {
     plugins: [mcpPlugin()],
     // pkce-challenge (via @ai-sdk/mcp) has no worker export; its browser build uses Web Crypto, which workerd supports.
-    resolve: { alias: { "pkce-challenge": "pkce-challenge/dist/index.browser.js" } },
+    resolve: { alias: { "pkce-challenge": new URL("./node_modules/pkce-challenge/dist/index.browser.js", import.meta.url).pathname } },
   },
 });
