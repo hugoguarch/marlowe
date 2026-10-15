@@ -15,9 +15,8 @@ export const Route = createFileRoute("/api/public/hooks/pulse-sync")({
         const google = await syncAllGoogle().catch((e) => ({ error: String(e) }));
         const { syncAllLinkedIn } = await import("@/lib/pulse/linkedin.server");
         const linkedin = await syncAllLinkedIn().catch((e) => ({ error: String(e) }));
-        const { runDueTasks } = await import("@/lib/agent/agent.server");
-        const agent = await runDueTasks().catch((e) => ({ error: String(e) }));
-        return Response.json({ ok: true, gsc, meta, google, linkedin, agent });
+        // Agent tasks run from the hourly /api/public/hooks/agent-tasks runner.
+        return Response.json({ ok: true, gsc, meta, google, linkedin });
       },
     },
   },
