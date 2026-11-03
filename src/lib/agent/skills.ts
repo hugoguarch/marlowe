@@ -21,6 +21,4 @@ export function skillToMd(s: { name: string; summary: string; instructions: stri
 
 export const SKILLS: Skill[] = Object.entries(files)
   .map(([path, text]) => parseSkillMd(text, path.split("/").pop()!.replace(/\.md$/, "")))
-  .map((s, _i, all) => ({ ...s, id: s.id === "skill" ? s.name : s.id, _all: all }))
-  .map(({ _all, ...s }) => s)
   .sort((a, b) => a.name.localeCompare(b.name));
