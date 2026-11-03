@@ -21,3 +21,11 @@
 - [ ] Phase 4: external MCP servers the agent can call (GoHighLevel, Semrush) + publish tools on /mcp
 - [ ] Phase 5: stronger coding model for Site Builder + component library from your real sites
 - [ ] Phase 6: approvals queue before anything is published live; real email sending
+
+## Nov 2026
+- [ ] LinkedIn API version fix
+- [ ] Google Business Profile: connected but dashboard shows not connected
+- [ ] Connections hub (Settings → Connections) with app cards
+- [ ] Automations recipes tab in Agent
+- [ ] Skills as .md files; more agent tools
+- [ ] Email analytics via MCP
