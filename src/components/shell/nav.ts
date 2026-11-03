@@ -1,5 +1,7 @@
 import {
   Briefcase,
+  Plug,
+  Workflow,
   Globe,
   Home,
   Megaphone,
@@ -16,6 +18,7 @@ export type Dept = { key: string; label: string; icon: LucideIcon; base: string;
 export const TOP: (NavItem & { icon: LucideIcon })[] = [
   { label: "Dashboard", to: "/dashboard", icon: Home },
   { label: "Agent", to: "/agent", icon: Sparkles },
+  { label: "Automations", to: "/automations", icon: Workflow },
 ];
 
 export const DEPTS: Dept[] = [
@@ -71,6 +74,7 @@ export const DEPTS: Dept[] = [
 ];
 
 export const BOTTOM: (NavItem & { icon: LucideIcon })[] = [
+  { label: "Connections", to: "/connections", icon: Plug },
   { label: "Accounts", to: "/accounts", icon: Briefcase },
   { label: "Settings", to: "/settings", icon: Settings },
 ];

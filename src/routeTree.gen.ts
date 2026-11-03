@@ -24,6 +24,8 @@ import { Route as OauthCallbackRouteImport } from './routes/oauth.callback'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedShellAccountsRouteImport } from './routes/_authenticated/_shell/accounts'
 import { Route as AuthenticatedShellAgentRouteImport } from './routes/_authenticated/_shell/agent'
+import { Route as AuthenticatedShellAutomationsRouteImport } from './routes/_authenticated/_shell/automations'
+import { Route as AuthenticatedShellConnectionsRouteImport } from './routes/_authenticated/_shell/connections'
 import { Route as AuthenticatedShellDashboardRouteImport } from './routes/_authenticated/_shell/dashboard'
 import { Route as AuthenticatedShellSettingsRouteImport } from './routes/_authenticated/_shell/settings'
 import { Route as AuthenticatedAppSplatRouteImport } from './routes/_authenticated/app.$'
@@ -135,6 +137,18 @@ const AuthenticatedShellAgentRoute = AuthenticatedShellAgentRouteImport.update({
   path: '/agent',
   getParentRoute: () => AuthenticatedShellRoute,
 } as any)
+const AuthenticatedShellAutomationsRoute =
+  AuthenticatedShellAutomationsRouteImport.update({
+    id: '/automations',
+    path: '/automations',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
+const AuthenticatedShellConnectionsRoute =
+  AuthenticatedShellConnectionsRouteImport.update({
+    id: '/connections',
+    path: '/connections',
+    getParentRoute: () => AuthenticatedShellRoute,
+  } as any)
 const AuthenticatedShellDashboardRoute =
   AuthenticatedShellDashboardRouteImport.update({
     id: '/dashboard',
@@ -356,6 +370,8 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/accounts': typeof AuthenticatedShellAccountsRoute
   '/agent': typeof AuthenticatedShellAgentRoute
+  '/automations': typeof AuthenticatedShellAutomationsRoute
+  '/connections': typeof AuthenticatedShellConnectionsRoute
   '/dashboard': typeof AuthenticatedShellDashboardRoute
   '/settings': typeof AuthenticatedShellSettingsRouteWithChildren
   '/app/$': typeof AuthenticatedAppSplatRoute
@@ -406,6 +422,8 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/accounts': typeof AuthenticatedShellAccountsRoute
   '/agent': typeof AuthenticatedShellAgentRoute
+  '/automations': typeof AuthenticatedShellAutomationsRoute
+  '/connections': typeof AuthenticatedShellConnectionsRoute
   '/dashboard': typeof AuthenticatedShellDashboardRoute
   '/app/$': typeof AuthenticatedAppSplatRoute
   '/pulse/$': typeof AuthenticatedPulseSplatRoute
@@ -457,6 +475,8 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/_shell/accounts': typeof AuthenticatedShellAccountsRoute
   '/_authenticated/_shell/agent': typeof AuthenticatedShellAgentRoute
+  '/_authenticated/_shell/automations': typeof AuthenticatedShellAutomationsRoute
+  '/_authenticated/_shell/connections': typeof AuthenticatedShellConnectionsRoute
   '/_authenticated/_shell/dashboard': typeof AuthenticatedShellDashboardRoute
   '/_authenticated/_shell/settings': typeof AuthenticatedShellSettingsRouteWithChildren
   '/_authenticated/app/$': typeof AuthenticatedAppSplatRoute
@@ -509,6 +529,8 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/accounts'
     | '/agent'
+    | '/automations'
+    | '/connections'
     | '/dashboard'
     | '/settings'
     | '/app/$'
@@ -559,6 +581,8 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/accounts'
     | '/agent'
+    | '/automations'
+    | '/connections'
     | '/dashboard'
     | '/app/$'
     | '/pulse/$'
@@ -609,6 +633,8 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/_authenticated/_shell/accounts'
     | '/_authenticated/_shell/agent'
+    | '/_authenticated/_shell/automations'
+    | '/_authenticated/_shell/connections'
     | '/_authenticated/_shell/dashboard'
     | '/_authenticated/_shell/settings'
     | '/_authenticated/app/$'
@@ -769,6 +795,20 @@ declare module '@tanstack/react-router' {
       path: '/agent'
       fullPath: '/agent'
       preLoaderRoute: typeof AuthenticatedShellAgentRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
+    '/_authenticated/_shell/automations': {
+      id: '/_authenticated/_shell/automations'
+      path: '/automations'
+      fullPath: '/automations'
+      preLoaderRoute: typeof AuthenticatedShellAutomationsRouteImport
+      parentRoute: typeof AuthenticatedShellRoute
+    }
+    '/_authenticated/_shell/connections': {
+      id: '/_authenticated/_shell/connections'
+      path: '/connections'
+      fullPath: '/connections'
+      preLoaderRoute: typeof AuthenticatedShellConnectionsRouteImport
       parentRoute: typeof AuthenticatedShellRoute
     }
     '/_authenticated/_shell/dashboard': {
@@ -1072,6 +1112,8 @@ const AuthenticatedShellMarketingAnalyticsRouteWithChildren =
 interface AuthenticatedShellRouteChildren {
   AuthenticatedShellAccountsRoute: typeof AuthenticatedShellAccountsRoute
   AuthenticatedShellAgentRoute: typeof AuthenticatedShellAgentRoute
+  AuthenticatedShellAutomationsRoute: typeof AuthenticatedShellAutomationsRoute
+  AuthenticatedShellConnectionsRoute: typeof AuthenticatedShellConnectionsRoute
   AuthenticatedShellDashboardRoute: typeof AuthenticatedShellDashboardRoute
   AuthenticatedShellSettingsRoute: typeof AuthenticatedShellSettingsRouteWithChildren
   AuthenticatedShellDesignBrandRoute: typeof AuthenticatedShellDesignBrandRoute
@@ -1096,6 +1138,8 @@ interface AuthenticatedShellRouteChildren {
 const AuthenticatedShellRouteChildren: AuthenticatedShellRouteChildren = {
   AuthenticatedShellAccountsRoute: AuthenticatedShellAccountsRoute,
   AuthenticatedShellAgentRoute: AuthenticatedShellAgentRoute,
+  AuthenticatedShellAutomationsRoute: AuthenticatedShellAutomationsRoute,
+  AuthenticatedShellConnectionsRoute: AuthenticatedShellConnectionsRoute,
   AuthenticatedShellDashboardRoute: AuthenticatedShellDashboardRoute,
   AuthenticatedShellSettingsRoute: AuthenticatedShellSettingsRouteWithChildren,
   AuthenticatedShellDesignBrandRoute: AuthenticatedShellDesignBrandRoute,

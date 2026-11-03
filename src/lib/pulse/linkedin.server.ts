@@ -3,7 +3,9 @@ import { allowedOrigin, decrypt, encrypt, signState, verifyState } from "./googl
 
 export const LINKEDIN_CALLBACK_PATH = "/api/public/oauth/linkedin/callback";
 export const LINKEDIN_SCOPES = ["rw_organization_admin", "r_organization_social"];
-const VERSION = "202509";
+// LinkedIn retires versions ~12 months after release; bump this one value when it does.
+export const LINKEDIN_API_VERSION = "202510";
+const VERSION = LINKEDIN_API_VERSION;
 export { allowedOrigin, signState, verifyState };
 
 function creds() {

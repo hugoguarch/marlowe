@@ -408,7 +408,7 @@ function GoogleConnections({ client, purpose }: { client: PulseClient; purpose: 
           <SearchSelect className="mt-1" options={opts} value="" placeholder={yt ? "Type a channel name…" : "Type a business name…"} onChange={(v) => void link(v)} />
         </label>
       )}
-      {accts.some((a) => a.error) && <p className="mt-2 text-[11px] text-p-down">{accts.filter((a) => a.error).map((a) => `${a.email}: ${a.error}`).join(" · ")}</p>}
+      {accts.some((a) => a.error || (!yt && a.locError)) && <p className="mt-2 text-[11px] text-p-down">{accts.filter((a) => a.error || (!yt && a.locError)).map((a) => `${a.email}: ${a.error ?? a.locError}`).join(" · ")}</p>}
       {busy && <p className="mt-2 text-xs text-p-muted">Linking and pulling data…</p>}
     </Panel>
   );
