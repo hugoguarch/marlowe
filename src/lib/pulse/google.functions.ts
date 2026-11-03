@@ -29,13 +29,14 @@ export const googleAssets = createServerFn({ method: "POST" })
     return Promise.all((data ?? []).map(async (a) => {
       try {
         const tok = await g.accessToken(a.id);
+        let locError: string | null = null;
         const [channels, locations] = await Promise.all([
           g.youtubeChannels(tok).catch(() => []),
-          g.gbpLocations(tok).catch((e) => { console.warn("GBP locations failed", e instanceof Error ? e.message : e); return []; }),
+          g.gbpLocations(tok).catch((e) => { locError = e instanceof Error ? e.message : "Could not list locations"; return [] as { id: string; name: string }[]; }),
         ]);
-        return { id: a.id, email: a.email, channels, locations, error: null as string | null };
+        return { id: a.id, email: a.email, channels, locations, error: null as string | null, locError: locError as string | null };
       } catch (e) {
-        return { id: a.id, email: a.email, channels: [], locations: [], error: e instanceof Error ? e.message : "Failed" };
+        return { id: a.id, email: a.email, channels: [], locations: [], error: e instanceof Error ? e.message : "Failed", locError: null as string | null };
       }
     }));
   });
