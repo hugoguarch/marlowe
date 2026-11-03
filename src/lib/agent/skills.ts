@@ -12,7 +12,7 @@ export function parseSkillMd(text: string, fallbackId = "skill"): Skill {
   const meta: Record<string, string> = {};
   if (m) for (const line of m[1]!.split("\n")) { const i = line.indexOf(":"); if (i > 0) meta[line.slice(0, i).trim()] = line.slice(i + 1).trim(); }
   const body = (m ? m[2]! : text).trim();
-  return { id: meta.id ?? fallbackId, name: meta.name ?? fallbackId, summary: meta.summary ?? "", instructions: body };
+  return { id: meta["id"] ?? fallbackId, name: meta["name"] ?? fallbackId, summary: meta["summary"] ?? "", instructions: body };
 }
 
 export function skillToMd(s: { name: string; summary: string; instructions: string }) {
