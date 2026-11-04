@@ -426,7 +426,7 @@ export async function probeMcp(url: string, headers: Record<string, string>) {
   const { createMCPClient } = await import("@ai-sdk/mcp");
   const client = await createMCPClient({ transport: { type: "http", url, headers, redirect: "error" } });
   try {
-    return Object.keys(await client.tools());
+    return Object.keys((await (client as any).tools()) as Record<string, unknown>);
   } finally {
     await client.close().catch(() => {});
   }
