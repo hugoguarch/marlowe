@@ -329,8 +329,11 @@ export async function runAgent(ctx: AgentCtx, scope: AgentScope, history: { role
   const messages: ModelMessage[] = history.slice(-20).map((m) => ({ role: m.role === "user" ? "user" : "assistant", content: m.body }) as ModelMessage);
   messages.push({ role: "user", content: [{ type: "text", text }, ...(await attachmentParts(ctx, files))] });
 
+  let streamErr: unknown;
   try {
     const result = streamText({
+      maxRetries: 0,
+      onError: ({ error }) => { streamErr ??= error; },
       model: provider.responses(MODEL),
       instructions: systemPrompt(scope, cfg, mcp.names),
       messages,
@@ -341,8 +344,18 @@ export async function runAgent(ctx: AgentCtx, scope: AgentScope, history: { role
       },
     });
 
-    const reply = await result.text;
-    const steps = await result.steps;
+    let reply: string, steps: Awaited<typeof result.steps>;
+    try {
+      reply = await result.text;
+      steps = await result.steps;
+    } catch (e) {
+      // The SDK hides the real gateway error behind "No output generated"; surface it.
+      const real: any = streamErr ?? e;
+      const status = real?.statusCode ?? real?.status;
+      let msg = real?.message ?? String(real);
+      try { msg = JSON.parse(real?.responseBody ?? "").message ?? msg; } catch { /* keep */ }
+      throw new Error(status ? `${status} ${msg}` : msg);
+    }
     const tools: ToolLog[] = [];
     for (const s of steps) {
       for (const r of s.toolResults as any[]) tools.push({ name: r.toolName, input: r.input, output: r.output, ok: true });
