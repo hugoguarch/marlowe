@@ -259,7 +259,7 @@ async function loadMcpTools(userId: string) {
     try {
       const client = await createMCPClient({ transport: { type: "http", url: s.url, headers: (s.auth_headers ?? {}) as Record<string, string>, redirect: "error" } });
       clients.push(client);
-      const t = await client.tools();
+      const t: Record<string, unknown> = await (client as any).tools();
       for (const [n, def] of Object.entries(t).slice(0, 40)) {
         const key = `${slug}__${n}`.slice(0, 64);
         tools[key] = def as any;
