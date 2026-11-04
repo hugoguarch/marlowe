@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ChevronDown, ExternalLink, LayoutGrid, List, Loader2, Plus, Search, Settings2, X } from "lucide-react";
 import { useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 
 import { Switch } from "@/components/ui/switch";
@@ -156,10 +157,13 @@ function Pick({ value, onChange, options }: { value: string; onChange: (v: strin
 }
 
 function Modal({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
-  return (
+  if (typeof document === "undefined") return null;
+  // Portal to <body> so the dialog is centred on screen, not inside the scrolling page.
+  return createPortal(
     <div className="fixed inset-0 z-50 grid place-items-center bg-foreground/40 p-4" onClick={onClose}>
-      <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>{children}</div>
-    </div>
+      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-border bg-card p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>{children}</div>
+    </div>,
+    document.body,
   );
 }
 

@@ -259,7 +259,7 @@ async function loadMcpTools(userId: string) {
     try {
       const client = await createMCPClient({ transport: { type: "http", url: s.url, headers: (s.auth_headers ?? {}) as Record<string, string>, redirect: "error" } });
       clients.push(client);
-      const t = await client.tools();
+      const t: Record<string, unknown> = await (client as any).tools();
       for (const [n, def] of Object.entries(t).slice(0, 40)) {
         const key = `${slug}__${n}`.slice(0, 64);
         tools[key] = def as any;
@@ -329,8 +329,11 @@ export async function runAgent(ctx: AgentCtx, scope: AgentScope, history: { role
   const messages: ModelMessage[] = history.slice(-20).map((m) => ({ role: m.role === "user" ? "user" : "assistant", content: m.body }) as ModelMessage);
   messages.push({ role: "user", content: [{ type: "text", text }, ...(await attachmentParts(ctx, files))] });
 
+  let streamErr: unknown;
   try {
     const result = streamText({
+      maxRetries: 0,
+      onError: ({ error }) => { streamErr ??= error; },
       model: provider.responses(MODEL),
       instructions: systemPrompt(scope, cfg, mcp.names),
       messages,
@@ -341,8 +344,18 @@ export async function runAgent(ctx: AgentCtx, scope: AgentScope, history: { role
       },
     });
 
-    const reply = await result.text;
-    const steps = await result.steps;
+    let reply: string, steps: Awaited<typeof result.steps>;
+    try {
+      reply = await result.text;
+      steps = await result.steps;
+    } catch (e) {
+      // The SDK hides the real gateway error behind "No output generated"; surface it.
+      const real: any = streamErr ?? e;
+      const status = real?.statusCode ?? real?.status;
+      let msg = real?.message ?? String(real);
+      try { msg = JSON.parse(real?.responseBody ?? "").message ?? msg; } catch { /* keep */ }
+      throw new Error(status ? `${status} ${msg}` : msg);
+    }
     const tools: ToolLog[] = [];
     for (const s of steps) {
       for (const r of s.toolResults as any[]) tools.push({ name: r.toolName, input: r.input, output: r.output, ok: true });
@@ -413,7 +426,7 @@ export async function probeMcp(url: string, headers: Record<string, string>) {
   const { createMCPClient } = await import("@ai-sdk/mcp");
   const client = await createMCPClient({ transport: { type: "http", url, headers, redirect: "error" } });
   try {
-    return Object.keys(await client.tools());
+    return Object.keys((await (client as any).tools()) as Record<string, unknown>);
   } finally {
     await client.close().catch(() => {});
   }
