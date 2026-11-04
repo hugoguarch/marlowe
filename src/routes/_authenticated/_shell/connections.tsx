@@ -177,7 +177,7 @@ function ConnectDialog({ app, onClose, onDone }: { app: ConnectApp | "custom"; o
     try {
       const data = isCustom
         ? { name: name.trim(), url: url.trim(), headers }
-        : { name: app.name, url: app.mcpUrl!, headers: [app.header!.replace("{key}", key.trim()), app.extraField ? `${app.extraField.header}: ${extra.trim()}` : ""].filter(Boolean).join("\n") };
+        : { name: app.name, url: (url.trim() || app.mcpUrl!), headers: [key.trim() ? app.header!.replace("{key}", key.trim()) : "", app.extraField ? `${app.extraField.header}: ${extra.trim()}` : ""].filter(Boolean).join("\n") };
       const r = await add({ data });
       toast.success(`Connected, ${r.tools} tools available to the agent`);
       onDone();
@@ -196,14 +196,15 @@ function ConnectDialog({ app, onClose, onDone }: { app: ConnectApp | "custom"; o
           <Field label="Server address"><input value={url} onChange={(e) => setUrl(e.target.value)} className={inp} placeholder="https://…/mcp" /></Field>
           <Field label="Headers (optional, one per line)"><textarea value={headers} onChange={(e) => setHeaders(e.target.value)} rows={3} className={inp} placeholder="Authorization: Bearer …" /></Field>
         </>) : (<>
-          <Field label={app.keyLabel ?? "API key"}><input type="password" value={key} onChange={(e) => setKey(e.target.value)} className={inp} autoComplete="off" /></Field>
+          <Field label="MCP server link"><input value={url || app.mcpUrl || ""} onChange={(e) => setUrl(e.target.value)} className={inp} placeholder="https://…/mcp" /></Field>
+          <Field label={`${app.keyLabel ?? "API key"} (only if the server asks for one)`}><input type="password" value={key} onChange={(e) => setKey(e.target.value)} className={inp} autoComplete="off" /></Field>
           {app.extraField && <Field label={app.extraField.label}><input value={extra} onChange={(e) => setExtra(e.target.value)} className={inp} /></Field>}
           {app.keyHelp && <p className="text-xs text-muted-foreground">{app.keyHelp}</p>}
         </>)}
       </div>
       <div className="mt-6 flex justify-end gap-2">
         <button onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm text-foreground">Cancel</button>
-        <button disabled={busy || (isCustom ? !name || !url : !key)} onClick={submit} className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">{busy && <Loader2 className="h-4 w-4 animate-spin" />}Connect</button>
+        <button disabled={busy || (isCustom ? !name || !url : !(url || app.mcpUrl))} onClick={submit} className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">{busy && <Loader2 className="h-4 w-4 animate-spin" />}Connect</button>
       </div>
     </Modal>
   );
