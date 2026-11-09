@@ -27,6 +27,7 @@ function fill(tpl: string, scope: Scope): string {
 }
 
 export function renderReportHtml(data: Scope, origin: string) {
+  if (typeof data["customHtml"] === "string" && data["customHtml"].trim()) return data["customHtml"];
   const abs = (u: string) => (u.startsWith("http") ? u : origin + u);
   const face = (w: number, u: string) =>
     `@font-face{font-family:"Helvetica Neue";font-weight:${w};font-style:normal;font-display:block;src:url("${abs(u)}") format("opentype")}`;

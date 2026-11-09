@@ -3,6 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { reportSaveSchema } from "./report/document";
 
 type Ctx = { supabase: any; userId: string };
 type Row = { channel: string; date: string; metric: string; value: number; site: string };
@@ -259,15 +260,7 @@ export const getReport = createServerFn({ method: "POST" })
 
 export const saveReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({
-    id: z.string().uuid(), status: z.enum(["draft", "approved"]),
-    patch: z.object({
-      intro: z.string().max(400), summaryTitle: z.string().max(80), period: z.string().max(60), nextPeriod: z.string().max(60),
-      showGmb: z.boolean(), showSocial: z.boolean(),
-      paras: z.array(z.object({ text: z.string().max(800) })).max(5),
-      focus: z.array(z.object({ n: z.string(), title: z.string().max(80), body: z.string().max(400) })).max(5),
-    }),
-  }).parse(d))
+  .inputValidator((d: unknown) => reportSaveSchema.parse(d))
   .handler(async ({ data, context }) => {
     const ctx = context as unknown as Ctx;
     if (!(await canWrite(ctx))) throw new Error("Only admins and account managers can edit reports");

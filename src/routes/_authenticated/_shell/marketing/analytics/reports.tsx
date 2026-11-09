@@ -1,12 +1,12 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { usePulse } from "@/components/pulse/context";
 import { Empty, Loading, PageTitle, Panel } from "@/components/pulse/ui";
-import { deleteReport, generateReport, getReport, listReports, saveReport } from "@/lib/pulse/report.functions";
-import { renderReportHtml } from "@/lib/pulse/report/render";
+import { generateReport, listReports } from "@/lib/pulse/report.functions";
+import { ReportEditor } from "@/components/pulse/ReportEditor";
 
 export const Route = createFileRoute("/_authenticated/_shell/marketing/analytics/reports")({
   head: () => ({
@@ -33,7 +33,7 @@ function presets(): Preset[] {
     const s = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
     const e = new Date(Date.UTC(s.getUTCFullYear(), s.getUTCMonth() + 1, 0));
     const n = new Date(Date.UTC(s.getUTCFullYear(), s.getUTCMonth() + 1, 1));
-    out.push({ id: `m${i}`, label: `${MONTHS[s.getUTCMonth()]} ${s.getUTCFullYear()}`, from: iso(s), to: iso(e), period: `${MONTHS[s.getUTCMonth()]} ${s.getUTCFullYear()}`, next: MONTHS[n.getUTCMonth()]! });
+    out.push({ id: `m${i}`, label: `${MONTHS[s.getUTCMonth()]} ${s.getUTCFullYear()}`, from: iso(s), to: iso(e), period: `${MONTHS[s.getUTCMonth()]} ${s.getUTCFullYear()}`, next: (MONTHS[n.getUTCMonth()] ?? "Next month") });
   }
   const q = Math.floor(now.getUTCMonth() / 3);
   for (let i = 1; i <= 2; i++) {
@@ -65,7 +65,7 @@ function ReportsPage() {
   return (
     <div className="space-y-6">
       <PageTitle title="Reports" sub={client.name} />
-      {openId ? <Editor id={openId} canWrite={canWrite} onClose={() => { setOpenId(null); reports.refetch(); }} /> : (
+      {openId ? <ReportEditor id={openId} canWrite={canWrite} onClose={() => { setOpenId(null); reports.refetch(); }} /> : (
         <>
           {canWrite && <Generate clientId={clientId} onDone={(id) => { reports.refetch(); setOpenId(id); }} />}
           <Panel title="Report archive" sub="Every report generated for this client.">
@@ -94,12 +94,12 @@ function ReportsPage() {
 
 function Generate({ clientId, onDone }: { clientId: string; onDone: (id: string) => void }) {
   const opts = useMemo(presets, []);
-  const [sel, setSel] = useState(opts[0]!.id);
+  const [sel, setSel] = useState(opts[0]?.id ?? "custom");
   const [custom, setCustom] = useState({ from: "", to: "", period: "", next: "" });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const gen = useServerFn(generateReport);
-  const p = sel === "custom" ? { ...custom } : opts.find((o) => o.id === sel)!;
+  const p = sel === "custom" ? { ...custom } : (opts.find((o) => o.id === sel) ?? custom);
   const ready = p.from && p.to && p.period && p.next;
   return (
     <Panel title="New report" sub="Fills the Why Media Digital Marketing Report with this client's data. The summary is written from the numbers and you can edit everything before approving.">
@@ -133,98 +133,3 @@ function Generate({ clientId, onDone }: { clientId: string; onDone: (id: string)
   );
 }
 
-function Editor({ id, canWrite, onClose }: { id: string; canWrite: boolean; onClose: () => void }) {
-  const fetchOne = useServerFn(getReport);
-  const save = useServerFn(saveReport);
-  const del = useServerFn(deleteReport);
-  const qc = useQueryClient();
-  const q = useQuery({ queryKey: ["pulse", "report", id], queryFn: () => fetchOne({ data: { id } }) });
-  const [doc, setDoc] = useState<Record<string, any> | null>(null);
-  const [msg, setMsg] = useState<string | null>(null);
-  const frame = useRef<HTMLIFrameElement>(null);
-  useEffect(() => { if (q.data) setDoc(q.data.data); }, [q.data]);
-  // Scale the A4 pages to fit the preview pane (screen only; printing is unaffected).
-  const fit = () => {
-    const f = frame.current, b = f?.contentDocument?.body;
-    if (f && b) b.style.zoom = String(Math.min(1, (f.clientWidth - 24) / 794));
-  };
-  useEffect(() => {
-    const f = frame.current;
-    if (!f) return;
-    const ro = new ResizeObserver(fit);
-    ro.observe(f);
-    return () => ro.disconnect();
-  });
-
-  const html = useMemo(() => {
-    if (!doc) return "";
-    const order = ["01", "02", "03", "04"];
-    const visible = ["web", doc["showGmb"] ? "gmb" : null, doc["showSocial"] ? "social" : null, "sum"].filter(Boolean) as string[];
-    const n = visible.length;
-    const slot = (k: string) => `${String(visible.indexOf(k) + 1).padStart(2, "0")} / ${String(n).padStart(2, "0")}`;
-    const pg = Object.fromEntries(order.map((o, i) => [o, slot(["web", "gmb", "social", "sum"][i]!)]));
-    return renderReportHtml({ ...doc, pg }, window.location.origin);
-  }, [doc]);
-
-  if (!doc || !q.data) return <Loading />;
-  const set = (patch: Record<string, unknown>) => setDoc({ ...doc, ...patch });
-  const persist = async (status: "draft" | "approved") => {
-    setMsg(null);
-    try {
-      await save({ data: { id, status, patch: { intro: doc["intro"], summaryTitle: doc["summaryTitle"], period: doc["period"], nextPeriod: doc["nextPeriod"], showGmb: !!doc["showGmb"], showSocial: !!doc["showSocial"], paras: doc["paras"], focus: doc["focus"] } } });
-      qc.invalidateQueries({ queryKey: ["pulse", "report", id] });
-      setMsg(status === "approved" ? "Approved." : "Saved.");
-    } catch (e) { setMsg(e instanceof Error ? e.message : "Couldn't save"); }
-  };
-
-  return (
-    <div className="grid gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
-      <div className="space-y-4">
-        <div className="flex flex-wrap gap-2">
-          <button className={btn} onClick={onClose}>← All reports</button>
-          <button className={btn} onClick={() => {
-            const f = frame.current;
-            if (!f?.contentDocument) return;
-            f.contentDocument.body.style.zoom = "1";
-            f.contentWindow?.print();
-            fit();
-          }}>Download PDF</button>
-        </div>
-        <Panel title="Edit text" sub={q.data.status === "approved" ? "Approved" : "Draft"}>
-          <fieldset disabled={!canWrite} className="space-y-3">
-            <label className="block space-y-1 text-xs text-p-muted">Period<input className={input} value={doc["period"]} onChange={(e) => set({ period: e.target.value })} /></label>
-            <label className="block space-y-1 text-xs text-p-muted">Next period<input className={input} value={doc["nextPeriod"]} onChange={(e) => set({ nextPeriod: e.target.value })} /></label>
-            <label className="block space-y-1 text-xs text-p-muted">Cover intro<textarea rows={3} className={input} value={doc["intro"]} onChange={(e) => set({ intro: e.target.value })} /></label>
-            <div className="flex gap-4 text-sm text-p-text">
-              <label className="flex items-center gap-2"><input type="checkbox" checked={!!doc["showGmb"]} onChange={(e) => set({ showGmb: e.target.checked })} />Google Business page</label>
-              <label className="flex items-center gap-2"><input type="checkbox" checked={!!doc["showSocial"]} onChange={(e) => set({ showSocial: e.target.checked })} />Social page</label>
-            </div>
-            <label className="block space-y-1 text-xs text-p-muted">Summary heading<input className={input} value={doc["summaryTitle"]} onChange={(e) => set({ summaryTitle: e.target.value })} /></label>
-            {(doc["paras"] as { text: string }[]).map((p, i) => (
-              <label key={i} className="block space-y-1 text-xs text-p-muted">Paragraph {i + 1}
-                <textarea rows={3} className={input} value={p.text} onChange={(e) => set({ paras: (doc["paras"] as any[]).map((x, j) => (j === i ? { text: e.target.value } : x)) })} />
-              </label>
-            ))}
-            {(doc["focus"] as { n: string; title: string; body: string }[]).map((f, i) => (
-              <div key={i} className="space-y-1 text-xs text-p-muted">Focus {f.n}
-                <input className={input} placeholder="Title" value={f.title} onChange={(e) => set({ focus: (doc["focus"] as any[]).map((x, j) => (j === i ? { ...x, title: e.target.value } : x)) })} />
-                <textarea rows={2} className={input} placeholder="One sentence" value={f.body} onChange={(e) => set({ focus: (doc["focus"] as any[]).map((x, j) => (j === i ? { ...x, body: e.target.value } : x)) })} />
-              </div>
-            ))}
-          </fieldset>
-          {canWrite && (
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <button className={btn} onClick={() => persist("draft")}>Save draft</button>
-              <button className={primary} onClick={() => persist("approved")}>Approve</button>
-              <button className="ml-auto text-xs text-p-muted hover:text-red-600" onClick={async () => { if (confirm("Delete this report?")) { await del({ data: { id } }); onClose(); } }}>Delete</button>
-            </div>
-          )}
-          {msg && <p className="mt-2 text-xs text-p-muted">{msg}</p>}
-        </Panel>
-      </div>
-      <div className="overflow-hidden rounded-[8px] border border-p-line bg-p-bg">
-        <iframe ref={frame} title="Report preview" srcDoc={html} onLoad={fit} className="h-[calc(100vh-180px)] min-h-[700px] w-full" />
-      </div>
-    </div>
-  );
-}

@@ -1,4 +1,8 @@
 # Roadmap
+## Report editing and export
+- [ ] Edit all report content, values and full HTML/CSS; persist changes
+- [ ] Export a standalone HTML file and verify saving/export
+
 - [x] Ask Why AI bar in header
 - [x] Sidebar collapse/expand + hover flyouts
 - [x] Post Designer rebuilt to design + schedule action
